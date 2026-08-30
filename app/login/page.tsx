@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
-import { PageShell } from "@/components/page-shell";
 import { requestMagicLink } from "@/app/login/actions";
+import { PageShell } from "@/components/page-shell";
+import {
+  formatLoginSendFailedCopy,
+  toPublicAuthError,
+} from "@/lib/auth-error";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -12,6 +16,23 @@ export default async function LoginPage({
   const query = await searchParams;
   const status = typeof query.status === "string" ? query.status : null;
   const error = typeof query.error === "string" ? query.error : null;
+  const sendFailedCopy =
+    error === "send-failed"
+      ? formatLoginSendFailedCopy(
+          toPublicAuthError({
+            message:
+              typeof query.auth_message === "string"
+                ? query.auth_message
+                : undefined,
+            code:
+              typeof query.auth_code === "string" ? query.auth_code : undefined,
+            status:
+              typeof query.auth_status === "string"
+                ? Number(query.auth_status)
+                : undefined,
+          }),
+        )
+      : null;
 
   return (
     <PageShell>
@@ -52,9 +73,9 @@ export default async function LoginPage({
           NEXT_PUBLIC_SUPABASE_ANON_KEY.
         </p>
       ) : null}
-      {error === "send-failed" ? (
+      {sendFailedCopy ? (
         <p className="mt-4 text-sm text-brick" role="alert">
-          Supabase did not send the link. Check the project auth settings.
+          {sendFailedCopy}
         </p>
       ) : null}
       {error === "auth" ? (

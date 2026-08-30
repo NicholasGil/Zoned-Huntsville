@@ -1,5 +1,8 @@
+import { PurchaseAuthError } from "./auth-error.ts";
+
 export type PurchaseAuthUser = {
   id: string;
+  email?: string | null;
   email_confirmed_at?: string | null;
 };
 
@@ -20,11 +23,8 @@ export type PurchaseAuthAdmin = {
         data: { user: PurchaseAuthUser | null };
         error: { message: string } | null;
       }>;
-      generateLink: (params: {
-        type: "magiclink";
-        email: string;
-      }) => Promise<{
-        data: { user: PurchaseAuthUser | null };
+      listUsers: (params?: { page?: number; perPage?: number }) => Promise<{
+        data: { users: PurchaseAuthUser[] };
         error: { message: string } | null;
       }>;
     };
@@ -34,19 +34,34 @@ export type PurchaseAuthAdmin = {
         shouldCreateUser: boolean;
         emailRedirectTo: string;
       };
-    }) => Promise<{ error: { message: string } | null }>;
+    }) => Promise<{
+      error: { message: string; code?: string; status?: number } | null;
+    }>;
   };
 };
 
-export function purchaseMagicLinkRedirectTo(siteUrl: string): string {
+/**
+ * Magic-link redirect that matches the Auth allowlist path.
+ *
+ * GoTrue accepts any path on the project Site URL host. When Site URL is a
+ * different host, allowlist entries are exact (query string included). The
+ * project allowlist has `/auth/confirm` with no query. `/auth/confirm` already
+ * defaults `next` to `/guide`, so purchase and login share this URL.
+ */
+export function authConfirmRedirectTo(siteUrl: string): string {
   const origin = siteUrl.replace(/\/+$/, "");
-  return `${origin}/auth/confirm?next=/guide`;
+  return `${origin}/auth/confirm`;
+}
+
+export function purchaseMagicLinkRedirectTo(siteUrl: string): string {
+  return authConfirmRedirectTo(siteUrl);
 }
 
 /**
  * Create the Auth user if needed and mark the address confirmed so
  * "Confirm email" does not send a signup mail. Then send exactly one
- * magic/sign-in link via Supabase Auth (works when Resend is unset).
+ * magic/sign-in link via Supabase Auth `signInWithOtp` (this is what
+ * actually triggers built-in Auth mail; generateLink does not send).
  */
 export async function sendConfirmedPurchaseMagicLink(
   admin: PurchaseAuthAdmin,
@@ -64,7 +79,10 @@ export async function sendConfirmedPurchaseMagicLink(
   });
 
   if (error) {
-    throw new Error(error.message);
+    throw new PurchaseAuthError(error.message, {
+      code: error.code,
+      status: error.status,
+    });
   }
 }
 
@@ -81,16 +99,17 @@ export async function ensureConfirmedAuthUser(
     return created.data.user.id;
   }
 
-  const existing = await admin.auth.admin.generateLink({
-    type: "magiclink",
-    email,
-  });
-  const user = existing.data.user;
+  const listed = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
+  const normalized = email.toLowerCase();
+  const user = (listed.data.users ?? []).find(
+    (candidate) => (candidate.email ?? "").toLowerCase() === normalized,
+  );
   if (!user) {
-    throw new Error(
+    throw new PurchaseAuthError(
       created.error?.message ??
-        existing.error?.message ??
+        listed.error?.message ??
         "Could not create or load the Auth user for this purchase email.",
+      { code: created.error?.code },
     );
   }
 
@@ -99,7 +118,7 @@ export async function ensureConfirmedAuthUser(
       email_confirm: true,
     });
     if (updated.error || !updated.data.user) {
-      throw new Error(
+      throw new PurchaseAuthError(
         updated.error?.message ?? "Could not confirm the Auth user.",
       );
     }

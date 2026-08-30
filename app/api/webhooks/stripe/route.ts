@@ -1,5 +1,6 @@
 import { after, NextResponse } from "next/server";
 import { getAppEnv } from "@/lib/env";
+import { runAppliedPurchaseNotifications } from "@/lib/purchase-follow-up";
 import { fulfillStripeEvent, sendPurchaseMagicLink } from "@/lib/stripe-fulfillment";
 import { sendPurchaseReceipt } from "@/lib/transactional-mail";
 import { getStripe } from "@/lib/stripe";
@@ -44,17 +45,15 @@ export async function POST(request: Request) {
   }
 
   if (result.kind === "applied") {
-    after(async () => {
-      try {
-        await sendPurchaseMagicLink(result.email);
-      } catch {
-        // Entitlement is already written.
-      }
-      await sendPurchaseReceipt({
-        to: result.email,
-        amountUsd: result.amountUsd,
-      });
-    });
+    after(() =>
+      runAppliedPurchaseNotifications(
+        { email: result.email, amountUsd: result.amountUsd },
+        {
+          sendMagicLink: sendPurchaseMagicLink,
+          sendReceipt: sendPurchaseReceipt,
+        },
+      ),
+    );
   }
 
   return NextResponse.json({ received: true, result: result.kind });

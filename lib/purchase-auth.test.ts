@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { PurchaseAuthError } from "./auth-error.ts";
 import {
+  authConfirmRedirectTo,
   ensureConfirmedAuthUser,
   purchaseMagicLinkRedirectTo,
   sendConfirmedPurchaseMagicLink,
@@ -12,7 +14,7 @@ function createAdminMock(options: {
   existing?: PurchaseAuthUser | null;
   createError?: { message: string; code?: string };
   updateError?: { message: string };
-  otpError?: { message: string };
+  otpError?: { message: string; code?: string; status?: number };
 }): {
   admin: PurchaseAuthAdmin;
   calls: string[];
@@ -36,7 +38,11 @@ function createAdminMock(options: {
           }
           return {
             data: {
-              user: { id: "new-user", email_confirmed_at: "2026-08-30T00:00:00Z" },
+              user: {
+                id: "new-user",
+                email: attributes.email,
+                email_confirmed_at: "2026-08-30T00:00:00Z",
+              },
             },
             error: null,
           };
@@ -51,10 +57,10 @@ function createAdminMock(options: {
             error: null,
           };
         },
-        async generateLink(params) {
-          calls.push(`generateLink:${params.type}:${params.email}`);
+        async listUsers() {
+          calls.push("listUsers");
           return {
-            data: { user: options.existing ?? null },
+            data: { users: options.existing ? [options.existing] : [] },
             error: options.existing ? null : { message: "missing user" },
           };
         },
@@ -71,10 +77,14 @@ function createAdminMock(options: {
 }
 
 describe("purchaseMagicLinkRedirectTo", () => {
-  it("includes next=/guide and strips a trailing slash", () => {
+  it("uses the allowlisted /auth/confirm path and strips a trailing slash", () => {
     assert.equal(
       purchaseMagicLinkRedirectTo("https://huntsvilleschoolguide.vercel.app/"),
-      "https://huntsvilleschoolguide.vercel.app/auth/confirm?next=/guide",
+      "https://huntsvilleschoolguide.vercel.app/auth/confirm",
+    );
+    assert.equal(
+      authConfirmRedirectTo("https://huntsvilleschoolguide.vercel.app/"),
+      "https://huntsvilleschoolguide.vercel.app/auth/confirm",
     );
   });
 });
@@ -87,17 +97,25 @@ describe("ensureConfirmedAuthUser", () => {
     assert.deepEqual(calls, ["createUser:buyer@example.com:confirm=true"]);
   });
 
-  it("confirms an existing unconfirmed user instead of sending signup mail", async () => {
+  it("confirms an existing unconfirmed user without generateLink side effects", async () => {
     const { admin, calls } = createAdminMock({
-      existing: { id: "old-user", email_confirmed_at: null },
+      existing: {
+        id: "old-user",
+        email: "buyer@example.com",
+        email_confirmed_at: null,
+      },
     });
     const id = await ensureConfirmedAuthUser(admin, "buyer@example.com");
     assert.equal(id, "old-user");
     assert.deepEqual(calls, [
       "createUser:buyer@example.com:confirm=true",
-      "generateLink:magiclink:buyer@example.com",
+      "listUsers",
       "updateUserById:old-user:confirm=true",
     ]);
+    assert.equal(
+      calls.some((call) => call.startsWith("generateLink:")),
+      false,
+    );
   });
 });
 
@@ -114,14 +132,18 @@ describe("sendConfirmedPurchaseMagicLink", () => {
     assert.equal(otpCalls.length, 1);
     assert.equal(
       otpCalls[0],
-      "signInWithOtp:buyer@example.com:create=false:https://huntsvilleschoolguide.vercel.app/auth/confirm?next=/guide",
+      "signInWithOtp:buyer@example.com:create=false:https://huntsvilleschoolguide.vercel.app/auth/confirm",
     );
     assert.equal(calls[0], "createUser:buyer@example.com:confirm=true");
   });
 
   it("does not send the link if confirmation fails", async () => {
     const { admin, calls } = createAdminMock({
-      existing: { id: "old-user", email_confirmed_at: null },
+      existing: {
+        id: "old-user",
+        email: "buyer@example.com",
+        email_confirmed_at: null,
+      },
       updateError: { message: "update failed" },
     });
 
@@ -137,6 +159,32 @@ describe("sendConfirmedPurchaseMagicLink", () => {
     assert.equal(
       calls.some((call) => call.startsWith("signInWithOtp:")),
       false,
+    );
+  });
+
+  it("throws the OTP error message and code when Auth refuses to send", async () => {
+    const { admin } = createAdminMock({
+      otpError: {
+        message: "email rate limit exceeded",
+        code: "over_email_send_rate_limit",
+        status: 429,
+      },
+    });
+
+    await assert.rejects(
+      () =>
+        sendConfirmedPurchaseMagicLink(
+          admin,
+          "https://huntsvilleschoolguide.vercel.app",
+          "buyer@example.com",
+        ),
+      (error: unknown) => {
+        assert.ok(error instanceof PurchaseAuthError);
+        assert.equal(error.message, "email rate limit exceeded");
+        assert.equal(error.code, "over_email_send_rate_limit");
+        assert.equal(error.status, 429);
+        return true;
+      },
     );
   });
 });
