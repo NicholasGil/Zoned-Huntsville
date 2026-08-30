@@ -66,10 +66,10 @@ export function SalesPage() {
           Eight modules
         </h2>
         <ol className="mt-6 max-w-2xl list-decimal space-y-4 pl-6 text-muted">
-          {GUIDE_MODULES.map((module) => (
-            <li key={module.slug}>
-              <span className="text-ink">{module.title}</span>
-              <span className="mt-1 block text-sm">{module.purpose}</span>
+          {GUIDE_MODULES.map((entry) => (
+            <li key={entry.slug}>
+              <span className="text-ink">{entry.title}</span>
+              <span className="mt-1 block text-sm">{entry.purpose}</span>
             </li>
           ))}
         </ol>

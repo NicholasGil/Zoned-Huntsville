@@ -13,23 +13,23 @@ import { FIVE_SYSTEM_SLUGS, PRIVATE_SCHOOL_SLUGS, slugOrder } from "@/lib/seed-f
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return GUIDE_MODULES.map((module) => ({ module: module.slug }));
+  return GUIDE_MODULES.map((entry) => ({ module: entry.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/guide/[module]">): Promise<Metadata> {
   const { module: moduleSlug } = await params;
-  const module = getGuideModule(moduleSlug);
-  return { title: module ? module.title : "Guide module" };
+  const guideModule = getGuideModule(moduleSlug);
+  return { title: guideModule ? guideModule.title : "Guide module" };
 }
 
 export default async function GuideModulePage({
   params,
 }: PageProps<"/guide/[module]">) {
   const { module: moduleSlug } = await params;
-  const module = getGuideModule(moduleSlug);
-  if (!module) {
+  const guideModule = getGuideModule(moduleSlug);
+  if (!guideModule) {
     notFound();
   }
 
@@ -43,11 +43,11 @@ export default async function GuideModulePage({
     );
   }
 
-  const facts = await getPublishedFacts(module.matchesFact);
+  const facts = await getPublishedFacts(guideModule.matchesFact);
   const slugRanks =
-    module.slug === "five-systems"
+    guideModule.slug === "five-systems"
       ? FIVE_SYSTEM_SLUGS
-      : module.slug === "private-and-parochial"
+      : guideModule.slug === "private-and-parochial"
         ? PRIVATE_SCHOOL_SLUGS
         : null;
   const orderedFacts = slugRanks
@@ -60,14 +60,14 @@ export default async function GuideModulePage({
   return (
     <PageShell>
       <p className="text-sm uppercase tracking-[0.16em] text-muted">
-        Module {module.number}
+        Module {guideModule.number}
       </p>
-      <h1 className="mt-3 font-serif text-4xl text-ink">{module.title}</h1>
-      <p className="mt-4 max-w-xl text-muted">{module.purpose}</p>
+      <h1 className="mt-3 font-serif text-4xl text-ink">{guideModule.title}</h1>
+      <p className="mt-4 max-w-xl text-muted">{guideModule.purpose}</p>
       {orderedFacts.length > 0 ? <FactList facts={orderedFacts} /> : null}
-      {module.unverified.length > 0 ? (
+      {guideModule.unverified.length > 0 ? (
         <div className="mt-10 max-w-xl space-y-3 text-muted">
-          {module.unverified.map((item) => (
+          {guideModule.unverified.map((item) => (
             <p key={item}>
               <VerifyToken>{item}</VerifyToken>
             </p>

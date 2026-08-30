@@ -28,15 +28,15 @@ export default async function GuideIndexPage() {
         what belongs there and mark anything not yet verified.
       </p>
       <ol className="mt-10 max-w-xl space-y-4">
-        {GUIDE_MODULES.map((module) => (
-          <li key={module.slug}>
+        {GUIDE_MODULES.map((entry) => (
+          <li key={entry.slug}>
             <Link
-              href={`/guide/${module.slug}`}
+              href={`/guide/${entry.slug}`}
               className="font-serif text-xl text-ink hover:text-brick"
             >
-              {module.number}. {module.title}
+              {entry.number}. {entry.title}
             </Link>
-            <p className="mt-1 text-sm text-muted">{module.purpose}</p>
+            <p className="mt-1 text-sm text-muted">{entry.purpose}</p>
           </li>
         ))}
       </ol>
