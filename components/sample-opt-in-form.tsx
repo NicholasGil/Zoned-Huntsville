@@ -35,7 +35,8 @@ export function SampleOptInForm({ className = "mt-10 max-w-md" }: { className?: 
       ) : null}
       {state.kind === "received" ? (
         <p className="mt-4 text-sm text-muted" role="status">
-          Request received. Email delivery is not wired in this scaffold.
+          Request received. The Huntsville City Schools profile will be sent to
+          this address.
         </p>
       ) : null}
     </form>

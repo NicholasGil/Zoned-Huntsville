@@ -24,6 +24,8 @@ export type AppEnv = {
   stripe: StripeEnv;
   supabase: SupabaseEnv;
   resendApiKey: string | null;
+  emailFrom: string | null;
+  contactTo: string | null;
 };
 
 function readOptional(name: string): string | null {
@@ -66,5 +68,7 @@ export function getAppEnv(): AppEnv {
           }
         : { kind: "missing" },
     resendApiKey: readOptional("RESEND_API_KEY"),
+    emailFrom: readOptional("EMAIL_FROM"),
+    contactTo: readOptional("CONTACT_TO"),
   };
 }
