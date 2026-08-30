@@ -22,4 +22,4 @@ npm install
 npm run dev
 ```
 
-`next build` is the gate for this repo. Stripe and Supabase keys are optional for the scaffold; route handlers return 503 until they are set.
+`next build` is the gate for this repo. `npm test` covers the post-purchase confirm handler (PKCE `code`, `token_hash`+`type`, and hash-token mails) and the single magic-link send path. Stripe and Supabase keys are optional for the scaffold; route handlers return 503 until they are set.

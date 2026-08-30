@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --experimental-strip-types --test lib/auth-confirm.test.ts lib/purchase-auth.test.ts"
   },
   "engines": {
     "node": ">=20.9.0"

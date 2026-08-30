@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import type { EntitlementTier } from "@/lib/database";
 import { getAppEnv } from "@/lib/env";
+import { sendConfirmedPurchaseMagicLink } from "@/lib/purchase-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isPriceTierMetadata, productTierFromPrice } from "@/lib/tiers";
 
@@ -95,12 +96,7 @@ export async function sendPurchaseMagicLink(email: string): Promise<void> {
     return;
   }
 
-  await admin.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `${env.siteUrl}/auth/confirm`,
-    },
-  });
+  await sendConfirmedPurchaseMagicLink(admin, env.siteUrl, email);
 }
 
 export async function fulfillStripeEvent(
