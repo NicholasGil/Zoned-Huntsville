@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=auth", env.siteUrl));
   }
 
-  await supabase.rpc("link_my_purchases");
+  await supabase.rpc("link_my_entitlements");
 
   return NextResponse.redirect(new URL(next, env.siteUrl));
 }

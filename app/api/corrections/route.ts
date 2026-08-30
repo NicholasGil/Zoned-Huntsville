@@ -61,8 +61,7 @@ export async function POST(request: Request) {
   }
 
   const row = {
-    page_path: report.page,
-    message: report.note,
+    message: `${report.page}: ${report.note}`,
     reporter_email: report.reporterEmail,
     fact_id: report.factId,
   };

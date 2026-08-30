@@ -1,118 +1,49 @@
-export type PricingTier = "79" | "149" | "349";
-export type PurchaseStatus = "pending" | "paid" | "refunded" | "failed";
-export type FactSubject =
-  | "district"
-  | "school"
-  | "program"
-  | "policy"
-  | "deadline"
-  | "other";
+export type EntitlementTier = "guide" | "toolkit" | "call";
+export type FactEntityType = "district" | "school" | "program" | "policy";
 export type VerificationMethod = "official_page" | "phone" | "secondary";
-export type SchoolKind = "public" | "private" | "magnet" | "specialty";
-
-export type ProfileRow = {
-  id: string;
-  email: string;
-  created_at: string;
-  is_admin: boolean;
-};
-
-export type PurchaseRow = {
-  id: string;
-  user_id: string | null;
-  email: string;
-  stripe_checkout_session_id: string;
-  stripe_payment_intent_id: string | null;
-  tier: PricingTier;
-  status: PurchaseStatus;
-  created_at: string;
-};
 
 export type EntitlementRow = {
   id: string;
   user_id: string | null;
   email: string;
-  has_guide: boolean;
-  has_toolkit: boolean;
-  has_call: boolean;
-  updated_at: string;
-};
-
-export type CallSlotRow = {
-  month: string;
-  capacity: number;
-  bookings: number;
-  remaining: number;
-};
-
-export type CallBookingRow = {
-  id: string;
-  month: string;
-  user_id: string;
-  created_at: string;
-};
-
-export type FactRow = {
-  id: string;
-  subject: FactSubject;
-  subject_key: string;
-  label: string;
-  value: string;
-  source_url: string;
-  verified_at: string;
-  verification_method: VerificationMethod;
-  created_at: string;
-  updated_at: string;
-};
-
-export type CorrectionRow = {
-  id: string;
-  page_path: string;
-  fact_id: string | null;
-  reporter_email: string | null;
-  message: string;
-  created_at: string;
-  emailed_at: string | null;
-};
-
-export type DistrictRow = {
-  id: string;
-  slug: string;
-  name: string;
-  website_url: string | null;
-  created_at: string;
-};
-
-export type SchoolRow = {
-  id: string;
-  slug: string;
-  name: string;
-  district_id: string | null;
-  kind: SchoolKind;
-  website_url: string | null;
-  created_at: string;
-};
-
-export type ProgramRow = {
-  id: string;
-  slug: string;
-  name: string;
-  school_id: string | null;
-  district_id: string | null;
-  created_at: string;
-};
-
-export type ModuleRow = {
-  id: string;
-  slug: string;
-  title: string;
-  sort_order: number;
-  created_at: string;
+  tier: EntitlementTier;
+  stripe_session_id: string;
+  stripe_payment_intent: string | null;
+  purchased_at: string;
+  refunded_at: string | null;
 };
 
 export type ProcessedEventRow = {
   event_id: string;
   processed_at: string;
+};
+
+export type FactRow = {
+  id: string;
+  entity_type: FactEntityType;
+  entity_slug: string;
+  field: string;
+  value: string;
+  source_url: string;
+  verified_at: string;
+  verification_method: VerificationMethod;
+  notes: string | null;
+};
+
+export type CorrectionRow = {
+  id: string;
+  fact_id: string | null;
+  reporter_email: string | null;
+  message: string;
+  created_at: string;
+  resolved_at: string | null;
+};
+
+export type LeadRow = {
+  id: string;
+  email: string;
+  source: string | null;
+  created_at: string;
 };
 
 type TableDef<Row, Insert, Update> = {
@@ -125,56 +56,23 @@ type TableDef<Row, Insert, Update> = {
 export type Database = {
   public: {
     Tables: {
-      profiles: TableDef<
-        ProfileRow,
-        {
-          id: string;
-          email: string;
-          created_at?: string;
-          is_admin?: boolean;
-        },
-        {
-          email?: string;
-          is_admin?: boolean;
-        }
-      >;
-      purchases: TableDef<
-        PurchaseRow,
-        {
-          id?: string;
-          user_id?: string | null;
-          email: string;
-          stripe_checkout_session_id: string;
-          stripe_payment_intent_id?: string | null;
-          tier: PricingTier;
-          status: PurchaseStatus;
-          created_at?: string;
-        },
-        {
-          user_id?: string | null;
-          email?: string;
-          stripe_payment_intent_id?: string | null;
-          tier?: PricingTier;
-          status?: PurchaseStatus;
-        }
-      >;
       entitlements: TableDef<
         EntitlementRow,
         {
           id?: string;
           user_id?: string | null;
           email: string;
-          has_guide?: boolean;
-          has_toolkit?: boolean;
-          has_call?: boolean;
-          updated_at?: string;
+          tier: EntitlementTier;
+          stripe_session_id: string;
+          stripe_payment_intent?: string | null;
+          purchased_at?: string;
+          refunded_at?: string | null;
         },
         {
           user_id?: string | null;
-          has_guide?: boolean;
-          has_toolkit?: boolean;
-          has_call?: boolean;
-          updated_at?: string;
+          email?: string;
+          stripe_payment_intent?: string | null;
+          refunded_at?: string | null;
         }
       >;
       processed_events: TableDef<
@@ -182,119 +80,51 @@ export type Database = {
         { event_id: string; processed_at?: string },
         { processed_at?: string }
       >;
-      call_slots: TableDef<
-        CallSlotRow,
-        {
-          month: string;
-          capacity?: number;
-          bookings?: number;
-        },
-        { capacity?: number; bookings?: number }
-      >;
-      call_bookings: TableDef<
-        CallBookingRow,
-        {
-          id?: string;
-          month: string;
-          user_id: string;
-          created_at?: string;
-        },
-        { month?: string; user_id?: string }
-      >;
-      districts: TableDef<
-        DistrictRow,
-        {
-          id?: string;
-          slug: string;
-          name: string;
-          website_url?: string | null;
-          created_at?: string;
-        },
-        { slug?: string; name?: string; website_url?: string | null }
-      >;
-      schools: TableDef<
-        SchoolRow,
-        {
-          id?: string;
-          slug: string;
-          name: string;
-          district_id?: string | null;
-          kind: SchoolKind;
-          website_url?: string | null;
-          created_at?: string;
-        },
-        {
-          slug?: string;
-          name?: string;
-          district_id?: string | null;
-          kind?: SchoolKind;
-          website_url?: string | null;
-        }
-      >;
-      programs: TableDef<
-        ProgramRow,
-        {
-          id?: string;
-          slug: string;
-          name: string;
-          school_id?: string | null;
-          district_id?: string | null;
-          created_at?: string;
-        },
-        {
-          slug?: string;
-          name?: string;
-          school_id?: string | null;
-          district_id?: string | null;
-        }
-      >;
-      modules: TableDef<
-        ModuleRow,
-        {
-          id?: string;
-          slug: string;
-          title: string;
-          sort_order: number;
-          created_at?: string;
-        },
-        { slug?: string; title?: string; sort_order?: number }
-      >;
       facts: TableDef<
         FactRow,
         {
           id?: string;
-          subject: FactSubject;
-          subject_key: string;
-          label: string;
+          entity_type: FactEntityType;
+          entity_slug: string;
+          field: string;
           value: string;
           source_url: string;
           verified_at: string;
           verification_method: VerificationMethod;
-          created_at?: string;
-          updated_at?: string;
+          notes?: string | null;
         },
         {
-          subject?: FactSubject;
-          subject_key?: string;
-          label?: string;
+          entity_type?: FactEntityType;
+          entity_slug?: string;
+          field?: string;
           value?: string;
           source_url?: string;
           verified_at?: string;
           verification_method?: VerificationMethod;
+          notes?: string | null;
         }
       >;
       corrections: TableDef<
         CorrectionRow,
         {
           id?: string;
-          page_path: string;
           fact_id?: string | null;
           reporter_email?: string | null;
           message: string;
           created_at?: string;
-          emailed_at?: string | null;
+          resolved_at?: string | null;
         },
-        { emailed_at?: string | null; fact_id?: string | null }
+        { resolved_at?: string | null; fact_id?: string | null }
+      >;
+      leads: TableDef<
+        LeadRow,
+        {
+          id?: string;
+          email: string;
+          source?: string | null;
+          created_at?: string;
+        },
+        { source?: string | null }
       >;
     };
     Views: {
@@ -304,7 +134,7 @@ export type Database = {
       };
     };
     Functions: {
-      link_my_purchases: {
+      link_my_entitlements: {
         Args: Record<string, never>;
         Returns: undefined;
       };
@@ -312,13 +142,25 @@ export type Database = {
         Args: Record<string, never>;
         Returns: boolean;
       };
-      has_paid_guide: {
+      has_guide_access: {
         Args: Record<string, never>;
         Returns: boolean;
       };
-      has_paid_toolkit: {
+      has_toolkit_access: {
         Args: Record<string, never>;
         Returns: boolean;
+      };
+      jwt_email: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+      call_month_usage: {
+        Args: Record<string, never>;
+        Returns: {
+          capacity: number;
+          bookings: number;
+          remaining: number;
+        };
       };
     };
     Enums: Record<string, never>;

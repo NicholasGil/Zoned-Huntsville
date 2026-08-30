@@ -1,13 +1,14 @@
 import type Stripe from "stripe";
-import type { PricingTier } from "@/lib/database";
-import { isPricingTierId } from "@/lib/site";
+import type { EntitlementTier } from "@/lib/database";
+import { getAppEnv } from "@/lib/env";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { isPriceTierMetadata, productTierFromPrice } from "@/lib/tiers";
 
 export type FulfillmentResult =
   | { kind: "ignored" }
   | { kind: "duplicate" }
-  | { kind: "applied"; purchaseId: string }
-  | { kind: "refunded"; purchaseId: string }
+  | { kind: "applied"; entitlementId: string }
+  | { kind: "refunded"; entitlementId: string }
   | { kind: "missing-admin" }
   | { kind: "invalid"; reason: string }
   | { kind: "write-failed"; reason: string };
@@ -35,12 +36,18 @@ function readCheckoutEmail(session: Stripe.Checkout.Session): string | null {
   return null;
 }
 
-function readTier(session: Stripe.Checkout.Session): PricingTier | null {
+function readProductTier(session: Stripe.Checkout.Session): EntitlementTier | null {
   const raw = session.metadata?.tier;
-  if (typeof raw !== "string" || !isPricingTierId(raw)) {
+  if (typeof raw !== "string") {
     return null;
   }
-  return raw;
+  if (raw === "guide" || raw === "toolkit" || raw === "call") {
+    return raw;
+  }
+  if (!isPriceTierMetadata(raw)) {
+    return null;
+  }
+  return productTierFromPrice(raw);
 }
 
 async function alreadyProcessed(eventId: string): Promise<boolean> {
@@ -70,30 +77,19 @@ async function markProcessed(eventId: string): Promise<void> {
   }
 }
 
-async function resolveUserId(email: string, clientReferenceId: string | null) {
+async function sendPurchaseMagicLink(email: string): Promise<void> {
   const admin = createSupabaseAdminClient();
+  const env = getAppEnv();
   if (!admin) {
-    return null;
+    return;
   }
 
-  if (clientReferenceId) {
-    const { data: byId } = await admin
-      .from("profiles")
-      .select("id")
-      .eq("id", clientReferenceId)
-      .maybeSingle();
-    if (byId) {
-      return byId.id;
-    }
-  }
-
-  const { data: byEmail } = await admin
-    .from("profiles")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
-
-  return byEmail?.id ?? null;
+  await admin.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: `${env.siteUrl}/auth/confirm`,
+    },
+  });
 }
 
 export async function fulfillStripeEvent(
@@ -111,7 +107,7 @@ export async function fulfillStripeEvent(
 
     const session = event.data.object;
     const email = readCheckoutEmail(session);
-    const tier = readTier(session);
+    const tier = readProductTier(session);
     if (!email) {
       return { kind: "invalid", reason: "Checkout session has no customer email." };
     }
@@ -119,31 +115,50 @@ export async function fulfillStripeEvent(
       return { kind: "invalid", reason: "Checkout session metadata.tier is missing or unknown." };
     }
 
-    const userId = await resolveUserId(email, session.client_reference_id);
+    let userId: string | null = null;
+    if (
+      typeof session.client_reference_id === "string" &&
+      session.client_reference_id.length > 0
+    ) {
+      try {
+        const { data: existing } = await admin.auth.admin.getUserById(
+          session.client_reference_id,
+        );
+        if (existing.user) {
+          userId = existing.user.id;
+        }
+      } catch {
+        userId = null;
+      }
+    }
     const paymentIntentId = readPaymentIntentId(session.payment_intent);
 
     const { data, error } = await admin
-      .from("purchases")
+      .from("entitlements")
       .upsert(
         {
           email,
           user_id: userId,
-          stripe_checkout_session_id: session.id,
-          stripe_payment_intent_id: paymentIntentId,
+          stripe_session_id: session.id,
+          stripe_payment_intent: paymentIntentId,
           tier,
-          status: "paid",
         },
-        { onConflict: "stripe_checkout_session_id" },
+        { onConflict: "stripe_session_id" },
       )
       .select("id")
       .single();
 
     if (error || !data) {
-      return { kind: "write-failed", reason: error?.message ?? "Purchase write failed." };
+      return { kind: "write-failed", reason: error?.message ?? "Entitlement write failed." };
     }
 
     await markProcessed(event.id);
-    return { kind: "applied", purchaseId: data.id };
+    try {
+      await sendPurchaseMagicLink(email);
+    } catch {
+      // Entitlement is already written. Do not fail the webhook on mail.
+    }
+    return { kind: "applied", entitlementId: data.id };
   }
 
   if (event.type === "charge.refunded") {
@@ -158,9 +173,10 @@ export async function fulfillStripeEvent(
     }
 
     const { data, error } = await admin
-      .from("purchases")
-      .update({ status: "refunded" })
-      .eq("stripe_payment_intent_id", paymentIntentId)
+      .from("entitlements")
+      .update({ refunded_at: new Date().toISOString() })
+      .eq("stripe_payment_intent", paymentIntentId)
+      .is("refunded_at", null)
       .select("id")
       .maybeSingle();
 
@@ -171,7 +187,7 @@ export async function fulfillStripeEvent(
       return { kind: "ignored" };
     }
     await markProcessed(event.id);
-    return { kind: "refunded", purchaseId: data.id };
+    return { kind: "refunded", entitlementId: data.id };
   }
 
   return { kind: "ignored" };

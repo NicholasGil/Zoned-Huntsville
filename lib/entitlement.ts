@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { flagsFromPaidTiers, type EntitlementFlags } from "@/lib/tiers";
+import { flagsFromProductTiers, type EntitlementFlags } from "@/lib/tiers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type Entitlement =
@@ -9,9 +9,8 @@ export type Entitlement =
     } & EntitlementFlags);
 
 /**
- * Server-side access check. Reads the signed-in user from cookies, attaches
- * purchases that share that email, then derives flags from paid tiers.
- * 149 and 349 include every lower tier.
+ * auth.uid() → email → entitlement rows → tier flags.
+ * toolkit and call include every lower tier.
  */
 export async function getEntitlement(): Promise<Entitlement> {
   await cookies();
@@ -28,17 +27,14 @@ export async function getEntitlement(): Promise<Entitlement> {
     return { kind: "anonymous" };
   }
 
-  await supabase.rpc("link_my_purchases");
+  await supabase.rpc("link_my_entitlements");
 
-  const { data: purchases } = await supabase
-    .from("purchases")
-    .select("tier, status")
-    .eq("status", "paid");
+  const { data: rows } = await supabase
+    .from("entitlements")
+    .select("tier, refunded_at")
+    .is("refunded_at", null);
 
-  const flags = flagsFromPaidTiers(
-    (purchases ?? []).map((row) => row.tier),
-  );
-
+  const flags = flagsFromProductTiers((rows ?? []).map((row) => row.tier));
   return { kind: "signed-in", ...flags };
 }
 
@@ -52,4 +48,12 @@ export function canReadToolkit(entitlement: Entitlement): boolean {
 
 export function canBookCall(entitlement: Entitlement): boolean {
   return entitlement.kind === "signed-in" && entitlement.hasCall;
+}
+
+export function isAdminUser(user: { app_metadata?: unknown }): boolean {
+  const meta = user.app_metadata;
+  if (typeof meta !== "object" || meta === null || !("is_admin" in meta)) {
+    return false;
+  }
+  return meta.is_admin === true;
 }

@@ -1,29 +1,29 @@
-import type { CallSlotRow } from "@/lib/database";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { utcMonthStart } from "@/lib/tiers";
 
 export type CallSlotQuery =
   | { kind: "unavailable" }
-  | { kind: "missing" }
-  | { kind: "row"; slot: CallSlotRow };
+  | { kind: "row"; capacity: number; bookings: number; remaining: number };
 
-export async function getCallSlot(
-  month = utcMonthStart(),
-): Promise<CallSlotQuery> {
+export async function getCallSlot(): Promise<CallSlotQuery> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return { kind: "unavailable" };
   }
 
-  const { data } = await supabase
-    .from("call_slots")
-    .select("month, capacity, bookings, remaining")
-    .eq("month", month)
-    .maybeSingle();
-
-  if (!data) {
-    return { kind: "missing" };
+  const { data, error } = await supabase.rpc("call_month_usage");
+  if (error || !data) {
+    return { kind: "unavailable" };
   }
 
-  return { kind: "row", slot: data };
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) {
+    return { kind: "unavailable" };
+  }
+
+  return {
+    kind: "row",
+    capacity: row.capacity,
+    bookings: row.bookings,
+    remaining: row.remaining,
+  };
 }

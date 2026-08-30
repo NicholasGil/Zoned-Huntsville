@@ -1,44 +1,47 @@
-import type { CorrectionRow, FactRow, ProfileRow, PurchaseRow } from "@/lib/database";
+import type { CorrectionRow, EntitlementRow, FactRow } from "@/lib/database";
+import { isAdminUser } from "@/lib/entitlement";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export function isSecondaryFact(fact: Pick<FactRow, "verification_method">): boolean {
+export function isSecondaryFact(
+  fact: Pick<FactRow, "verification_method">,
+): boolean {
   return fact.verification_method === "secondary";
 }
 
-export async function getSignedInProfile(): Promise<ProfileRow | null> {
+export async function getSignedInAdminState(): Promise<{
+  email: string | null;
+  isAdmin: boolean;
+}> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
-    return null;
+    return { email: null, isAdmin: false };
   }
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return null;
+    return { email: null, isAdmin: false };
   }
 
-  const { data } = await supabase
-    .from("profiles")
-    .select("id, email, created_at, is_admin")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  return data;
+  return {
+    email: user.email ?? null,
+    isAdmin: isAdminUser(user),
+  };
 }
 
-export async function getOwnPurchases(): Promise<PurchaseRow[]> {
+export async function getOwnEntitlements(): Promise<EntitlementRow[]> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return [];
   }
 
   const { data } = await supabase
-    .from("purchases")
+    .from("entitlements")
     .select(
-      "id, user_id, email, stripe_checkout_session_id, stripe_payment_intent_id, tier, status, created_at",
+      "id, user_id, email, tier, stripe_session_id, stripe_payment_intent, purchased_at, refunded_at",
     )
-    .order("created_at", { ascending: false });
+    .order("purchased_at", { ascending: false });
 
   return data ?? [];
 }
@@ -52,7 +55,7 @@ export async function getStaleFacts(): Promise<FactRow[]> {
   const { data } = await supabase
     .from("stale_facts")
     .select(
-      "id, subject, subject_key, label, value, source_url, verified_at, verification_method, created_at, updated_at",
+      "id, entity_type, entity_slug, field, value, source_url, verified_at, verification_method, notes",
     )
     .order("verified_at", { ascending: true });
 
@@ -67,9 +70,7 @@ export async function getAdminCorrections(): Promise<CorrectionRow[]> {
 
   const { data } = await supabase
     .from("corrections")
-    .select(
-      "id, page_path, fact_id, reporter_email, message, created_at, emailed_at",
-    )
+    .select("id, fact_id, reporter_email, message, created_at, resolved_at")
     .order("created_at", { ascending: false });
 
   return data ?? [];

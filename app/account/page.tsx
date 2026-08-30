@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { requestPurchaseEmailLink } from "@/app/account/actions";
 import { PageShell } from "@/components/page-shell";
 import { getCallSlot, type CallSlotQuery } from "@/lib/call-slots";
 import { getEntitlement } from "@/lib/entitlement";
-import { getOwnPurchases, getSignedInProfile } from "@/lib/facts";
+import { getOwnEntitlements, getSignedInAdminState } from "@/lib/facts";
 
 export const dynamic = "force-dynamic";
 
@@ -11,32 +12,36 @@ export const metadata: Metadata = {
   title: "Account",
 };
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: PageProps<"/account">) {
+  const query = await searchParams;
+  const status = typeof query.status === "string" ? query.status : null;
+  const error = typeof query.error === "string" ? query.error : null;
+
   const entitlement = await getEntitlement();
-  const profile = await getSignedInProfile();
-  const purchases = entitlement.kind === "signed-in" ? await getOwnPurchases() : [];
-  const unavailableSlot: CallSlotQuery = { kind: "unavailable" };
+  const identity = await getSignedInAdminState();
+  const rows = entitlement.kind === "signed-in" ? await getOwnEntitlements() : [];
+  const unavailable: CallSlotQuery = { kind: "unavailable" };
   const callSlot =
-    entitlement.kind === "signed-in" && entitlement.hasCall
-      ? await getCallSlot()
-      : unavailableSlot;
+    entitlement.kind === "signed-in" ? await getCallSlot() : unavailable;
 
   return (
     <PageShell>
       <h1 className="font-serif text-4xl text-ink">Account</h1>
       <p className="mt-4 max-w-xl text-muted">
-        Access comes from paid purchases on this sign-in email. The $149 and $349
-        tiers include every lower tier.
+        Access is matched to the Stripe checkout email. toolkit and call include
+        every lower tier.
       </p>
       <dl className="mt-8 max-w-md border border-rule px-5 py-4 text-sm">
         <div className="flex justify-between gap-4">
           <dt className="text-muted">Status</dt>
           <dd>{entitlement.kind}</dd>
         </div>
-        {profile ? (
+        {identity.email ? (
           <div className="mt-3 flex justify-between gap-4">
-            <dt className="text-muted">Email</dt>
-            <dd className="break-all">{profile.email}</dd>
+            <dt className="text-muted">Signed-in email</dt>
+            <dd className="break-all">{identity.email}</dd>
           </div>
         ) : null}
         <div className="mt-3 flex justify-between gap-4">
@@ -65,10 +70,54 @@ export default async function AccountPage() {
         </div>
       </dl>
 
-      {entitlement.kind === "signed-in" && !entitlement.hasGuide ? (
-        <p className="mt-6 max-w-xl text-sm text-muted">
-          No paid purchase is attached to this email. Sign in with the address
-          used at Stripe Checkout, then refresh this page.
+      {!(entitlement.kind === "signed-in" && entitlement.hasGuide) ? (
+        <section className="mt-10 max-w-md">
+          <h2 className="font-serif text-2xl text-ink">Purchase email</h2>
+          <p className="mt-3 text-sm text-muted">
+            If you checked out with a different address, request a magic link
+            there. Access will not appear on this session until that email
+            signs in.
+          </p>
+          <form action={requestPurchaseEmailLink} className="mt-6">
+            <label htmlFor="purchase-email" className="block text-sm text-ink">
+              Checkout email
+            </label>
+            <input
+              id="purchase-email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              className="mt-2 w-full border border-rule bg-paper px-3 py-2"
+            />
+            <button
+              type="submit"
+              className="mt-4 bg-brick px-4 py-2.5 text-sm text-paper hover:bg-brick-dark"
+            >
+              Email me a sign-in link
+            </button>
+          </form>
+        </section>
+      ) : null}
+
+      {error === "invalid-email" ? (
+        <p className="mt-4 text-sm text-brick" role="alert">
+          That email address is not valid.
+        </p>
+      ) : null}
+      {error === "not-configured" ? (
+        <p className="mt-4 text-sm text-brick" role="alert">
+          Supabase is not configured.
+        </p>
+      ) : null}
+      {error === "send-failed" ? (
+        <p className="mt-4 text-sm text-brick" role="alert">
+          Supabase did not send the link.
+        </p>
+      ) : null}
+      {status === "link-sent" ? (
+        <p className="mt-4 text-sm text-muted" role="status">
+          If that address is accepted, a sign-in email is on the way.
         </p>
       ) : null}
 
@@ -77,36 +126,35 @@ export default async function AccountPage() {
           <h2 className="font-serif text-2xl text-ink">Call slots this month</h2>
           {callSlot.kind === "row" ? (
             <p className="mt-3 text-sm text-muted">
-              {callSlot.slot.remaining} of {callSlot.slot.capacity} remaining (
-              {callSlot.slot.bookings} booked).
-            </p>
-          ) : callSlot.kind === "missing" ? (
-            <p className="mt-3 text-sm text-muted">
-              No call-slot row exists for this month, so remaining is not shown.
+              {callSlot.remaining} of {callSlot.capacity} remaining (
+              {callSlot.bookings} booked).
             </p>
           ) : (
             <p className="mt-3 text-sm text-muted">
-              Call-slot counts are not available until Supabase is configured.
+              Call-slot counts are not available until Supabase can read paid
+              call entitlements for this month.
             </p>
           )}
         </section>
       ) : null}
 
-      {purchases.length > 0 ? (
+      {rows.length > 0 ? (
         <section className="mt-10">
-          <h2 className="font-serif text-2xl text-ink">Purchases</h2>
+          <h2 className="font-serif text-2xl text-ink">Entitlements</h2>
           <ul className="mt-4 divide-y divide-rule border border-rule text-sm">
-            {purchases.map((purchase) => (
-              <li key={purchase.id} className="flex justify-between gap-4 px-4 py-3">
-                <span>${purchase.tier}</span>
-                <span className="text-muted">{purchase.status}</span>
+            {rows.map((row) => (
+              <li key={row.id} className="flex justify-between gap-4 px-4 py-3">
+                <span>{row.tier}</span>
+                <span className="text-muted">
+                  {row.refunded_at ? "refunded" : "active"}
+                </span>
               </li>
             ))}
           </ul>
         </section>
       ) : null}
 
-      {profile?.is_admin ? (
+      {identity.isAdmin ? (
         <p className="mt-10">
           <Link href="/admin/stale-facts" className="text-brick hover:underline">
             Stale facts and corrections

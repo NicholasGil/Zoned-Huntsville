@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageShell } from "@/components/page-shell";
 import { SourcedFact } from "@/components/sourced-fact";
-import { getAdminCorrections, getSignedInProfile, getStaleFacts } from "@/lib/facts";
+import {
+  getAdminCorrections,
+  getSignedInAdminState,
+  getStaleFacts,
+} from "@/lib/facts";
 
 export const dynamic = "force-dynamic";
 
@@ -11,14 +15,15 @@ export const metadata: Metadata = {
 };
 
 export default async function StaleFactsPage() {
-  const profile = await getSignedInProfile();
+  const identity = await getSignedInAdminState();
 
-  if (!profile?.is_admin) {
+  if (!identity.isAdmin) {
     return (
       <PageShell>
         <h1 className="font-serif text-4xl text-ink">Admin</h1>
         <p className="mt-4 max-w-xl text-muted">
-          This page lists facts older than 90 days. It is limited to admins.
+          This page lists facts older than 90 days. It is limited to admins
+          (`app_metadata.is_admin`).
         </p>
         <p className="mt-8">
           <Link href="/account" className="text-brick hover:underline">
@@ -49,7 +54,7 @@ export default async function StaleFactsPage() {
           {staleFacts.map((fact) => (
             <li key={fact.id} className="px-4 py-4 text-sm">
               <p className="font-medium text-ink">
-                {fact.subject} / {fact.subject_key} / {fact.label}
+                {fact.entity_type} / {fact.entity_slug} / {fact.field}
               </p>
               <p className="mt-2">
                 <SourcedFact fact={fact} />
@@ -76,11 +81,10 @@ export default async function StaleFactsPage() {
         <ul className="mt-4 divide-y divide-rule border border-rule">
           {corrections.map((row) => (
             <li key={row.id} className="px-4 py-4 text-sm">
-              <p className="text-ink">{row.page_path}</p>
               <p className="mt-2 text-muted">{row.message}</p>
               <p className="mt-2 text-muted">
                 {row.reporter_email ?? "no reporter email"} · {row.created_at}
-                {row.emailed_at ? ` · emailed ${row.emailed_at}` : " · not emailed"}
+                {row.resolved_at ? ` · resolved ${row.resolved_at}` : " · open"}
               </p>
             </li>
           ))}
