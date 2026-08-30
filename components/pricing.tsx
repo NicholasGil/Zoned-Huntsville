@@ -1,9 +1,10 @@
+import { CallSlotsRemaining } from "@/components/call-slots-remaining";
+import { CheckoutForm } from "@/components/checkout-form";
 import { hero, pricingTiers } from "@/lib/site";
-import { VerifyToken } from "@/components/verify-token";
 
 export function Pricing() {
   return (
-    <section aria-labelledby="pricing-heading" className="mt-20">
+    <section id="pricing" aria-labelledby="pricing-heading" className="scroll-mt-8 mt-20">
       <h2 id="pricing-heading" className="font-serif text-2xl text-ink">
         Pricing
       </h2>
@@ -27,28 +28,23 @@ export function Pricing() {
             >
               {isTarget ? (
                 <p className="text-xs uppercase tracking-[0.16em] text-brick">
-                  Target tier
+                  Recommended
                 </p>
               ) : null}
+              <p className="mt-2 font-serif text-2xl text-ink">{tier.name}</p>
               <p className="mt-2 font-serif text-4xl text-ink">${tier.amountUsd}</p>
-              <p className="mt-3 text-sm text-muted">
-                <VerifyToken>
-                  {`what is included at $${tier.amountUsd}`}
-                </VerifyToken>
-              </p>
-              <form action="/api/checkout" method="post" className="mt-6">
-                <input type="hidden" name="tier" value={tier.id} />
-                <button
-                  type="submit"
-                  className={
-                    isTarget
-                      ? "w-full bg-brick px-4 py-2.5 text-sm text-paper hover:bg-brick-dark"
-                      : "w-full border border-ink px-4 py-2.5 text-sm text-ink hover:bg-ink hover:text-paper"
-                  }
-                >
-                  {label}
-                </button>
-              </form>
+              <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-muted">
+                {tier.includes.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+              {tier.id === "349" ? <CallSlotsRemaining /> : null}
+              <CheckoutForm
+                tierId={tier.id}
+                label={label}
+                variant={isTarget ? "brick-full" : "ink"}
+                className="mt-6"
+              />
               {tier.id === "79" ? (
                 <p className="mt-3 text-xs text-muted">{hero.guarantee}</p>
               ) : null}

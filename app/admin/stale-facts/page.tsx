@@ -59,16 +59,7 @@ export default async function StaleFactsPage() {
               <p className="mt-2">
                 <SourcedFact fact={fact} />
               </p>
-              <p className="mt-2 break-all text-muted">
-                verified {fact.verified_at} · {fact.verification_method} ·{" "}
-                {fact.source_url.startsWith("http") ? (
-                  <a href={fact.source_url} className="text-brick hover:underline">
-                    {fact.source_url}
-                  </a>
-                ) : (
-                  fact.source_url
-                )}
-              </p>
+              <p className="mt-2 text-muted">{fact.verification_method}</p>
             </li>
           ))}
         </ul>
