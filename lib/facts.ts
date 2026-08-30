@@ -1,6 +1,12 @@
 import type { CorrectionRow, EntitlementRow, FactRow } from "@/lib/database";
 import { isAdminUser } from "@/lib/entitlement";
+import { seedFactsMatching, type SeedFact } from "@/lib/seed-facts";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export type PublishedFact = SeedFact & {
+  id?: string;
+  notes?: string | null;
+};
 
 export function isSecondaryFact(
   fact: Pick<FactRow, "verification_method">,
@@ -60,6 +66,29 @@ export async function getStaleFacts(): Promise<FactRow[]> {
     .order("verified_at", { ascending: true });
 
   return data ?? [];
+}
+
+export async function getPublishedFacts(
+  matches: (fact: SeedFact) => boolean,
+): Promise<PublishedFact[]> {
+  const fallback = seedFactsMatching(matches);
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return fallback;
+  }
+
+  const { data, error } = await supabase
+    .from("facts")
+    .select(
+      "id, entity_type, entity_slug, field, value, source_url, verified_at, verification_method, notes",
+    );
+
+  if (error || !data) {
+    return fallback;
+  }
+
+  const published = data.filter(matches);
+  return published.length > 0 ? published : fallback;
 }
 
 export async function getAdminCorrections(): Promise<CorrectionRow[]> {

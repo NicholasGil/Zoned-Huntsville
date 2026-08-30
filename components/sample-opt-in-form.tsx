@@ -5,11 +5,11 @@ import { submitSampleOptIn, type SampleState } from "@/app/sample/actions";
 
 const initial: SampleState = { kind: "idle" };
 
-export function SampleOptInForm() {
+export function SampleOptInForm({ className = "mt-10 max-w-md" }: { className?: string }) {
   const [state, action, pending] = useActionState(submitSampleOptIn, initial);
 
   return (
-    <form action={action} className="mt-10 max-w-md">
+    <form action={action} className={className}>
       <label htmlFor="sample-email" className="block text-sm text-ink">
         Email
       </label>

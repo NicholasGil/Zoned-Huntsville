@@ -17,9 +17,40 @@ export const hero = {
 } as const;
 
 export const pricingTiers = [
-  { id: "79", amountUsd: 79, prominence: "default" },
-  { id: "149", amountUsd: 149, prominence: "target" },
-  { id: "349", amountUsd: 349, prominence: "default" },
+  {
+    id: "79",
+    amountUsd: 79,
+    prominence: "default",
+    name: "The Guide",
+    includes: [
+      "Full guide, all districts, all schools, all programs.",
+      "Web-based, mobile-readable, lifetime access to the current edition.",
+    ],
+  },
+  {
+    id: "149",
+    amountUsd: 149,
+    prominence: "target",
+    name: "Guide + Toolkit",
+    includes: [
+      "Everything in the Guide.",
+      "School Comparison Worksheet (pre-filled).",
+      "Deadline Calendar.",
+      "Registration Document Checklist per district.",
+      "Call Script Pack.",
+      "Zone-vs-Listing cross-check worksheet.",
+    ],
+  },
+  {
+    id: "349",
+    amountUsd: 349,
+    prominence: "default",
+    name: "Guide + Toolkit + Call",
+    includes: [
+      "Everything in the Guide and Toolkit.",
+      "One 45-minute video call with Nicholas.",
+    ],
+  },
 ] as const;
 
 export type PricingTierId = (typeof pricingTiers)[number]["id"];
