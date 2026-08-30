@@ -12,9 +12,9 @@ Build spec lives in Google Docs as `huntsvilleschoolguidebuildspec.md`.
 
 ## What this repo is now
 
-Section 7 of the spec: app shell and stack only. Routes exist. Purchase records, schema, legal copy, seed data, and live Stripe products do not.
+Section 8 of the spec: schema, RLS, Stripe purchase writes, and server-side entitlement checks. Apply `supabase/migrations` to a Supabase project before expecting access to flip after checkout.
 
-Public pages (`/`, `/sample`, `/legal/*`) are statically rendered with metadata. Gated pages under `/guide` and `/account` are dynamic server components and call an entitlement stub that currently returns anonymous.
+Public pages (`/`, `/sample`, `/legal/*`) stay static. Gated pages under `/guide` and `/account` read the signed-in user and paid purchases. Without Supabase keys the entitlement check returns anonymous.
 
 ## Editorial rule
 
@@ -30,7 +30,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Turbopack is the default bundler for `next dev` and `next build`.
 
-Named environment variables are listed in `.env.example`. Leave them empty to run the stubs.
+Named environment variables are listed in `.env.example`. Leave them empty to run without live Stripe or Supabase.
 
 ## Routes
 
@@ -44,13 +44,14 @@ Named environment variables are listed in `.env.example`. Leave them empty to ru
 | `/guide` | Gated module index shell. |
 | `/guide/[module]` | Gated module content shell. |
 | `/guide/tools` | Gated, Toolkit tier only. |
-| `/account` | Purchase record shell. |
+| `/account` | Signed-in purchases, entitlements, and call-slot remaining when a month row exists. |
+| `/admin/stale-facts` | Admin-only facts with `verified_at` older than 90 days, plus correction reports. |
 | `/legal/terms` `/legal/privacy` `/legal/refunds` `/legal/disclaimer` | Draft legal placeholders. |
 | `/contact` | Contact form shell. |
 | `/api/checkout` | Creates a Stripe Checkout Session when keys exist; otherwise 503. |
-| `/api/webhooks/stripe` | Stripe webhook receiver stub. |
-| `/api/corrections` | Error-report receiver stub. |
+| `/api/webhooks/stripe` | Verifies the Stripe signature and writes purchase + entitlements on `checkout.session.completed`. |
+| `/api/corrections` | Inserts a corrections row. Returns 202. |
 
 ## Out of scope here
 
-Supabase schema and migrations, Stripe product setup, real email, finished legal text, seed data, Vercel deploy, and domain DNS.
+Stripe product setup, real email, finished legal text, Vercel deploy, and domain DNS.

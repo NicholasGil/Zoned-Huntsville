@@ -15,10 +15,10 @@ export function AccessGate({
 
   const reason =
     entitlement.kind === "anonymous"
-      ? "The entitlement check ran on the server and found no signed-in purchase record. Purchase storage is not wired in this scaffold."
+      ? "The server found no signed-in session. Request a magic link, then open the guide again."
       : need === "toolkit"
-        ? "You are signed in, but this page requires the Toolkit tier."
-        : "You are signed in, but this page requires a guide purchase.";
+        ? "You are signed in, but this page requires a $149 or $349 purchase."
+        : "You are signed in, but this page requires a paid guide purchase.";
 
   return (
     <section className="border border-rule bg-paper-raised px-6 py-8">
