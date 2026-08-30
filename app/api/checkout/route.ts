@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAppEnv } from "@/lib/env";
 import { isPricingTierId } from "@/lib/site";
 import { getStripe } from "@/lib/stripe";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 async function readTier(request: Request): Promise<string | null> {
   const contentType = request.headers.get("content-type") ?? "";
@@ -68,12 +69,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Stripe is not configured." }, { status: 503 });
   }
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${env.siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${env.siteUrl}/`,
-  });
+  const supabase = await createSupabaseServerClient();
+  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+
+  const idempotencyKey =
+    request.headers.get("idempotency-key") ?? crypto.randomUUID();
+
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: "payment",
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${env.siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${env.siteUrl}/`,
+      metadata: { tier: tierValue },
+      ...(user?.id ? { client_reference_id: user.id } : {}),
+      ...(user?.email ? { customer_email: user.email } : {}),
+    },
+    { idempotencyKey },
+  );
 
   if (!session.url) {
     return NextResponse.json({ error: "Stripe did not return a checkout URL." }, { status: 502 });

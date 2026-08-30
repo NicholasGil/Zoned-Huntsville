@@ -19,8 +19,9 @@ export default async function CheckoutSuccessPage({
     <PageShell>
       <h1 className="font-serif text-4xl text-ink">Checkout redirect</h1>
       <p className="mt-4 max-w-xl text-muted">
-        Stripe will send buyers here after payment. This page does not confirm a
-        purchase until webhook handling and entitlement records exist.
+        Stripe sends buyers here after payment. Access is granted only after the
+        webhook writes the purchase. Sign in with the checkout email if the
+        guide is still locked.
       </p>
       {sessionId ? (
         <p className="mt-4 break-all font-mono text-sm text-muted">

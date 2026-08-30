@@ -23,6 +23,7 @@ export type AppEnv = {
   siteUrl: string;
   stripe: StripeEnv;
   supabase: SupabaseEnv;
+  resendApiKey: string | null;
 };
 
 function readOptional(name: string): string | null {
@@ -64,5 +65,6 @@ export function getAppEnv(): AppEnv {
             serviceRoleKey: readOptional("SUPABASE_SERVICE_ROLE_KEY"),
           }
         : { kind: "missing" },
+    resendApiKey: readOptional("RESEND_API_KEY"),
   };
 }

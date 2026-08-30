@@ -1,0 +1,36 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { parseEmail } from "@/lib/email";
+import { getAppEnv } from "@/lib/env";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export async function requestPurchaseEmailLink(formData: FormData) {
+  const parsed = parseEmail(formData.get("email"));
+  if (parsed.kind === "invalid") {
+    redirect("/account?error=invalid-email");
+  }
+
+  const env = getAppEnv();
+  if (env.supabase.kind === "missing") {
+    redirect("/account?error=not-configured");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    redirect("/account?error=not-configured");
+  }
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email: parsed.email,
+    options: {
+      emailRedirectTo: `${env.siteUrl}/auth/confirm?next=/account`,
+    },
+  });
+
+  if (error) {
+    redirect("/account?error=send-failed");
+  }
+
+  redirect("/account?status=link-sent");
+}

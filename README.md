@@ -12,9 +12,9 @@ Build spec lives in Google Docs as `huntsvilleschoolguidebuildspec.md`.
 
 ## What this repo is now
 
-Section 7 of the spec: app shell and stack only. Routes exist. Purchase records, schema, legal copy, seed data, and live Stripe products do not.
+Section 8 of the spec: `entitlements`, `processed_events`, `facts`, `corrections`, and `leads`, plus RLS and the Stripe write path. Apply `supabase/migrations` before expecting access to flip after checkout.
 
-Public pages (`/`, `/sample`, `/legal/*`) are statically rendered with metadata. Gated pages under `/guide` and `/account` are dynamic server components and call an entitlement stub that currently returns anonymous.
+Public pages (`/`, `/sample`, `/legal/*`) stay static. Gated pages resolve `auth.uid()` → email → entitlement row → tier. Without Supabase keys the check returns anonymous.
 
 ## Editorial rule
 
@@ -30,7 +30,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Turbopack is the default bundler for `next dev` and `next build`.
 
-Named environment variables are listed in `.env.example`. Leave them empty to run the stubs.
+Named environment variables are listed in `.env.example`. Leave them empty to run without live Stripe or Supabase.
 
 ## Routes
 
@@ -44,13 +44,15 @@ Named environment variables are listed in `.env.example`. Leave them empty to ru
 | `/guide` | Gated module index shell. |
 | `/guide/[module]` | Gated module content shell. |
 | `/guide/tools` | Gated, Toolkit tier only. |
-| `/account` | Purchase record shell. |
+| `/account` | Signed-in entitlements, a purchase-email magic-link form, and call remaining from paid `call` rows this month. |
+| `/admin/stale-facts` | Admin-only facts with `verified_at` older than 90 days, plus correction reports. |
 | `/legal/terms` `/legal/privacy` `/legal/refunds` `/legal/disclaimer` | Draft legal placeholders. |
 | `/contact` | Contact form shell. |
 | `/api/checkout` | Creates a Stripe Checkout Session when keys exist; otherwise 503. |
-| `/api/webhooks/stripe` | Stripe webhook receiver stub. |
-| `/api/corrections` | Error-report receiver stub. |
+| `/api/webhooks/stripe` | Verifies the Stripe signature, dedupes on `event.id`, inserts an entitlements row, then sends a magic link. |
+| `/api/corrections` | Inserts a corrections row. Returns 202. |
+| `/api/toolkit` | Toolkit download gate. 401 anonymous, 403 without toolkit/call, 200 when entitled. |
 
 ## Out of scope here
 
-Supabase schema and migrations, Stripe product setup, real email, finished legal text, seed data, Vercel deploy, and domain DNS.
+Stripe product setup, real email, finished legal text, Vercel deploy, and domain DNS.
