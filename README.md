@@ -51,6 +51,7 @@ Named environment variables are listed in `.env.example`. Leave them empty to ru
 | `/api/checkout` | Creates a Stripe Checkout Session when keys exist; otherwise 503. |
 | `/api/webhooks/stripe` | Verifies the Stripe signature, dedupes on `event.id`, inserts an entitlements row, then sends a magic link. |
 | `/api/corrections` | Inserts a corrections row. Returns 202. |
+| `/api/toolkit` | Toolkit download gate. 401 anonymous, 403 without toolkit/call, 200 when entitled. |
 
 ## Out of scope here
 

@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { getAppEnv } from "@/lib/env";
-import { fulfillStripeEvent } from "@/lib/stripe-fulfillment";
+import { fulfillStripeEvent, sendPurchaseMagicLink } from "@/lib/stripe-fulfillment";
 import { getStripe } from "@/lib/stripe";
 
 export async function POST(request: Request) {
@@ -40,6 +40,16 @@ export async function POST(request: Request) {
   }
   if (result.kind === "write-failed") {
     return NextResponse.json({ error: result.reason }, { status: 500 });
+  }
+
+  if (result.kind === "applied") {
+    after(async () => {
+      try {
+        await sendPurchaseMagicLink(result.email);
+      } catch {
+        // Entitlement is already written.
+      }
+    });
   }
 
   return NextResponse.json({ received: true, result: result.kind });

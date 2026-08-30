@@ -7,7 +7,7 @@ import { isPriceTierMetadata, productTierFromPrice } from "@/lib/tiers";
 export type FulfillmentResult =
   | { kind: "ignored" }
   | { kind: "duplicate" }
-  | { kind: "applied"; entitlementId: string }
+  | { kind: "applied"; entitlementId: string; email: string }
   | { kind: "refunded"; entitlementId: string }
   | { kind: "missing-admin" }
   | { kind: "invalid"; reason: string }
@@ -77,7 +77,7 @@ async function markProcessed(eventId: string): Promise<void> {
   }
 }
 
-async function sendPurchaseMagicLink(email: string): Promise<void> {
+export async function sendPurchaseMagicLink(email: string): Promise<void> {
   const admin = createSupabaseAdminClient();
   const env = getAppEnv();
   if (!admin) {
@@ -100,12 +100,19 @@ export async function fulfillStripeEvent(
     return { kind: "missing-admin" };
   }
 
-  if (event.type === "checkout.session.completed") {
+  if (
+    event.type === "checkout.session.completed" ||
+    event.type === "checkout.session.async_payment_succeeded"
+  ) {
     if (await alreadyProcessed(event.id)) {
       return { kind: "duplicate" };
     }
 
     const session = event.data.object;
+    if (session.payment_status !== "paid") {
+      return { kind: "ignored" };
+    }
+
     const email = readCheckoutEmail(session);
     const tier = readProductTier(session);
     if (!email) {
@@ -153,12 +160,7 @@ export async function fulfillStripeEvent(
     }
 
     await markProcessed(event.id);
-    try {
-      await sendPurchaseMagicLink(email);
-    } catch {
-      // Entitlement is already written. Do not fail the webhook on mail.
-    }
-    return { kind: "applied", entitlementId: data.id };
+    return { kind: "applied", entitlementId: data.id, email };
   }
 
   if (event.type === "charge.refunded") {
