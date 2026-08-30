@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getAppEnv } from "@/lib/env";
+import { sendCorrectionPing } from "@/lib/transactional-mail";
 
 type CorrectionReport = {
   page: string;
@@ -53,42 +54,31 @@ export async function POST(request: Request) {
   }
 
   const env = getAppEnv();
-  if (env.supabase.kind === "missing") {
-    return NextResponse.json(
-      { accepted: true, persistence: "unavailable", page: report.page },
-      { status: 202 },
-    );
+  const message = `${report.page}: ${report.note}`;
+  let persistence: "stored" | "unavailable" | "error" = "unavailable";
+
+  if (env.supabase.kind === "present") {
+    const row = {
+      message,
+      reporter_email: report.reporterEmail,
+      fact_id: report.factId,
+    };
+    const admin = createSupabaseAdminClient();
+    const writer = admin ?? (await createSupabaseServerClient());
+    if (writer) {
+      const { error } = await writer.from("corrections").insert(row);
+      persistence = error ? "error" : "stored";
+    }
   }
 
-  const row = {
-    message: `${report.page}: ${report.note}`,
-    reporter_email: report.reporterEmail,
-    fact_id: report.factId,
-  };
-
-  const admin = createSupabaseAdminClient();
-  const writer = admin ?? (await createSupabaseServerClient());
-  if (!writer) {
-    return NextResponse.json(
-      { accepted: true, persistence: "unavailable", page: report.page },
-      { status: 202 },
-    );
-  }
-
-  const { error } = await writer.from("corrections").insert(row);
-  if (error) {
-    return NextResponse.json(
-      { accepted: true, persistence: "error", page: report.page },
-      { status: 202 },
-    );
-  }
+  await sendCorrectionPing({
+    reporterEmail: report.reporterEmail,
+    message,
+    factId: report.factId,
+  });
 
   return NextResponse.json(
-    {
-      accepted: true,
-      persistence: "stored",
-      page: report.page,
-    },
+    { accepted: true, persistence, page: report.page },
     { status: 202 },
   );
 }

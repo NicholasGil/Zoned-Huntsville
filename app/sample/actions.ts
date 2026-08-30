@@ -3,6 +3,7 @@
 import { parseEmail } from "@/lib/email";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { sendSampleProfileEmail } from "@/lib/transactional-mail";
 
 export type SampleState =
   | { kind: "idle" }
@@ -22,11 +23,9 @@ export async function submitSampleOptIn(
   const admin = createSupabaseAdminClient();
   const writer = admin ?? (await createSupabaseServerClient());
   if (writer) {
-    const { error } = await writer.from("leads").insert(row);
-    if (error && error.code !== "23505") {
-      return { kind: "received" };
-    }
+    await writer.from("leads").insert(row);
   }
 
+  await sendSampleProfileEmail(parsed.email);
   return { kind: "received" };
 }

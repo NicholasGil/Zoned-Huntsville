@@ -1,6 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { getAppEnv } from "@/lib/env";
 import { fulfillStripeEvent, sendPurchaseMagicLink } from "@/lib/stripe-fulfillment";
+import { sendPurchaseReceipt } from "@/lib/transactional-mail";
 import { getStripe } from "@/lib/stripe";
 
 export async function POST(request: Request) {
@@ -49,6 +50,10 @@ export async function POST(request: Request) {
       } catch {
         // Entitlement is already written.
       }
+      await sendPurchaseReceipt({
+        to: result.email,
+        amountUsd: result.amountUsd,
+      });
     });
   }
 

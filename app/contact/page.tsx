@@ -11,8 +11,7 @@ export default function ContactPage() {
     <PageShell>
       <h1 className="font-serif text-4xl text-ink">Contact</h1>
       <p className="mt-4 max-w-xl text-muted">
-        Use this form to reach the publisher. Delivery is a stub until email is
-        wired.
+        Use this form to reach the publisher.
       </p>
       <ContactForm />
     </PageShell>

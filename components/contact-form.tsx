@@ -64,7 +64,7 @@ export function ContactForm() {
       ) : null}
       {state.kind === "received" ? (
         <p className="mt-4 text-sm text-muted" role="status">
-          Message received. Outbound email is not wired in this scaffold.
+          Message received.
         </p>
       ) : null}
     </form>

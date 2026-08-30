@@ -7,7 +7,7 @@ import { isPriceTierMetadata, productTierFromPrice } from "@/lib/tiers";
 export type FulfillmentResult =
   | { kind: "ignored" }
   | { kind: "duplicate" }
-  | { kind: "applied"; entitlementId: string; email: string }
+  | { kind: "applied"; entitlementId: string; email: string; amountUsd: number | null }
   | { kind: "refunded"; entitlementId: string }
   | { kind: "missing-admin" }
   | { kind: "invalid"; reason: string }
@@ -34,6 +34,17 @@ function readCheckoutEmail(session: Stripe.Checkout.Session): string | null {
     return session.customer_email.trim().toLowerCase();
   }
   return null;
+}
+
+function readPaidAmountUsd(session: Stripe.Checkout.Session): number | null {
+  if (typeof session.amount_total !== "number") {
+    return null;
+  }
+  const currency = session.currency?.toLowerCase();
+  if (currency && currency !== "usd") {
+    return null;
+  }
+  return session.amount_total / 100;
 }
 
 function readProductTier(session: Stripe.Checkout.Session): EntitlementTier | null {
@@ -160,7 +171,12 @@ export async function fulfillStripeEvent(
     }
 
     await markProcessed(event.id);
-    return { kind: "applied", entitlementId: data.id, email };
+    return {
+      kind: "applied",
+      entitlementId: data.id,
+      email,
+      amountUsd: readPaidAmountUsd(session),
+    };
   }
 
   if (event.type === "charge.refunded") {
