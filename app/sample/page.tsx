@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { CheckoutForm } from "@/components/checkout-form";
 import { PageShell } from "@/components/page-shell";
 import { SampleOptInForm } from "@/components/sample-opt-in-form";
 import { SourcedFact } from "@/components/sourced-fact";
 import { fieldLabel, huntsvilleCitySampleFacts } from "@/lib/seed-facts";
+import { hero } from "@/lib/site";
 
 export const dynamic = "force-static";
 
@@ -36,7 +38,13 @@ export default function SamplePage() {
       <p className="mt-10 max-w-xl text-muted">
         Leave an email if you want this profile sent to you.
       </p>
-      <SampleOptInForm />
+      <SampleOptInForm submitLabel="Email me a copy" />
+      <CheckoutForm
+        tierId="79"
+        label={hero.cta}
+        variant="brick"
+        className="mt-10 max-w-sm"
+      />
     </PageShell>
   );
 }

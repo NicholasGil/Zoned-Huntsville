@@ -40,10 +40,10 @@ export function SalesPage() {
           , each district&apos;s own published policy, and the schools themselves.
           Every claim is linked. Nothing here is a star rating.
         </p>
-        <ul className="mt-3 max-w-2xl space-y-1 text-sm text-text-muted">
+        <ul className="mt-2 max-w-2xl space-y-0.5 text-xs leading-snug text-text-muted">
           {officialPortals.map((portal) => (
             <li key={portal.href}>
-              <a href={portal.href} className="text-action hover:underline">
+              <a href={portal.href} className="text-text-muted hover:underline">
                 {portal.label}
               </a>
             </li>
