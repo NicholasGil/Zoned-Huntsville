@@ -1,6 +1,6 @@
 import { CallSlotsRemaining } from "@/components/call-slots-remaining";
 import { CheckoutForm } from "@/components/checkout-form";
-import { hero, pricingTiers } from "@/lib/site";
+import { edition, hero, pricingTiers } from "@/lib/site";
 
 export function Pricing() {
   return (
@@ -9,7 +9,8 @@ export function Pricing() {
         Pricing
       </h2>
       <p className="mt-2 text-sm text-muted">
-        Listed prices only. No crossed-out &quot;regular&quot; prices.
+        {edition} edition. Listed prices only. No crossed-out &quot;regular&quot;
+        prices.
       </p>
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {pricingTiers.map((tier) => {

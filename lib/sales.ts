@@ -1,8 +1,13 @@
 export const salesCopy = {
+  whatsInTheGuide: [
+    "The $79 Guide is the 2026–27 edition.",
+    "What is sourced today is The Five Systems: Huntsville City, Madison City, Madison County, Athens City, and Limestone County. Each published fact is linked to its official source and stamped with the date we verified it.",
+    "Remaining modules stay in the Guide and are marked until they are sourced. They are not sold as a finished catalog of magnets, private schools, deadlines, or registration documents.",
+  ],
   problem:
     "You can tour a house in Madison and enroll in Madison County. You can live inside Huntsville city limits and be zoned to a school four neighborhoods away. Madison City's published policy admits students who reside within the Madison City school zone — and there's no obvious front door for anyone else. Athens City takes non-residents through a separate application entirely. Nobody puts these three facts on the same page, because the people writing about Huntsville schools are selling houses.",
   mechanism:
-    "This is not a ranking. Rankings are opinions with a number attached. This is the underlying material: what each system publishes, what each school requires, when each window opens, and where to confirm it yourself in one click. Where a fact couldn't be confirmed from an official source, it says so.",
+    "This is not a ranking. Rankings are opinions with a number attached. This is the underlying material: what each system publishes, linked to its official source and the date we verified it. Where a fact couldn't be confirmed from an official source, it says so.",
   zonePromise:
     "The Zone Promise. If your address isn't covered, or a deadline in this guide turns out to be wrong on the day you call, email us and we'll refund you in full — and fix it for everyone else the same week.",
   whoBuiltThis:
@@ -16,7 +21,7 @@ export const salesCopy = {
     {
       question: "Isn't this all free on the districts' websites?",
       answer:
-        "Yes, and it is spread across five district sites, two GIS tools, a state ESA portal that redirects to a vendor domain, ten private school sites that don't publish tuition, and a state report card most people have never opened. The guide is the assembly, not the facts.",
+        "Yes, and it is spread across district sites, GIS tools, a state ESA portal that redirects to a vendor domain, private school sites, and a state report card most people have never opened. The Guide puts the sourced Five Systems material on one page. Remaining modules are marked until they are sourced.",
     },
     {
       question: "Won't this be out of date?",
@@ -36,7 +41,7 @@ export const salesCopy = {
     {
       question: "Do I need the Toolkit?",
       answer:
-        "If you've already picked your school, no. If you're comparing more than three, the worksheets are the reason you'll finish in an evening.",
+        "If the Guide is enough, buy the Guide. The Toolkit tier is optional. It is not required to read the Five Systems material.",
     },
   ],
   faq: [
@@ -53,7 +58,7 @@ export const salesCopy = {
     {
       question: "What is the Toolkit?",
       answer:
-        "The $149 tier adds the School Comparison Worksheet (pre-filled), Deadline Calendar, Registration Document Checklist per district, Call Script Pack, and Zone-vs-Listing cross-check worksheet.",
+        "The $149 tier adds Toolkit access on top of the Guide. This edition does not include a downloadable worksheet pack. The $349 tier adds one 45-minute video call with Nicholas.",
     },
     {
       question: "Why is the call capped?",
