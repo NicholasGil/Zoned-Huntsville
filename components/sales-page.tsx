@@ -16,16 +16,18 @@ function GuideBuyCard({
   showTiersLink?: boolean;
 }) {
   return (
-    <div className="max-w-sm rounded-lg border border-border bg-surface px-5 py-5 sm:px-6 sm:py-6">
-      <p className="font-sans text-[32px] font-semibold leading-none text-text">$79</p>
-      <CheckoutForm
-        tierId="79"
-        label={hero.cta}
-        variant="brick"
-        className="mt-4"
-      />
+    <div className="max-w-sm rounded-lg border border-border bg-surface px-4 py-4 sm:px-6 sm:py-6">
+      <div className="flex items-center gap-4">
+        <p className="font-sans text-[32px] font-semibold leading-none text-text">$79</p>
+        <CheckoutForm
+          tierId="79"
+          label={hero.cta}
+          variant="brick"
+          className="min-w-0 flex-1"
+        />
+      </div>
       {showGuarantee ? (
-        <p className="mt-3 text-sm font-normal leading-snug text-text-muted">
+        <p className="mt-2 text-xs font-normal leading-snug text-text-muted sm:mt-3 sm:text-sm">
           {salesCopy.heroRiskReversal}
         </p>
       ) : null}
@@ -42,7 +44,7 @@ function GuideBuyCard({
 
 export function SalesPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 pt-6 pb-28 sm:pt-16 sm:pb-24 max-md:pb-28">
+    <div className="mx-auto w-full max-w-4xl px-6 pt-4 pb-28 sm:pt-16 sm:pb-24 max-md:pb-28">
       <Suspense fallback={null}>
         <CheckoutNotice />
       </Suspense>
@@ -65,15 +67,15 @@ export function SalesPage() {
             href={namedSources.alsdeReportCard.href}
             className="text-action hover:underline"
           >
-            {namedSources.alsdeReportCard.label}
+            ALSDE report card
           </a>
           {" "}and{" "}
           <a href={namedSources.nces.href} className="text-action hover:underline">
             {namedSources.nces.label}
           </a>
-          . Every claim is linked. Nothing here is a star rating.
+          . Linked. Not a star rating.
         </p>
-        <div className="mt-5 sm:mt-8">
+        <div className="mt-4 sm:mt-8">
           <GuideBuyCard showGuarantee />
         </div>
       </section>

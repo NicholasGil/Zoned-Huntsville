@@ -1,6 +1,6 @@
 export const salesCopy = {
   heroRiskReversal:
-    "30-day refund. Zone Promise: if your address isn't covered, or a deadline in this guide is wrong the day you call, you get a full refund.",
+    "30-day refund. Zone Promise: uncovered address or a wrong deadline the day you call — full refund.",
   whatsInTheGuide: [
     "The $79 Guide is the 2026–27 edition.",
     "What is sourced today is The Five Systems: Huntsville City, Madison City, Madison County, Athens City, and Limestone County. Each published fact is linked to its official source and stamped with the date we verified it.",

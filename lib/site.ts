@@ -40,7 +40,7 @@ export const namedSources = {
 export const hero = {
   headline: "Know which system your address gets — before you sign.",
   subhead:
-    "Huntsville has five school systems. The 2026–27 Guide assembles what each one publishes, with a source link and the date we verified it. Not a ranking.",
+    "The 2026–27 Guide: what Huntsville's five systems publish, linked and dated. Not a ranking.",
   cta: "Get the Guide — $79",
   guarantee: "30-day money-back guarantee",
   credibility:
