@@ -1,5 +1,7 @@
 import {
+  FIVE_SYSTEM_PROFILE_FIELDS,
   FIVE_SYSTEM_SLUGS,
+  HCS_MAGNET_SLUGS,
   PRIVATE_SCHOOL_SLUGS,
   type SeedFact,
 } from "./seed-facts.ts";
@@ -14,7 +16,29 @@ export type GuideModule = {
 };
 
 const fiveSystemSlugs: readonly string[] = FIVE_SYSTEM_SLUGS;
+const fiveSystemProfileFields: readonly string[] = FIVE_SYSTEM_PROFILE_FIELDS;
 const privateSchoolSlugs: readonly string[] = PRIVATE_SCHOOL_SLUGS;
+const hcsMagnetSlugs: readonly string[] = HCS_MAGNET_SLUGS;
+
+const ZONE_FIELDS = [
+  "zone_locator_url",
+  "how_to_check_before_lease",
+  "zone_check_instruction",
+  "rezoning_status",
+  "residency_rule",
+] as const;
+
+const REGISTRATION_FIELDS = [
+  "enrollment",
+  "enrollment_path",
+  "registration_documents",
+  "registration_timeline",
+  "transfer_policy",
+  "non_resident_path",
+  "non_resident_tuition",
+  "non_resident_policy",
+  "residency_rule",
+] as const;
 
 export const GUIDE_MODULES: readonly GuideModule[] = [
   {
@@ -41,11 +65,12 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
       "Huntsville City, Madison City, Madison County, Athens City, Limestone County",
     unverified: [
       "Madison City superintendent, mailing address, and non-resident admission policy text",
-      "Limestone County superintendent and official zone locator",
+      "Limestone County superintendent",
     ],
     matchesFact: (fact) =>
       (fact.entity_type === "district" || fact.entity_type === "policy") &&
-      fiveSystemSlugs.includes(fact.entity_slug),
+      fiveSystemSlugs.includes(fact.entity_slug) &&
+      fiveSystemProfileFields.includes(fact.field),
   },
   {
     slug: "zones-and-addresses",
@@ -54,9 +79,11 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     purpose:
       "What each system publishes for matching an address to a school, and where to confirm it.",
     unverified: [
-      "Athens City and Limestone County official zone locators",
+      "Athens City official interactive zone locator — the district tells families to call (256) 233-6600",
+      "confirm zero Madison City non-resident exceptions by phone",
     ],
-    matchesFact: (fact) => fact.field === "zone_locator_url",
+    matchesFact: (fact) =>
+      (ZONE_FIELDS as readonly string[]).includes(fact.field),
   },
   {
     slug: "magnets-and-specialty",
@@ -65,10 +92,16 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     purpose:
       "District magnet and specialty programs, plus statewide specialty schools that serve this metro.",
     unverified: [
-      "magnet and specialty application windows for each district",
+      "one-application / lottery / PK–5 vs 6–12 essay-interview-audition mechanics, sibling priority, transportation, and IEP applicants on the live HCS magnet page",
+      "fall 2026 application window for 2027–28 magnet entry",
+      "whether Columbia High still publishes an IB Diploma magnet",
+      "current-year IB PYP/MYP program naming on the live HCS magnet page or a current ASFL program page",
+      "magnet office phone (256) 428-6987 from older secondary copy — live HCS arts article published 256-924-1113",
     ],
     matchesFact: (fact) =>
-      fact.entity_type === "school" && fact.entity_slug === "ascte",
+      (fact.entity_type === "school" && fact.entity_slug === "ascte") ||
+      fact.entity_slug === "hcs-magnets" ||
+      hcsMagnetSlugs.includes(fact.entity_slug),
   },
   {
     slug: "private-and-parochial",
@@ -118,9 +151,15 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     purpose:
       "How each district says to enroll, and which documents they ask for.",
     unverified: [
-      "registration windows and document checklists for each district",
+      "Huntsville City Schools new-student document checklist",
+      "Limestone County Schools new-student document checklist",
+      "Madison County 2026–27 start-of-year processing dates — they roll annually; reconfirm on the district page",
+      "Athens City capacity limits and current-year non-resident tuition by phone",
+      "Madison City non-resident exceptions, if any, by phone",
     ],
-    matchesFact: (fact) => fact.field === "enrollment",
+    matchesFact: (fact) =>
+      fiveSystemSlugs.includes(fact.entity_slug) &&
+      (REGISTRATION_FIELDS as readonly string[]).includes(fact.field),
   },
 ];
 

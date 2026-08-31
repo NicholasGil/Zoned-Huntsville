@@ -1,4 +1,5 @@
 import type { FactEntityType, VerificationMethod } from "@/lib/database";
+import { ZONE_MAGNET_REG_FACTS } from "./c015-c016-c019-facts.ts";
 
 export type SeedFact = {
   entity_type: FactEntityType;
@@ -26,6 +27,31 @@ export const PRIVATE_SCHOOL_SLUGS = [
   "holy-spirit-regional",
   "grace-lutheran",
   "providence-classical",
+] as const;
+
+export const HCS_MAGNET_SLUGS = [
+  "new-century-technology",
+  "aaa-magnet",
+  "lee-capa",
+  "asfl-magnet",
+  "columbia-ib",
+  "williams-agt",
+  "jemison-college-academy",
+] as const;
+
+export const FIVE_SYSTEM_PROFILE_FIELDS = [
+  "name",
+  "website",
+  "phone",
+  "address",
+  "mailing_address",
+  "superintendent",
+  "superintendent_approved_at",
+  "superintendent_since",
+  "zone_locator_url",
+  "enrollment",
+  "non_resident_path",
+  "non_resident_tuition",
 ] as const;
 
 export const HUNTSVILLE_CITY_SAMPLE_FIELDS = [
@@ -71,6 +97,27 @@ export const FACT_FIELD_LABELS: Record<string, string> = {
   still_active: "Program status",
   individual_phone: "Individual inquiries",
   corporate_phone: "Corporate inquiries",
+  how_to_check_before_lease: "How to check before a lease",
+  zone_check_instruction: "How to check zoning",
+  rezoning_status: "Rezoning",
+  residency_rule: "Who may enroll",
+  enrollment_path: "Enrollment path",
+  registration_documents: "Documents",
+  registration_timeline: "Timeline",
+  transfer_policy: "Transfers / non-residents",
+  non_resident_policy: "Non-resident policy",
+  magnet_office_phone: "Magnet office",
+  magnet_office_email: "Magnet email",
+  application_portal: "Application portal",
+  application_mechanics: "Application mechanics",
+  application_window_2027_28: "2027–28 application window",
+  seats_2026_27: "2026–27 freshman seats",
+  gpa_target: "GPA target",
+  residency_requirement: "Residency",
+  lottery: "Selection",
+  focus: "Focus",
+  also_known_as: "Also called",
+  elementary_campus_url: "Elementary campus",
 };
 
 export function fieldLabel(field: string): string {
@@ -813,9 +860,12 @@ export const MODULE_FILL_FACTS: readonly SeedFact[] = [
   },
 ];
 
+export { ZONE_MAGNET_REG_FACTS } from "./c015-c016-c019-facts.ts";
+
 export const seedFacts: readonly SeedFact[] = [
   ...EXISTING_SEED_FACTS,
   ...MODULE_FILL_FACTS,
+  ...ZONE_MAGNET_REG_FACTS,
 ];
 
 export function seedFactsMatching(

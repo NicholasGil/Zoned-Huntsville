@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test lib/auth-confirm.test.ts lib/auth-error.test.ts lib/purchase-auth.test.ts lib/purchase-follow-up.test.ts lib/checkout-receipt.test.ts lib/sales-honesty.test.ts lib/guide-modules.test.ts lib/shortlist-path.test.ts"
+    "test": "node --experimental-strip-types --test lib/auth-confirm.test.ts lib/auth-error.test.ts lib/purchase-auth.test.ts lib/purchase-follow-up.test.ts lib/checkout-receipt.test.ts lib/sales-honesty.test.ts lib/guide-modules.test.ts lib/guide-modules-c015.test.ts lib/shortlist-path.test.ts"
   },
   "engines": {
     "node": ">=20.9.0"

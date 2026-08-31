@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FactList } from "@/components/fact-list";
 import { AccessGate } from "@/components/gate";
+import { LeaseCheck } from "@/components/lease-check";
 import { PageShell } from "@/components/page-shell";
 import { ShortlistPath } from "@/components/shortlist-path";
 import { VerifyToken } from "@/components/verify-token";
@@ -11,6 +12,7 @@ import { getPublishedFacts } from "@/lib/facts";
 import { GUIDE_MODULES, getGuideModule } from "@/lib/guide-modules";
 import {
   FIVE_SYSTEM_SLUGS,
+  HCS_MAGNET_SLUGS,
   PRIVATE_SCHOOL_SLUGS,
   seedFacts,
   slugOrder,
@@ -51,12 +53,18 @@ export default async function GuideModulePage({
   }
 
   const facts = await getPublishedFacts(guideModule.matchesFact);
+  const magnetOrder = ["hcs-magnets", ...HCS_MAGNET_SLUGS, "ascte"] as const;
   const slugRanks =
-    guideModule.slug === "five-systems" || guideModule.slug === "start-here"
+    guideModule.slug === "five-systems" ||
+    guideModule.slug === "start-here" ||
+    guideModule.slug === "zones-and-addresses" ||
+    guideModule.slug === "registration-mechanics"
       ? FIVE_SYSTEM_SLUGS
       : guideModule.slug === "private-and-parochial"
         ? PRIVATE_SCHOOL_SLUGS
-        : null;
+        : guideModule.slug === "magnets-and-specialty"
+          ? magnetOrder
+          : null;
   const orderedFacts = slugRanks
     ? [...facts].sort((a, b) => {
         const bySlug = slugOrder(a.entity_slug, slugRanks) - slugOrder(b.entity_slug, slugRanks);
@@ -71,6 +79,9 @@ export default async function GuideModulePage({
       </p>
       <h1 className="mt-3 font-serif text-4xl text-ink">{guideModule.title}</h1>
       <p className="mt-4 max-w-xl text-muted">{guideModule.purpose}</p>
+      {guideModule.slug === "zones-and-addresses" ? (
+        <LeaseCheck facts={orderedFacts} />
+      ) : null}
       {orderedFacts.length > 0 ? <FactList facts={orderedFacts} /> : null}
       {guideModule.slug === "start-here" ? (
         <ShortlistPath
