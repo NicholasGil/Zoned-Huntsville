@@ -24,7 +24,7 @@ export function SampleOptInForm({ className = "mt-10 max-w-md" }: { className?: 
       <button
         type="submit"
         disabled={pending}
-        className="mt-4 bg-action px-4 py-2.5 text-sm text-text-on-action hover:bg-action-hover disabled:opacity-60"
+        className="mt-4 min-h-11 rounded-md bg-action px-6 py-3 text-sm font-semibold text-text-on-action hover:bg-action-hover active:bg-action-active outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-60"
       >
         Email me the sample
       </button>
