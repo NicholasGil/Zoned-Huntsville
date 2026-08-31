@@ -5,7 +5,13 @@ import { submitSampleOptIn, type SampleState } from "@/app/sample/actions";
 
 const initial: SampleState = { kind: "idle" };
 
-export function SampleOptInForm({ className = "mt-10 max-w-md" }: { className?: string }) {
+export function SampleOptInForm({
+  className = "mt-10 max-w-md",
+  submitLabel = "Email me the sample",
+}: {
+  className?: string;
+  submitLabel?: string;
+}) {
   const [state, action, pending] = useActionState(submitSampleOptIn, initial);
 
   return (
@@ -26,7 +32,7 @@ export function SampleOptInForm({ className = "mt-10 max-w-md" }: { className?: 
         disabled={pending}
         className="mt-4 min-h-11 rounded-md bg-action px-6 py-3 text-sm font-semibold text-text-on-action hover:bg-action-hover active:bg-action-active outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-60"
       >
-        Email me the sample
+        {submitLabel}
       </button>
       {state.kind === "invalid-email" ? (
         <p className="mt-4 text-sm text-danger" role="alert">
