@@ -98,6 +98,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     );
     assert.ok(address);
     assert.match(address.value, /211 Celtic Drive/);
+    assert.match(address.value, /Title IX Coordinator address/);
     assert.match(address.source_url, /district-title-ix-information/);
     const nonResident = facts.find(
       (fact) =>

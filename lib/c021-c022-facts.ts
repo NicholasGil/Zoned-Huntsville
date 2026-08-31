@@ -55,7 +55,7 @@ export const LEFTOVER_S2_FACTS: readonly SeedFact[] = [
     "district",
     "madison-city",
     "address",
-    "211 Celtic Drive, Madison, AL 35758",
+    "211 Celtic Drive, Madison, AL 35758 — published as the Title IX Coordinator address; the official site does not label a district mailing address",
     MCS_TITLE_IX,
   ),
   official(

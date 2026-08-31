@@ -24,7 +24,7 @@ insert into public.facts (
     'district',
     'madison-city',
     'address',
-    '211 Celtic Drive, Madison, AL 35758',
+    '211 Celtic Drive, Madison, AL 35758 — published as the Title IX Coordinator address; the official site does not label a district mailing address',
     'https://www.madisoncity.k12.al.us/district-title-ix-information',
     '2026-08-31',
     'official_page'
