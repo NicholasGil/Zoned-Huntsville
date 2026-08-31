@@ -1,5 +1,6 @@
 import type { FactEntityType, VerificationMethod } from "@/lib/database";
 import { ZONE_MAGNET_REG_FACTS } from "./c015-c016-c019-facts.ts";
+import { LEFTOVER_S2_FACTS } from "./c021-c022-facts.ts";
 
 export type SeedFact = {
   entity_type: FactEntityType;
@@ -110,6 +111,8 @@ export const FACT_FIELD_LABELS: Record<string, string> = {
   magnet_office_email: "Magnet email",
   application_portal: "Application portal",
   application_mechanics: "Application mechanics",
+  admissions_process: "Admissions",
+  tuition_publication: "Tuition",
   application_window_2027_28: "2027–28 application window",
   seats_2026_27: "2026–27 freshman seats",
   gpa_target: "GPA target",
@@ -861,12 +864,29 @@ export const MODULE_FILL_FACTS: readonly SeedFact[] = [
 ];
 
 export { ZONE_MAGNET_REG_FACTS } from "./c015-c016-c019-facts.ts";
+export { LEFTOVER_S2_FACTS } from "./c021-c022-facts.ts";
 
-export const seedFacts: readonly SeedFact[] = [
-  ...EXISTING_SEED_FACTS,
-  ...MODULE_FILL_FACTS,
-  ...ZONE_MAGNET_REG_FACTS,
-];
+function mergeSeedFacts(
+  groups: readonly (readonly SeedFact[])[],
+): SeedFact[] {
+  const merged = new Map<string, SeedFact>();
+  for (const group of groups) {
+    for (const fact of group) {
+      merged.set(
+        `${fact.entity_type}:${fact.entity_slug}:${fact.field}`,
+        fact,
+      );
+    }
+  }
+  return [...merged.values()];
+}
+
+export const seedFacts: readonly SeedFact[] = mergeSeedFacts([
+  EXISTING_SEED_FACTS,
+  MODULE_FILL_FACTS,
+  ZONE_MAGNET_REG_FACTS,
+  LEFTOVER_S2_FACTS,
+]);
 
 export function seedFactsMatching(
   matches: (fact: SeedFact) => boolean,

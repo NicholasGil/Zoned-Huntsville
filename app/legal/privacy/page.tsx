@@ -41,8 +41,10 @@ export default function PrivacyPage() {
       <h2 className="pt-4 font-serif text-2xl text-ink">Retention</h2>
       <p>
         We keep purchase emails so we can honor access and refunds. We keep
-        sample-form emails so we can send the profile.{" "}
-        <VerifyToken>retention schedule for leads and entitlements</VerifyToken>
+        sample-form emails so we can send the profile. Entitlement rows stay
+        until a refund is recorded on that row. Lead emails stay in the leads
+        table so we can send the sample. This edition does not publish a
+        day-count deletion schedule.
       </p>
       <h2 className="pt-4 font-serif text-2xl text-ink">Contact</h2>
       <p>
