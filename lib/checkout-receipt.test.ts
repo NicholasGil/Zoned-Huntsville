@@ -29,16 +29,16 @@ describe("stripeCheckoutLineItem", () => {
       currency: "usd",
       unit_amount: 14900,
       product_data: {
-        name: "The Huntsville School Guide — Toolkit",
-        description: "Toolkit",
+        name: "The Huntsville School Guide — Guide + Toolkit",
+        description: "Guide + Toolkit",
       },
     });
     assert.deepEqual(stripeCheckoutLineItem("349").price_data, {
       currency: "usd",
       unit_amount: 34900,
       product_data: {
-        name: "The Huntsville School Guide — Call",
-        description: "Call",
+        name: "The Huntsville School Guide — Guide + Toolkit + Call",
+        description: "Guide + Toolkit + Call",
       },
     });
     assert.equal(checkoutOffer("79").amountUsd, 79);
@@ -59,6 +59,11 @@ describe("stripeCheckoutLineItem", () => {
       assert.equal(params.metadata.tier, tier);
       assert.equal(params.line_items[0]?.price_data.currency, "usd");
       assert.equal(params.line_items[0]?.price_data.unit_amount, unitAmount);
+      assert.equal(
+        params.success_url,
+        "https://example.com/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+      );
+      assert.equal(params.cancel_url, "https://example.com/#pricing");
     }
   });
 });

@@ -14,6 +14,12 @@ const PRODUCT_TIER_BY_PRICE = {
   "349": "call",
 } as const;
 
+const STRIPE_LINE_SUFFIX = {
+  "79": "Guide",
+  "149": "Guide + Toolkit",
+  "349": "Guide + Toolkit + Call",
+} as const;
+
 export type BuyerProductTier = keyof typeof TIER_BUYER_LABEL;
 
 export function productTierFromPriceId(priceId: PricingTierId): BuyerProductTier {
@@ -32,11 +38,13 @@ export function checkoutOffer(tierId: PricingTierId) {
 
   const productTier = productTierFromPriceId(tierId);
   const tierLabel = buyerTierLabel(productTier);
+  const stripeLineName = `${PRODUCT_NAME} — ${STRIPE_LINE_SUFFIX[tierId]}`;
 
   return {
     productName: PRODUCT_NAME,
     productTier,
     tierLabel,
+    stripeLineName,
     amountUsd: tier.amountUsd,
     unitAmountCents: tier.amountUsd * 100,
   };
@@ -56,8 +64,8 @@ export function stripeCheckoutLineItem(tierId: PricingTierId) {
       currency: "usd" as const,
       unit_amount: offer.unitAmountCents,
       product_data: {
-        name: `${offer.productName} — ${offer.tierLabel}`,
-        description: offer.tierLabel,
+        name: offer.stripeLineName,
+        description: STRIPE_LINE_SUFFIX[tierId],
       },
     },
   };
@@ -67,11 +75,12 @@ export function stripeCheckoutSessionParams(
   tierId: PricingTierId,
   siteUrl: string,
 ) {
+  const origin = siteUrl.replace(/\/+$/, "");
   return {
     mode: "payment" as const,
     line_items: [stripeCheckoutLineItem(tierId)],
-    success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${siteUrl}/`,
+    success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/#pricing`,
     metadata: { tier: tierId },
   };
 }
