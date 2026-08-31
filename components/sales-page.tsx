@@ -22,6 +22,16 @@ export function SalesPage() {
         >
           {hero.headline}
         </h1>
+        <div className="mt-8 max-w-sm rounded-lg border border-border bg-surface px-6 py-6">
+          <p className="font-sans text-[32px] font-semibold leading-none text-text">$79</p>
+          <CheckoutForm
+            tierId="79"
+            label={hero.cta}
+            variant="brick"
+            className="mt-4"
+          />
+          <p className="mt-3 text-sm font-normal text-text-muted">{hero.guarantee}</p>
+        </div>
         <p className="mt-6 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
           {hero.subhead}
         </p>
@@ -40,25 +50,15 @@ export function SalesPage() {
           , each district&apos;s own published policy, and the schools themselves.
           Every claim is linked. Nothing here is a star rating.
         </p>
-        <ul className="mt-3 max-w-2xl space-y-1 text-sm text-text-muted">
+        <ul className="mt-2 max-w-2xl space-y-0.5 text-xs leading-snug text-text-muted">
           {officialPortals.map((portal) => (
             <li key={portal.href}>
-              <a href={portal.href} className="text-action hover:underline">
+              <a href={portal.href} className="text-text-muted hover:underline">
                 {portal.label}
               </a>
             </li>
           ))}
         </ul>
-        <div className="mt-8 max-w-sm rounded-lg border border-border bg-surface px-6 py-6">
-          <p className="font-sans text-[32px] font-semibold leading-none text-text">$79</p>
-          <CheckoutForm
-            tierId="79"
-            label={hero.cta}
-            variant="brick"
-            className="mt-4"
-          />
-          <p className="mt-3 text-sm font-normal text-text-muted">{hero.guarantee}</p>
-        </div>
       </section>
 
       <section aria-labelledby="problem-heading" className="mt-20">
