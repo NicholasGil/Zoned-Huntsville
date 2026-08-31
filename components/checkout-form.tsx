@@ -20,9 +20,7 @@ export function CheckoutForm({
   const buttonClass =
     variant === "ink"
       ? `w-full min-h-11 rounded-md border border-text bg-transparent px-6 py-3 text-sm font-semibold text-text hover:border-action ${focusRing}`
-      : variant === "brick-full"
-        ? `w-full ${primaryFill}`
-        : primaryFill;
+      : `w-full ${primaryFill}`;
 
   return (
     <form action="/api/checkout" method="post" className={className}>
