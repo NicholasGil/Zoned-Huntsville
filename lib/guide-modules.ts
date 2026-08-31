@@ -64,8 +64,8 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     purpose:
       "Huntsville City, Madison City, Madison County, Athens City, Limestone County",
     unverified: [
-      "Madison City superintendent, mailing address, and non-resident admission policy text",
-      "Limestone County superintendent",
+      "Madison City mailing address — official pages publish 211 Celtic Drive as the Title IX Coordinator address, not as a labeled mailing address",
+      "confirm zero Madison City non-resident exceptions by phone",
     ],
     matchesFact: (fact) =>
       (fact.entity_type === "district" || fact.entity_type === "policy") &&
@@ -110,7 +110,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     purpose:
       "Named private and parochial schools already verified in the seed. Tuition figures stay unpublished.",
     unverified: [
-      "published tuition for each private school that releases a figure",
+      "Randolph, Holy Spirit, Grace Lutheran, and St. John the Baptist applications-open dates that are not on the official admissions pages",
     ],
     matchesFact: (fact) =>
       fact.entity_type === "school" &&
