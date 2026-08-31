@@ -5,7 +5,7 @@ import { edition, hero, pricingTiers } from "@/lib/site";
 export function Pricing() {
   return (
     <section id="pricing" aria-labelledby="pricing-heading" className="scroll-mt-8 mt-20">
-      <h2 id="pricing-heading" className="font-sans text-2xl text-text">
+      <h2 id="pricing-heading" className="font-sans text-2xl font-semibold text-text">
         Pricing
       </h2>
       <p className="mt-2 text-sm text-text-muted">
@@ -23,8 +23,8 @@ export function Pricing() {
               key={tier.id}
               className={
                 isTarget
-                  ? "border-2 border-action bg-surface-raised px-5 py-6 md:-translate-y-2"
-                  : "border border-border bg-page px-5 py-6"
+                  ? "rounded-lg border-2 border-action bg-surface-raised px-5 py-6"
+                  : "rounded-lg border border-border bg-surface px-5 py-6"
               }
             >
               {isTarget ? (
@@ -32,8 +32,8 @@ export function Pricing() {
                   Recommended
                 </p>
               ) : null}
-              <p className="mt-2 font-sans text-2xl text-text">{tier.name}</p>
-              <p className="mt-2 font-sans text-4xl text-text">${tier.amountUsd}</p>
+              <p className="mt-2 font-sans text-2xl font-semibold text-text">{tier.name}</p>
+              <p className="mt-2 font-sans text-4xl font-semibold text-text">${tier.amountUsd}</p>
               <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-text-muted">
                 {tier.includes.map((line) => (
                   <li key={line}>{line}</li>
