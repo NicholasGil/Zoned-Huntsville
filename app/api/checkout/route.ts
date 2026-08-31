@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { stripeCheckoutSessionParams } from "@/lib/checkout-offer";
 import { getAppEnv } from "@/lib/env";
 import { isPricingTierId } from "@/lib/site";
 import { getStripe } from "@/lib/stripe";
@@ -53,17 +54,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const priceId = env.stripe.priceIds[tierValue];
-  if (!priceId) {
-    if (html) {
-      return NextResponse.redirect(new URL("/?checkout=missing-price", env.siteUrl), 303);
-    }
-    return NextResponse.json(
-      { error: `Set STRIPE_PRICE_ID_${tierValue} before creating a session.` },
-      { status: 503 },
-    );
-  }
-
   const stripe = getStripe();
   if (!stripe) {
     return NextResponse.json({ error: "Stripe is not configured." }, { status: 503 });
@@ -77,11 +67,7 @@ export async function POST(request: Request) {
 
   const session = await stripe.checkout.sessions.create(
     {
-      mode: "payment",
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${env.siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${env.siteUrl}/`,
-      metadata: { tier: tierValue },
+      ...stripeCheckoutSessionParams(tierValue, env.siteUrl),
       ...(user?.id ? { client_reference_id: user.id } : {}),
       ...(user?.email ? { customer_email: user.email } : {}),
     },
