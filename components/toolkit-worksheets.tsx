@@ -121,25 +121,21 @@ export function ToolkitWorksheets({ facts }: { facts: PublishedFact[] }) {
                     {row.websiteFact ? (
                       <SourcedFact fact={row.websiteFact} />
                     ) : (
-                      <VerifyToken>published website for {row.name}</VerifyToken>
+                      <VerifyToken>{`published website for ${row.name}`}</VerifyToken>
                     )}
                   </td>
                   <td className="py-3 pr-4 text-ink">
                     {row.locatorFact ? (
                       <SourcedFact fact={row.locatorFact} />
                     ) : (
-                      <VerifyToken>
-                        official zone locator for {row.name}
-                      </VerifyToken>
+                      <VerifyToken>{`official zone locator for ${row.name}`}</VerifyToken>
                     )}
                   </td>
                   <td className="py-3 text-ink">
                     {row.enrollmentFact ? (
                       <SourcedFact fact={row.enrollmentFact} />
                     ) : (
-                      <VerifyToken>
-                        published enrollment path for {row.name}
-                      </VerifyToken>
+                      <VerifyToken>{`published enrollment path for ${row.name}`}</VerifyToken>
                     )}
                   </td>
                 </tr>

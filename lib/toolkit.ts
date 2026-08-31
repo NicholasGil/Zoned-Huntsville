@@ -1,4 +1,3 @@
-import { canReadToolkit, type Entitlement } from "./entitlement.ts";
 import {
   FIVE_SYSTEM_SLUGS,
   fieldLabel,
@@ -231,6 +230,3 @@ export function officialLocatorFacts(facts: readonly SeedFact[]): SeedFact[] {
   });
 }
 
-export function toolkitIsGatedFor(entitlement: Entitlement): boolean {
-  return !canReadToolkit(entitlement);
-}

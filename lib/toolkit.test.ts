@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { canReadToolkit } from "./entitlement.ts";
 import { salesCopy } from "./sales.ts";
 import { FIVE_SYSTEM_SLUGS, seedFacts } from "./seed-facts.ts";
 import { hero, pricingTiers } from "./site.ts";
@@ -14,7 +13,6 @@ import {
   splitSourcedChecklistItems,
   TOOLKIT_SHIPPED,
   TOOLKIT_UNIMPLEMENTED,
-  toolkitIsGatedFor,
 } from "./toolkit.ts";
 
 const toolsPageSource = readFileSync(
@@ -57,42 +55,15 @@ describe("C-020 toolkit", () => {
     assert.match(toolsPageSource, /canReadToolkit/);
     assert.match(toolsPageSource, /need="toolkit"/);
     assert.equal(toolsPageSource.includes("canReadToolkit(entitlement)"), true);
-    assert.equal(toolkitIsGatedFor({ kind: "anonymous" }), true);
-    assert.equal(
-      toolkitIsGatedFor({
-        kind: "signed-in",
-        hasGuide: true,
-        hasToolkit: false,
-        hasCall: false,
-      }),
-      true,
+    assert.equal(toolsPageSource.includes("if (!canReadToolkit(entitlement))"), true);
+    assert.match(toolsPageSource, /ToolkitWorksheets/);
+    const entitlementSource = readFileSync(
+      new URL("./entitlement.ts", import.meta.url),
+      "utf8",
     );
-    assert.equal(
-      canReadToolkit({
-        kind: "signed-in",
-        hasGuide: true,
-        hasToolkit: false,
-        hasCall: false,
-      }),
-      false,
-    );
-    assert.equal(
-      canReadToolkit({
-        kind: "signed-in",
-        hasGuide: true,
-        hasToolkit: true,
-        hasCall: false,
-      }),
-      true,
-    );
-    assert.equal(
-      canReadToolkit({
-        kind: "signed-in",
-        hasGuide: true,
-        hasToolkit: true,
-        hasCall: true,
-      }),
-      true,
+    assert.match(
+      entitlementSource,
+      /entitlement\.kind === "signed-in" && entitlement\.hasToolkit/,
     );
   });
 
@@ -118,7 +89,8 @@ describe("C-020 toolkit", () => {
       assert.equal(worksheetsSource.includes(heading), true, heading);
     }
     assert.match(worksheetsSource, /LeaseCheck/);
-    assert.match(worksheetsSource, /Call Script Pack is not implemented/);
+    assert.match(worksheetsSource, /TOOLKIT_UNIMPLEMENTED/);
+    assert.match(worksheetsSource, /is not implemented/);
   });
 
   it("renders per-district registration lists from sourced facts only", () => {
