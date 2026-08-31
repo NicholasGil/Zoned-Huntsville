@@ -24,8 +24,8 @@ export default async function GuideIndexPage() {
     <PageShell>
       <h1 className="font-serif text-4xl text-ink">Guide modules</h1>
       <p className="mt-4 max-w-xl text-muted">
-        Eight modules. Module 2 has the sourced district facts. The others list
-        what belongs there and mark anything not yet verified.
+        Eight modules. Sourced modules show facts with a source link and the
+        date we verified them. Remaining holes stay marked.
       </p>
       <ol className="mt-10 max-w-xl space-y-4">
         {GUIDE_MODULES.map((entry) => (

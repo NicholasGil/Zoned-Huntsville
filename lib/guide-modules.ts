@@ -2,7 +2,7 @@ import {
   FIVE_SYSTEM_SLUGS,
   PRIVATE_SCHOOL_SLUGS,
   type SeedFact,
-} from "@/lib/seed-facts";
+} from "./seed-facts.ts";
 
 export type GuideModule = {
   slug: string;
@@ -26,7 +26,12 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     unverified: [
       "10-minute shortlist worksheet and the commute or budget thresholds it uses",
     ],
-    matchesFact: () => false,
+    matchesFact: (fact) =>
+      fact.entity_type === "district" &&
+      fiveSystemSlugs.includes(fact.entity_slug) &&
+      (fact.field === "name" ||
+        fact.field === "website" ||
+        fact.field === "zone_locator_url"),
   },
   {
     slug: "five-systems",
@@ -85,9 +90,11 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     purpose:
       "How Alabama homeschool and cover-school enrollment works for families in this metro.",
     unverified: [
-      "Alabama homeschool statute, cover-school list, and declaration process",
+      "Huntsville-area cover-school list",
+      "confirm section numbers against the current Alabama Legislature codebook — the legislature amends this title regularly",
+      "spec 4.2 wording that families file enrollment/attendance documentation with the cover school — confirm against the current codebook whether the filing is with the cover school, the local superintendent, or both",
     ],
-    matchesFact: () => false,
+    matchesFact: (fact) => fact.entity_slug === "alabama-homeschool",
   },
   {
     slug: "paying-for-it",
@@ -96,9 +103,13 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     purpose:
       "State ESA (CHOOSE Act) and scholarship-granting organizations, sourced when an official figure exists.",
     unverified: [
-      "CHOOSE Act award amounts and SGO list for the current year",
+      "exact date the next CHOOSE Act cycle opens in January 2027",
+      "funding and implementation details for the 2027–28 income-cap removal were still being finalized in 2026 reporting",
+      "current Alabama Accountability Act SGO award and credit figures",
     ],
-    matchesFact: () => false,
+    matchesFact: (fact) =>
+      fact.entity_slug === "alabama-choose-act" ||
+      fact.entity_slug === "alabama-accountability-act",
   },
   {
     slug: "registration-mechanics",
