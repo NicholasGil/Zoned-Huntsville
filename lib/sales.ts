@@ -1,13 +1,34 @@
 export const salesCopy = {
+  heroRiskReversal:
+    "30-day refund. Zone Promise: if your address isn't covered, or a deadline in this guide is wrong the day you call, you get a full refund.",
   whatsInTheGuide: [
     "The $79 Guide is the 2026–27 edition.",
     "What is sourced today is The Five Systems: Huntsville City, Madison City, Madison County, Athens City, and Limestone County. Each published fact is linked to its official source and stamped with the date we verified it.",
     "Remaining modules stay in the Guide and are marked until they are sourced. They are not sold as a finished catalog of magnets, private schools, deadlines, or registration documents.",
   ],
+  offerStack: [
+    {
+      name: "The Guide — $79",
+      detail:
+        "Sourced Five Systems material, web-based, mobile-readable, lifetime access to the 2026–27 edition. Remaining modules are marked until they are sourced.",
+    },
+    {
+      name: "Guide + Toolkit — $149",
+      detail:
+        "Everything in the Guide, plus Toolkit access: on-page printable checklists built from sourced facts already in the Guide. This edition does not include a downloadable PDF pack.",
+    },
+    {
+      name: "Guide + Toolkit + Call — $349",
+      detail:
+        "Everything in the Guide and Toolkit, plus one 45-minute video call with Nicholas. Four slots each month.",
+    },
+  ],
   problem:
-    "You can tour a house in Madison and enroll in Madison County. You can live inside Huntsville city limits and be zoned to a school four neighborhoods away. Madison City's published policy admits students who reside within the Madison City school zone — and there's no obvious front door for anyone else. Athens City takes non-residents through a separate application entirely. Nobody puts these three facts on the same page, because the people writing about Huntsville schools are selling houses.",
+    "Huntsville is five school systems, not one. A neighborhood name on a listing is not a zone. You can tour a house in Madison and enroll in Madison County. You can live inside Huntsville city limits and be zoned to a school four neighborhoods away. Deadlines sit on five different district calendars, a state ESA portal, and school sites. If the lease is in three weeks, you do not have time to reconstruct that from realtor blogs.",
+  problemDetail:
+    "Madison City's published policy admits students who reside within the Madison City school zone — and there's no obvious front door for anyone else. Athens City takes non-residents through a separate application entirely. Nobody puts these facts on the same page, because the people writing about Huntsville schools are selling houses.",
   mechanism:
-    "This is not a ranking. Rankings are opinions with a number attached. This is the underlying material: what each system publishes, linked to its official source and the date we verified it. Where a fact couldn't be confirmed from an official source, it says so.",
+    "This is not a ranking. Rankings are opinions with a number attached. This is sourced assembly: what each system publishes, linked to its official source and the date we verified it. Where a fact couldn't be confirmed from an official source, it says so.",
   zonePromise:
     "The Zone Promise. If your address isn't covered, or a deadline in this guide turns out to be wrong on the day you call, email us and we'll refund you in full — and fix it for everyone else the same week.",
   whoBuiltThis:
@@ -41,7 +62,7 @@ export const salesCopy = {
     {
       question: "Do I need the Toolkit?",
       answer:
-        "If the Guide is enough, buy the Guide. The Toolkit tier is optional. It is not required to read the Five Systems material.",
+        "If the Guide is enough, buy the Guide. The Toolkit tier is optional. It is Toolkit access — on-page checklists — not a five-worksheet pack. It is not required to read the Five Systems material.",
     },
   ],
   faq: [

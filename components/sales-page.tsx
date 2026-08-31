@@ -6,27 +6,60 @@ import { MobileBuyBar } from "@/components/mobile-buy-bar";
 import { Pricing } from "@/components/pricing";
 import { SampleOptInForm } from "@/components/sample-opt-in-form";
 import { salesCopy } from "@/lib/sales";
-import { edition, hero, namedSources, officialPortals, site } from "@/lib/site";
+import { edition, hero, namedSources, officialPortals } from "@/lib/site";
+
+function GuideBuyCard({
+  showGuarantee,
+  showTiersLink,
+}: {
+  showGuarantee?: boolean;
+  showTiersLink?: boolean;
+}) {
+  return (
+    <div className="max-w-sm rounded-lg border border-border bg-surface px-5 py-5 sm:px-6 sm:py-6">
+      <p className="font-sans text-[32px] font-semibold leading-none text-text">$79</p>
+      <CheckoutForm
+        tierId="79"
+        label={hero.cta}
+        variant="brick"
+        className="mt-4"
+      />
+      {showGuarantee ? (
+        <p className="mt-3 text-sm font-normal leading-snug text-text-muted">
+          {salesCopy.heroRiskReversal}
+        </p>
+      ) : null}
+      {showTiersLink ? (
+        <p className="mt-4 text-sm font-normal text-text-muted">
+          <Link href="#pricing" className="text-action hover:underline">
+            See all three tiers
+          </Link>
+        </p>
+      ) : null}
+    </div>
+  );
+}
 
 export function SalesPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-16 sm:py-24 max-md:pb-28">
+    <div className="mx-auto w-full max-w-4xl px-6 pt-6 pb-28 sm:pt-16 sm:pb-24 max-md:pb-28">
       <Suspense fallback={null}>
         <CheckoutNotice />
       </Suspense>
       <section aria-labelledby="hero-heading">
-        <p className="text-sm uppercase tracking-[0.18em] text-text-muted">{site.name}</p>
-        <p className="mt-2 text-sm text-text-muted">{edition} edition</p>
+        <p className="text-sm text-text-muted">
+          {edition} edition · five systems · Huntsville metro
+        </p>
         <h1
           id="hero-heading"
-          className="mt-5 max-w-3xl font-sans text-[32px] font-semibold leading-tight text-text sm:text-[48px]"
+          className="mt-3 max-w-3xl font-sans text-[32px] font-semibold leading-tight text-text sm:mt-5 sm:text-[48px]"
         >
           {hero.headline}
         </h1>
-        <p className="mt-6 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
+        <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:mt-6 sm:text-lg">
           {hero.subhead}
         </p>
-        <p className="mt-6 max-w-2xl text-sm leading-relaxed text-text-muted">
+        <p className="mt-3 max-w-2xl text-sm leading-snug text-text-muted">
           Sourced from the{" "}
           <a
             href={namedSources.alsdeReportCard.href}
@@ -34,47 +67,36 @@ export function SalesPage() {
           >
             {namedSources.alsdeReportCard.label}
           </a>
-          ,{" "}
+          {" "}and{" "}
           <a href={namedSources.nces.href} className="text-action hover:underline">
             {namedSources.nces.label}
           </a>
-          , each district&apos;s own published policy, and the schools themselves.
-          Every claim is linked. Nothing here is a star rating.
+          . Every claim is linked. Nothing here is a star rating.
         </p>
-        <ul className="mt-2 max-w-2xl space-y-0.5 text-xs leading-snug text-text-muted">
-          {officialPortals.map((portal) => (
-            <li key={portal.href}>
-              <a href={portal.href} className="text-text-muted hover:underline">
-                {portal.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8 max-w-sm rounded-lg border border-border bg-surface px-6 py-6">
-          <p className="font-sans text-[32px] font-semibold leading-none text-text">$79</p>
-          <CheckoutForm
-            tierId="79"
-            label={hero.cta}
-            variant="brick"
-            className="mt-4"
-          />
-          <p className="mt-3 text-sm font-normal text-text-muted">{hero.guarantee}</p>
+        <div className="mt-5 sm:mt-8">
+          <GuideBuyCard showGuarantee />
         </div>
       </section>
 
-      <section aria-labelledby="problem-heading" className="mt-20">
+      <section aria-labelledby="problem-heading" className="mt-16 sm:mt-20">
         <h2 id="problem-heading" className="font-sans text-2xl font-semibold text-text">
           The problem
         </h2>
         <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
           {salesCopy.problem}
         </p>
+        <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
+          {salesCopy.problemDetail}
+        </p>
       </section>
 
-      <section aria-labelledby="free-guides-heading" className="mt-20">
-        <h2 id="free-guides-heading" className="font-sans text-2xl font-semibold text-text">
-          Why free guides fail
+      <section aria-labelledby="mechanism-heading" className="mt-16 sm:mt-20">
+        <h2 id="mechanism-heading" className="font-sans text-2xl font-semibold text-text">
+          How this is built
         </h2>
+        <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
+          {salesCopy.mechanism}
+        </p>
         {salesCopy.whyFreeGuidesFail.map((paragraph) => (
           <p
             key={paragraph}
@@ -83,20 +105,23 @@ export function SalesPage() {
             {paragraph}
           </p>
         ))}
-      </section>
-
-      <section aria-labelledby="mechanism-heading" className="mt-20">
-        <h2 id="mechanism-heading" className="font-sans text-2xl font-semibold text-text">
-          How this is built
-        </h2>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
-          {salesCopy.mechanism}
+        <ul className="mt-4 max-w-2xl space-y-1 text-sm leading-snug text-text-muted">
+          {officialPortals.map((portal) => (
+            <li key={portal.href}>
+              <a href={portal.href} className="text-action hover:underline">
+                {portal.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-6 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
+          {salesCopy.whoBuiltThis}
         </p>
       </section>
 
-      <section aria-labelledby="modules-heading" className="mt-20">
-        <h2 id="modules-heading" className="font-sans text-2xl font-semibold text-text">
-          What&apos;s in the Guide
+      <section aria-labelledby="offer-heading" className="mt-16 sm:mt-20">
+        <h2 id="offer-heading" className="font-sans text-2xl font-semibold text-text">
+          What you get
         </h2>
         {salesCopy.whatsInTheGuide.map((paragraph) => (
           <p
@@ -106,15 +131,18 @@ export function SalesPage() {
             {paragraph}
           </p>
         ))}
-      </section>
-
-      <section aria-labelledby="sample-heading" className="mt-20">
-        <h2 id="sample-heading" className="font-sans text-2xl font-semibold text-text">
-          Free sample
-        </h2>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
-          Leave an email and get the full Huntsville City Schools district
-          profile. You can also read it on the{" "}
+        <ul className="mt-6 max-w-2xl space-y-4">
+          {salesCopy.offerStack.map((item) => (
+            <li key={item.name}>
+              <p className="font-sans text-lg font-semibold text-text">{item.name}</p>
+              <p className="mt-1 text-base font-normal leading-relaxed text-text-muted">
+                {item.detail}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-6 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
+          Preview first: the Huntsville City Schools profile is free on the{" "}
           <Link href="/sample" className="text-action hover:underline">
             sample page
           </Link>
@@ -123,36 +151,11 @@ export function SalesPage() {
         <SampleOptInForm className="mt-6 max-w-md" />
       </section>
 
-      <section aria-labelledby="who-heading" className="mt-20">
-        <h2 id="who-heading" className="font-sans text-2xl font-semibold text-text">
-          Who built this
-        </h2>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
-          {salesCopy.whoBuiltThis}
-        </p>
-      </section>
-
-      <section aria-labelledby="objections-heading" className="mt-20">
-        <h2 id="objections-heading" className="font-sans text-2xl font-semibold text-text">
-          Objections
-        </h2>
-        <dl className="mt-6 max-w-2xl space-y-8">
-          {salesCopy.objections.map((item) => (
-            <div key={item.question}>
-              <dt className="font-sans text-xl font-semibold text-text">{item.question}</dt>
-              <dd className="mt-3 text-base font-normal leading-relaxed text-text-muted sm:text-lg">
-                {item.answer}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
       <Pricing />
 
-      <section aria-labelledby="guarantee-heading" className="mt-20">
+      <section aria-labelledby="guarantee-heading" className="mt-16 sm:mt-20">
         <h2 id="guarantee-heading" className="font-sans text-2xl font-semibold text-text">
-          Guarantee
+          Risk reversal
         </h2>
         <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
           30-day unconditional money-back. If you want a refund, email us
@@ -165,14 +168,17 @@ export function SalesPage() {
         <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
           {salesCopy.zonePromise}
         </p>
+        <div className="mt-6">
+          <GuideBuyCard showGuarantee />
+        </div>
       </section>
 
-      <section aria-labelledby="faq-heading" className="mt-20">
+      <section aria-labelledby="faq-heading" className="mt-16 sm:mt-20">
         <h2 id="faq-heading" className="font-sans text-2xl font-semibold text-text">
           FAQ
         </h2>
         <dl className="mt-6 max-w-2xl space-y-8">
-          {salesCopy.faq.map((item) => (
+          {[...salesCopy.objections, ...salesCopy.faq].map((item) => (
             <div key={item.question}>
               <dt className="font-sans text-xl font-semibold text-text">{item.question}</dt>
               <dd className="mt-3 text-base font-normal leading-relaxed text-text-muted sm:text-lg">
@@ -183,23 +189,12 @@ export function SalesPage() {
         </dl>
       </section>
 
-      <section aria-labelledby="final-cta-heading" className="mt-20 border-t border-border pt-16">
+      <section aria-labelledby="final-cta-heading" className="mt-16 border-t border-border pt-16 sm:mt-20">
         <h2 id="final-cta-heading" className="font-sans text-2xl font-semibold text-text">
           Get the Guide
         </h2>
-        <div className="mt-6 max-w-sm rounded-lg border border-border bg-surface px-6 py-6">
-          <p className="font-sans text-[32px] font-semibold leading-none text-text">$79</p>
-          <CheckoutForm
-            tierId="79"
-            label={hero.cta}
-            variant="brick"
-            className="mt-4"
-          />
-          <p className="mt-4 text-sm font-normal text-text-muted">
-            <Link href="#pricing" className="text-action hover:underline">
-              See all three tiers
-            </Link>
-          </p>
+        <div className="mt-6">
+          <GuideBuyCard showGuarantee showTiersLink />
         </div>
       </section>
       <MobileBuyBar />
