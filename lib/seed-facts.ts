@@ -53,6 +53,24 @@ export const FACT_FIELD_LABELS: Record<string, string> = {
   non_resident_tuition: "Non-resident tuition",
   grades: "Grades",
   admissions_email: "Admissions email",
+  church_school_definition: "Church school (cover school)",
+  church_school_enrollment: "Church-school enrollment filing",
+  private_tutor_notice: "Private-tutor notice",
+  private_tutor_hours: "Private-tutor hours",
+  attendance_register: "Attendance register",
+  home_education_options: "Home-education options",
+  official_portal: "Official portal",
+  applications_2026_27: "2026–27 applications",
+  approved_2026_27: "2026–27 approvals",
+  esa_participating_school: "ESA — participating school",
+  esa_home_education: "ESA — home education",
+  application_window_2026_27: "2026–27 application window",
+  next_cycle: "Next application cycle",
+  income_cap_removal: "2027–28 income-cap removal",
+  education_freedom_eo: "Federal Education Freedom EO",
+  still_active: "Program status",
+  individual_phone: "Individual inquiries",
+  corporate_phone: "Corporate inquiries",
 };
 
 export function fieldLabel(field: string): string {
@@ -79,7 +97,7 @@ export function isHttpUrl(value: string): boolean {
 
 // Mirrors supabase/migrations/20260830120100_seed_sourced_facts.sql.
 // Static pages read this catalog so they never call cookies() or the gated facts table.
-export const seedFacts: readonly SeedFact[] = [
+const EXISTING_SEED_FACTS: readonly SeedFact[] = [
   {
     entity_type: "district",
     entity_slug: "huntsville-city",
@@ -568,6 +586,236 @@ export const seedFacts: readonly SeedFact[] = [
     verified_at: "2026-08-01",
     verification_method: "official_page",
   },
+];
+
+const ED_GOV_AL_HOMESCHOOL =
+  "https://www.ed.gov/birth-grade-12-education/education-choice/state-regulation-of-private-and-home-schools/alabama-state-regulations-of-private-and-home-schools";
+const IVEY_CHOOSE_APPLICATIONS_2026_04 =
+  "https://governor.alabama.gov/newsroom/2026/04/governor-ivey-announces-record-choose-act-applications-for-2026-27-school-year/";
+const IVEY_CHOOSE_FUNDING_2026_07 =
+  "https://governor.alabama.gov/newsroom/2026/07/governor-ivey-announces-funding-for-choose-act-education-savings-accounts-for-2026-2027-school-year/";
+const CHOOSE_ACT_2024_311 =
+  "https://www.revenue.alabama.gov/wp-content/uploads/2024/03/CHOOSE-Act-2024-21.pdf";
+const CHOOSE_PORTAL = "https://chooseact.alabama.gov";
+const DOR_ACCOUNTABILITY_ACT =
+  "https://www.revenue.alabama.gov/individual-corporate/alabama-accountability-act/";
+const IVEY_EDUCATION_FREEDOM_EO =
+  "https://governor.alabama.gov/newsroom/2026/01/governor-ivey-signs-executive-order-confirming-alabamas-participation-in-federal-education-freedom-tax-credit-program/";
+
+// Mirrors supabase/migrations/20260831040000_seed_c014_c017_c018_facts.sql.
+export const MODULE_FILL_FACTS: readonly SeedFact[] = [
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-homeschool",
+    field: "name",
+    value: "Alabama homeschool and cover schools",
+    source_url: ED_GOV_AL_HOMESCHOOL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-homeschool",
+    field: "home_education_options",
+    value:
+      "A home school can seek qualification as a private school, a church school, or under the private tutor option (Code of Alabama 1975 §§16-28-1(1), 16-28-1(2), 16-28-5).",
+    source_url: ED_GOV_AL_HOMESCHOOL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-homeschool",
+    field: "church_school_definition",
+    value:
+      "A church school (often called a cover school) is a school operated on-site or through home programs as a ministry of a local church, group of churches, denomination, and/or association of churches that does not receive any state or federal funding (Code of Alabama 1975 §16-28-1(2)).",
+    source_url: ED_GOV_AL_HOMESCHOOL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-homeschool",
+    field: "church_school_enrollment",
+    value:
+      "Documentation of a child's enrollment and attendance in a church school must be filed with the local public school superintendent by the parent or guardian on a form provided by the superintendent or his agent (Code of Alabama 1975 §16-28-7).",
+    source_url: ED_GOV_AL_HOMESCHOOL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-homeschool",
+    field: "private_tutor_notice",
+    value:
+      "Before private-tutor instruction begins, a statement must be filed with the local county or city superintendent showing the child or children to be instructed, the subjects to be taught, and the period of instruction (Code of Alabama 1975 §16-28-5).",
+    source_url: ED_GOV_AL_HOMESCHOOL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-homeschool",
+    field: "private_tutor_hours",
+    value:
+      "Private-tutor instruction must be at least three hours a day for 140 days each calendar year, between 8:00 A.M. and 4:00 P.M., in English, by a person who holds a certificate issued by the state superintendent of education (Code of Alabama 1975 §16-28-5).",
+    source_url: ED_GOV_AL_HOMESCHOOL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-homeschool",
+    field: "attendance_register",
+    value:
+      "The principal teacher of private and church schools must keep an attendance register showing the enrollment of the school and every absence of each enrolled child from school for a half-day or more (Code of Alabama 1975 §16-28-8).",
+    source_url: ED_GOV_AL_HOMESCHOOL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "name",
+    value: "Alabama CHOOSE Act",
+    source_url: CHOOSE_PORTAL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "official_portal",
+    value:
+      "chooseact.alabama.gov redirects to ClassWallet at https://classwallet.com/alchoose/",
+    source_url: CHOOSE_PORTAL,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "applications_2026_27",
+    value:
+      "29,341 applications representing 48,927 students for 2026–27",
+    source_url: IVEY_CHOOSE_APPLICATIONS_2026_04,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "approved_2026_27",
+    value:
+      "Over 34,000 students approved, equating to over $174 million in ESAs for 2026–27",
+    source_url: IVEY_CHOOSE_FUNDING_2026_07,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "esa_participating_school",
+    value:
+      "$7,000 per participating student enrolled in a participating school",
+    source_url: IVEY_CHOOSE_FUNDING_2026_07,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "esa_home_education",
+    value:
+      "$2,000 per participating student enrolled in a home education program (maximum of $4,000 per family)",
+    source_url: IVEY_CHOOSE_FUNDING_2026_07,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "application_window_2026_27",
+    value:
+      "The 2026–27 application officially closed at midnight on March 31, 2026",
+    source_url: IVEY_CHOOSE_APPLICATIONS_2026_04,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "next_cycle",
+    value:
+      "The application process for the 2027–28 academic year will begin in January 2027",
+    source_url: IVEY_CHOOSE_FUNDING_2026_07,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "income_cap_removal",
+    value:
+      "For years beginning January 1, 2025 and January 1, 2026 the credit is available to a parent of an eligible student whose family AGI did not exceed 300 percent of the federal poverty level for the preceding tax year. For years beginning on or after January 1, 2027 the credit is available to any parent of an eligible student; income is an allocation priority, not an eligibility gate (HB129, Ala. Act 2024-311).",
+    source_url: CHOOSE_ACT_2024_311,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-choose-act",
+    field: "education_freedom_eo",
+    value:
+      "Governor Ivey signed Executive Order No. 742 in January 2026 confirming Alabama participation in a federal Education Freedom tax credit program. This edition does not publish program amounts or rules while that federal program is still evolving.",
+    source_url: IVEY_EDUCATION_FREEDOM_EO,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-accountability-act",
+    field: "name",
+    value: "Alabama Accountability Act",
+    source_url: DOR_ACCOUNTABILITY_ACT,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-accountability-act",
+    field: "still_active",
+    value:
+      "The Alabama Accountability Act remains in effect. It established a scholarship program for low income students to attend public or private schools. Tax-deductible donations for scholarships are managed by Scholarship Granting Organizations (SGOs).",
+    source_url: DOR_ACCOUNTABILITY_ACT,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-accountability-act",
+    field: "individual_phone",
+    value:
+      "334-353-0602 / 334-353-9770 (individual taxpayers needing assistance with My Alabama Taxes or reserving an SGO tax credit)",
+    source_url: DOR_ACCOUNTABILITY_ACT,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-accountability-act",
+    field: "corporate_phone",
+    value:
+      "334-242-1200 (corporate taxpayers needing assistance with My Alabama Taxes or reserving an SGO tax credit)",
+    source_url: DOR_ACCOUNTABILITY_ACT,
+    verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+];
+
+export const seedFacts: readonly SeedFact[] = [
+  ...EXISTING_SEED_FACTS,
+  ...MODULE_FILL_FACTS,
 ];
 
 export function seedFactsMatching(
