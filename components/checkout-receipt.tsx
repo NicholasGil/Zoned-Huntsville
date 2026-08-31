@@ -30,6 +30,9 @@ function ReceiptRow({
 function ReceiptLinks() {
   return (
     <p className="mt-8 flex flex-wrap gap-x-5 gap-y-2">
+      <Link href="/#pricing" className="text-brick hover:underline">
+        Return to pricing
+      </Link>
       <Link href="/account" className="text-brick hover:underline">
         Account
       </Link>
