@@ -14,6 +14,8 @@ export function Pricing() {
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {pricingTiers.map((tier) => {
           const isTarget = tier.prominence === "target";
+          const label =
+            tier.id === "79" ? hero.cta : `Continue to checkout — $${tier.amountUsd}`;
 
           return (
             <article
@@ -39,6 +41,7 @@ export function Pricing() {
               {tier.id === "349" ? <CallSlotsRemaining /> : null}
               <CheckoutForm
                 tierId={tier.id}
+                label={label}
                 variant={isTarget ? "brick-full" : "ink"}
                 className="mt-6"
               />

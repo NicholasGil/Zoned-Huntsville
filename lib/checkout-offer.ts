@@ -38,6 +38,21 @@ export function checkoutOffer(tierId: PricingTierId) {
     productTier,
     tierLabel,
     amountUsd: tier.amountUsd,
-    payCta: `Pay $${tier.amountUsd} — ${tierLabel}`,
+    unitAmountCents: tier.amountUsd * 100,
+  };
+}
+
+export function stripeCheckoutLineItem(tierId: PricingTierId) {
+  const offer = checkoutOffer(tierId);
+  return {
+    quantity: 1 as const,
+    price_data: {
+      currency: "usd" as const,
+      unit_amount: offer.unitAmountCents,
+      product_data: {
+        name: offer.productName,
+        description: offer.tierLabel,
+      },
+    },
   };
 }

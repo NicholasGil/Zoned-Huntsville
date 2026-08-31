@@ -1,4 +1,3 @@
-import { checkoutOffer } from "@/lib/checkout-offer";
 import type { PricingTierId } from "@/lib/site";
 
 export function CheckoutForm({
@@ -8,15 +7,10 @@ export function CheckoutForm({
   className,
 }: {
   tierId: PricingTierId;
-  label?: string;
+  label: string;
   variant: "brick" | "ink" | "brick-full";
   className?: string;
 }) {
-  const offer = checkoutOffer(tierId);
-  const buttonLabel = label ?? offer.payCta;
-  const restatementId = `checkout-restate-${tierId}`;
-  const showRestatement = label === undefined;
-
   const buttonClass =
     variant === "ink"
       ? "w-full border border-ink px-4 py-2.5 text-sm text-ink hover:bg-ink hover:text-paper"
@@ -27,21 +21,8 @@ export function CheckoutForm({
   return (
     <form action="/api/checkout" method="post" className={className}>
       <input type="hidden" name="tier" value={tierId} />
-      {showRestatement ? (
-        <p id={restatementId} className="mb-3 text-sm text-muted">
-          {offer.productName}
-          <span className="mx-2 text-rule">·</span>
-          {offer.tierLabel}
-          <span className="mx-2 text-rule">·</span>
-          ${offer.amountUsd}
-        </p>
-      ) : null}
-      <button
-        type="submit"
-        className={buttonClass}
-        aria-describedby={showRestatement ? restatementId : undefined}
-      >
-        {buttonLabel}
+      <button type="submit" className={buttonClass}>
+        {label}
       </button>
     </form>
   );

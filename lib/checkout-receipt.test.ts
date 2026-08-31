@@ -1,20 +1,44 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { checkoutOffer } from "./checkout-offer.ts";
+import { checkoutOffer, stripeCheckoutLineItem } from "./checkout-offer.ts";
 import {
   mapCheckoutSession,
   receiptHasInventedAmount,
   unavailableReceipt,
 } from "./checkout-receipt.ts";
 
-describe("checkoutOffer", () => {
-  it("restates only the three catalog prices on the pay CTA", () => {
-    assert.equal(checkoutOffer("79").payCta, "Pay $79 — Guide");
-    assert.equal(checkoutOffer("149").payCta, "Pay $149 — Toolkit");
-    assert.equal(checkoutOffer("349").payCta, "Pay $349 — Call");
-    assert.equal(checkoutOffer("79").productName, "The Huntsville School Guide");
+describe("stripeCheckoutLineItem", () => {
+  it("names the product and maps only the three catalog prices", () => {
+    assert.deepEqual(stripeCheckoutLineItem("79"), {
+      quantity: 1,
+      price_data: {
+        currency: "usd",
+        unit_amount: 7900,
+        product_data: {
+          name: "The Huntsville School Guide",
+          description: "Guide",
+        },
+      },
+    });
+    assert.deepEqual(stripeCheckoutLineItem("149").price_data, {
+      currency: "usd",
+      unit_amount: 14900,
+      product_data: {
+        name: "The Huntsville School Guide",
+        description: "Toolkit",
+      },
+    });
+    assert.deepEqual(stripeCheckoutLineItem("349").price_data, {
+      currency: "usd",
+      unit_amount: 34900,
+      product_data: {
+        name: "The Huntsville School Guide",
+        description: "Call",
+      },
+    });
+    assert.equal(checkoutOffer("79").amountUsd, 79);
     assert.equal(checkoutOffer("149").amountUsd, 149);
-    assert.equal(checkoutOffer("349").tierLabel, "Call");
+    assert.equal(checkoutOffer("349").amountUsd, 349);
   });
 });
 
