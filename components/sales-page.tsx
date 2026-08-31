@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { CheckoutForm } from "@/components/checkout-form";
 import { CheckoutNotice } from "@/components/checkout-notice";
+import { MobileBuyBar } from "@/components/mobile-buy-bar";
 import { Pricing } from "@/components/pricing";
 import { SampleOptInForm } from "@/components/sample-opt-in-form";
 import { salesCopy } from "@/lib/sales";
@@ -9,7 +10,7 @@ import { edition, hero, namedSources, officialPortals, site } from "@/lib/site";
 
 export function SalesPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-16 sm:py-24">
+    <div className="mx-auto w-full max-w-4xl px-6 py-16 sm:py-24 max-md:pb-28">
       <Suspense fallback={null}>
         <CheckoutNotice />
       </Suspense>
@@ -201,6 +202,7 @@ export function SalesPage() {
           </p>
         </div>
       </section>
+      <MobileBuyBar />
     </div>
   );
 }
