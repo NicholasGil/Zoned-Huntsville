@@ -261,7 +261,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     assert.equal(privacySource.includes("P.O. Box"), false);
     assert.equal(termsSource.includes("P.O. Box"), false);
     assert.match(privacySource, /Entitlement rows stay/);
-    assert.match(privacySource, /leads table/);
+    assert.match(privacySource, /leads\s+table/);
     assert.equal(
       privacySource.includes("retention schedule for leads and entitlements"),
       false,
