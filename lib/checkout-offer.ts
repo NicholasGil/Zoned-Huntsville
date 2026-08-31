@@ -62,3 +62,16 @@ export function stripeCheckoutLineItem(tierId: PricingTierId) {
     },
   };
 }
+
+export function stripeCheckoutSessionParams(
+  tierId: PricingTierId,
+  siteUrl: string,
+) {
+  return {
+    mode: "payment" as const,
+    line_items: [stripeCheckoutLineItem(tierId)],
+    success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${siteUrl}/`,
+    metadata: { tier: tierId },
+  };
+}

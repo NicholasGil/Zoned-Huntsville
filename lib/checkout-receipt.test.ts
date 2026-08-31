@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { checkoutOffer, stripeCheckoutLineItem } from "./checkout-offer.ts";
+import {
+  checkoutOffer,
+  stripeCheckoutLineItem,
+  stripeCheckoutSessionParams,
+} from "./checkout-offer.ts";
 import {
   mapCheckoutSession,
   mapLastPayment,
@@ -40,6 +44,22 @@ describe("stripeCheckoutLineItem", () => {
     assert.equal(checkoutOffer("79").amountUsd, 79);
     assert.equal(checkoutOffer("149").amountUsd, 149);
     assert.equal(checkoutOffer("349").amountUsd, 349);
+  });
+
+  it("keeps mode payment, catalog unit_amounts, and metadata.tier 79|149|349", () => {
+    const expected = [
+      ["79", 7900],
+      ["149", 14900],
+      ["349", 34900],
+    ] as const;
+
+    for (const [tier, unitAmount] of expected) {
+      const params = stripeCheckoutSessionParams(tier, "https://example.com");
+      assert.equal(params.mode, "payment");
+      assert.equal(params.metadata.tier, tier);
+      assert.equal(params.line_items[0]?.price_data.currency, "usd");
+      assert.equal(params.line_items[0]?.price_data.unit_amount, unitAmount);
+    }
   });
 });
 
