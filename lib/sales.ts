@@ -58,7 +58,7 @@ export const salesCopy = {
     {
       question: "What is the Toolkit?",
       answer:
-        "The $149 tier adds Toolkit access on top of the Guide. This edition does not include a downloadable worksheet pack. The $349 tier adds one 45-minute video call with Nicholas.",
+        "The $149 tier adds Toolkit access on top of the Guide. The Toolkit is on-page printable checklists built from sourced facts already in the Guide. This edition does not include a downloadable PDF pack. The $349 tier adds one 45-minute video call with Nicholas.",
     },
     {
       question: "Why is the call capped?",
