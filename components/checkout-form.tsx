@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { PricingTierId } from "@/lib/site";
 
@@ -14,20 +15,23 @@ const busyLabel = "Sending you to checkout…";
 function CheckoutSubmitButton({
   label,
   buttonClass,
+  submitting,
 }: {
   label: string;
   buttonClass: string;
+  submitting: boolean;
 }) {
   const { pending } = useFormStatus();
+  const busy = pending || submitting;
 
   return (
     <button
       type="submit"
-      disabled={pending}
-      aria-busy={pending}
+      disabled={busy}
+      aria-busy={busy}
       className={`${buttonClass} disabled:opacity-60`}
     >
-      {pending ? busyLabel : label}
+      {busy ? busyLabel : label}
     </button>
   );
 }
@@ -47,11 +51,21 @@ export function CheckoutForm({
     variant === "ink"
       ? `w-full min-h-11 rounded-md border border-text bg-transparent px-6 py-3 text-sm font-semibold text-text hover:border-action ${focusRing}`
       : `w-full ${primaryFill}`;
+  const [submitting, setSubmitting] = useState(false);
 
   return (
-    <form action="/api/checkout" method="post" className={className}>
+    <form
+      action="/api/checkout"
+      method="post"
+      className={className}
+      onSubmit={() => setSubmitting(true)}
+    >
       <input type="hidden" name="tier" value={tierId} />
-      <CheckoutSubmitButton label={label} buttonClass={buttonClass} />
+      <CheckoutSubmitButton
+        label={label}
+        buttonClass={buttonClass}
+        submitting={submitting}
+      />
     </form>
   );
 }
