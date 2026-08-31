@@ -21,7 +21,7 @@ export function CallSlotsRemaining() {
 
   if (slot?.kind === "row") {
     return (
-      <p className="mt-3 text-sm text-muted" aria-live="polite">
+      <p className="mt-3 text-sm text-text-muted" aria-live="polite">
         {slot.remaining} of {slot.capacity} call slots remaining this month.
       </p>
     );
@@ -29,7 +29,7 @@ export function CallSlotsRemaining() {
 
   if (slot?.kind === "unavailable") {
     return (
-      <p className="mt-3 text-sm text-muted">
+      <p className="mt-3 text-sm text-text-muted">
         Four slots each month. Remaining is counted from this month&apos;s paid,
         non-refunded call purchases. The count is not available until that
         ledger is connected.
@@ -38,7 +38,7 @@ export function CallSlotsRemaining() {
   }
 
   return (
-    <p className="mt-3 text-sm text-muted">
+    <p className="mt-3 text-sm text-text-muted">
       Four slots each month. Remaining is counted from this month&apos;s paid,
       non-refunded call purchases.
     </p>

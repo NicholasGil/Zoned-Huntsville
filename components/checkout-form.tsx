@@ -13,10 +13,10 @@ export function CheckoutForm({
 }) {
   const buttonClass =
     variant === "ink"
-      ? "w-full border border-ink px-4 py-2.5 text-sm text-ink hover:bg-ink hover:text-paper"
+      ? "w-full border border-text px-4 py-2.5 text-sm text-text hover:bg-text hover:text-surface"
       : variant === "brick-full"
-        ? "w-full bg-brick px-4 py-2.5 text-sm text-paper hover:bg-brick-dark"
-        : "bg-brick px-5 py-2.5 text-sm text-paper hover:bg-brick-dark";
+        ? "w-full bg-action px-4 py-2.5 text-sm text-text-on-action hover:bg-action-hover"
+        : "bg-action px-5 py-2.5 text-sm text-text-on-action hover:bg-action-hover";
 
   return (
     <form action="/api/checkout" method="post" className={className}>
