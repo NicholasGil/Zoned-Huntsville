@@ -6,7 +6,6 @@ import {
   HCS_MAGNET_SLUGS,
   ZONE_MAGNET_REG_FACTS,
   factKey,
-  isHttpUrl,
   seedFacts,
   seedFactsMatching,
 } from "./seed-facts.ts";
