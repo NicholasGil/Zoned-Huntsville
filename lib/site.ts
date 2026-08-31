@@ -38,10 +38,9 @@ export const namedSources = {
 } as const;
 
 export const hero = {
-  headline:
-    "Huntsville has five school systems. Your address decides which one you get — and the map isn't the one you think.",
+  headline: "Know which system your address gets — before you sign.",
   subhead:
-    "The paid Guide is the 2026–27 edition. What is sourced now is The Five Systems — Huntsville City, Madison City, Madison County, Athens City, and Limestone County — each fact linked to its official source and stamped with the date we verified it. Remaining modules are marked until they are sourced. The Huntsville City profile is free. Built for families moving here on a ninety-day clock.",
+    "The 2026–27 Guide: what Huntsville's five systems publish, linked and dated. Not a ranking.",
   cta: "Get the Guide — $79",
   guarantee: "30-day money-back guarantee",
   credibility:
