@@ -1,29 +1,56 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: var(--font-newsreader), "Times New Roman", serif;
-  --font-sans: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
-  --color-paper: #f4efe6;
-  --color-paper-raised: #ebe4d6;
-  --color-ink: #1a1714;
-  --color-muted: #6b6258;
-  --color-rule: #d4cbb8;
-  --color-brick: #8b3a2a;
-  --color-brick-dark: #6e2d21;
+  --font-sans: var(--font-ibm-plex-sans), "IBM Plex Sans", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-n-0: #ffffff;
+  --color-n-1: #f6f7f9;
+  --color-n-2: #eef0f3;
+  --color-n-3: #d8dce3;
+  --color-n-4: #b4bbc6;
+  --color-n-5: #8b93a0;
+  --color-n-6: #5a616c;
+  --color-n-7: #3a4049;
+  --color-n-8: #14171c;
+
+  --color-blue-500: #1e4d7a;
+  --color-blue-600: #163a5c;
+  --color-blue-700: #0f2942;
+  --color-red-600: #9b2c2c;
+  --color-yellow-400: #ffbf47;
+
+  --color-page: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-surface-raised: #eef0f3;
+  --color-border: #d8dce3;
+  --color-text: #14171c;
+  --color-text-muted: #5a616c;
+  --color-text-on-action: #ffffff;
+  --color-action: #1e4d7a;
+  --color-action-hover: #163a5c;
+  --color-action-active: #0f2942;
+  --color-danger: #9b2c2c;
+  --color-focus: #ffbf47;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 html {
-  background: var(--color-paper);
+  background: var(--color-page);
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-page);
+  color: var(--color-text);
   font-family: var(--font-sans);
 }
 
 h1,
 h2,
 h3 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
 }

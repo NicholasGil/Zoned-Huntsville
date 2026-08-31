@@ -1,5 +1,11 @@
 import type { PricingTierId } from "@/lib/site";
 
+const focusRing =
+  "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+
+const primaryFill =
+  `min-h-11 rounded-md bg-action px-6 py-3 text-sm font-semibold text-text-on-action hover:bg-action-hover active:bg-action-active ${focusRing}`;
+
 export function CheckoutForm({
   tierId,
   label,
@@ -13,10 +19,8 @@ export function CheckoutForm({
 }) {
   const buttonClass =
     variant === "ink"
-      ? "w-full border border-ink px-4 py-2.5 text-sm text-ink hover:bg-ink hover:text-paper"
-      : variant === "brick-full"
-        ? "w-full bg-brick px-4 py-2.5 text-sm text-paper hover:bg-brick-dark"
-        : "bg-brick px-5 py-2.5 text-sm text-paper hover:bg-brick-dark";
+      ? `w-full min-h-11 rounded-md border border-text bg-transparent px-6 py-3 text-sm font-semibold text-text hover:border-action ${focusRing}`
+      : `w-full ${primaryFill}`;
 
   return (
     <form action="/api/checkout" method="post" className={className}>

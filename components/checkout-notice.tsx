@@ -20,7 +20,7 @@ export function CheckoutNotice() {
   const message = messages[code] ?? "Checkout could not start.";
 
   return (
-    <p className="mb-8 border border-brick px-4 py-3 text-sm text-brick" role="alert">
+    <p className="mb-8 border border-danger px-4 py-3 text-sm text-danger" role="alert">
       {message}
     </p>
   );

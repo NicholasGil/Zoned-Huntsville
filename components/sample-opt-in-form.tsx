@@ -10,7 +10,7 @@ export function SampleOptInForm({ className = "mt-10 max-w-md" }: { className?: 
 
   return (
     <form action={action} className={className}>
-      <label htmlFor="sample-email" className="block text-sm text-ink">
+      <label htmlFor="sample-email" className="block text-sm text-text">
         Email
       </label>
       <input
@@ -19,22 +19,22 @@ export function SampleOptInForm({ className = "mt-10 max-w-md" }: { className?: 
         type="email"
         required
         autoComplete="email"
-        className="mt-2 w-full border border-rule bg-paper px-3 py-2"
+        className="mt-2 w-full border border-border bg-surface px-3 py-2"
       />
       <button
         type="submit"
         disabled={pending}
-        className="mt-4 bg-brick px-4 py-2.5 text-sm text-paper hover:bg-brick-dark disabled:opacity-60"
+        className="mt-4 min-h-11 rounded-md bg-action px-6 py-3 text-sm font-semibold text-text-on-action hover:bg-action-hover active:bg-action-active outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-60"
       >
         Email me the sample
       </button>
       {state.kind === "invalid-email" ? (
-        <p className="mt-4 text-sm text-brick" role="alert">
+        <p className="mt-4 text-sm text-danger" role="alert">
           That email address is not valid.
         </p>
       ) : null}
       {state.kind === "received" ? (
-        <p className="mt-4 text-sm text-muted" role="status">
+        <p className="mt-4 text-sm text-text-muted" role="status">
           Request received. The Huntsville City Schools profile will be sent to
           this address.
         </p>
