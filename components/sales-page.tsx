@@ -4,9 +4,8 @@ import { CheckoutForm } from "@/components/checkout-form";
 import { CheckoutNotice } from "@/components/checkout-notice";
 import { Pricing } from "@/components/pricing";
 import { SampleOptInForm } from "@/components/sample-opt-in-form";
-import { GUIDE_MODULES } from "@/lib/guide-modules";
 import { salesCopy } from "@/lib/sales";
-import { hero, site } from "@/lib/site";
+import { edition, hero, namedSources, officialPortals, site } from "@/lib/site";
 
 export function SalesPage() {
   return (
@@ -16,6 +15,7 @@ export function SalesPage() {
       </Suspense>
       <section aria-labelledby="hero-heading">
         <p className="text-sm uppercase tracking-[0.18em] text-muted">{site.name}</p>
+        <p className="mt-2 text-sm text-muted">{edition} edition</p>
         <h1
           id="hero-heading"
           className="mt-5 max-w-3xl font-serif text-4xl leading-tight text-ink sm:text-5xl"
@@ -23,7 +23,30 @@ export function SalesPage() {
           {hero.headline}
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">{hero.subhead}</p>
-        <p className="mt-6 max-w-2xl text-sm leading-relaxed text-muted">{hero.credibility}</p>
+        <p className="mt-6 max-w-2xl text-sm leading-relaxed text-muted">
+          Sourced from the{" "}
+          <a
+            href={namedSources.alsdeReportCard.href}
+            className="text-brick hover:underline"
+          >
+            {namedSources.alsdeReportCard.label}
+          </a>
+          ,{" "}
+          <a href={namedSources.nces.href} className="text-brick hover:underline">
+            {namedSources.nces.label}
+          </a>
+          , each district&apos;s own published policy, and the schools themselves.
+          Every claim is linked. Nothing here is a star rating.
+        </p>
+        <ul className="mt-3 max-w-2xl space-y-1 text-sm text-muted">
+          {officialPortals.map((portal) => (
+            <li key={portal.href}>
+              <a href={portal.href} className="text-brick hover:underline">
+                {portal.label}
+              </a>
+            </li>
+          ))}
+        </ul>
         <div className="mt-8">
           <p className="font-serif text-3xl text-ink">$79</p>
           <CheckoutForm
@@ -63,16 +86,13 @@ export function SalesPage() {
 
       <section aria-labelledby="modules-heading" className="mt-20">
         <h2 id="modules-heading" className="font-serif text-2xl text-ink">
-          Eight modules
+          What&apos;s in the Guide
         </h2>
-        <ol className="mt-6 max-w-2xl list-decimal space-y-4 pl-6 text-muted">
-          {GUIDE_MODULES.map((entry) => (
-            <li key={entry.slug}>
-              <span className="text-ink">{entry.title}</span>
-              <span className="mt-1 block text-sm">{entry.purpose}</span>
-            </li>
-          ))}
-        </ol>
+        {salesCopy.whatsInTheGuide.map((paragraph) => (
+          <p key={paragraph} className="mt-4 max-w-2xl leading-relaxed text-muted">
+            {paragraph}
+          </p>
+        ))}
       </section>
 
       <section aria-labelledby="sample-heading" className="mt-20">

@@ -5,11 +5,43 @@ export const site = {
   client: "Nicholas Gil",
 } as const;
 
+export const edition = "2026–27" as const;
+
+export const officialPortals = [
+  {
+    label: "Alabama Achieves Reports & Data",
+    href: "https://www.alabamaachieves.org/reports-data/",
+  },
+  {
+    label: "ALSDE State Report Card",
+    href: "https://statereportcard.alsde.edu",
+  },
+  {
+    label: "ALSDE School Report Card",
+    href: "https://reportcard.alsde.edu/SelectSchool.aspx",
+  },
+  {
+    label: "NCES district search",
+    href: "https://nces.ed.gov/ccd/districtsearch/",
+  },
+] as const;
+
+export const namedSources = {
+  alsdeReportCard: {
+    label: "Alabama State Department of Education report card",
+    href: "https://statereportcard.alsde.edu",
+  },
+  nces: {
+    label: "NCES",
+    href: "https://nces.ed.gov/ccd/districtsearch/",
+  },
+} as const;
+
 export const hero = {
   headline:
     "Huntsville has five school systems. Your address decides which one you get — and the map isn't the one you think.",
   subhead:
-    "Every district, every magnet, every private school, every deadline, and every registration document in one place — each fact linked to its official source and stamped with the date we verified it. Built for families moving here on a ninety-day clock.",
+    "The paid Guide is the 2026–27 edition. What is sourced now is The Five Systems — Huntsville City, Madison City, Madison County, Athens City, and Limestone County — each fact linked to its official source and stamped with the date we verified it. Remaining modules are marked until they are sourced. The Huntsville City profile is free. Built for families moving here on a ninety-day clock.",
   cta: "Get the Guide — $79",
   guarantee: "30-day money-back guarantee",
   credibility:
@@ -23,8 +55,8 @@ export const pricingTiers = [
     prominence: "default",
     name: "The Guide",
     includes: [
-      "Full guide, all districts, all schools, all programs.",
-      "Web-based, mobile-readable, lifetime access to the current edition.",
+      "The Guide: sourced Five Systems material. Remaining modules are marked until they are sourced.",
+      "Web-based, mobile-readable, lifetime access to the 2026–27 edition.",
     ],
   },
   {
@@ -34,11 +66,7 @@ export const pricingTiers = [
     name: "Guide + Toolkit",
     includes: [
       "Everything in the Guide.",
-      "School Comparison Worksheet (pre-filled).",
-      "Deadline Calendar.",
-      "Registration Document Checklist per district.",
-      "Call Script Pack.",
-      "Zone-vs-Listing cross-check worksheet.",
+      "Toolkit access.",
     ],
   },
   {
