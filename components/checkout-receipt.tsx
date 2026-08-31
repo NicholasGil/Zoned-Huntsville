@@ -45,29 +45,24 @@ function ReceiptLinks() {
 
 export function CheckoutReceiptView({
   receipt,
-  sessionId,
 }: {
   receipt: CheckoutReceipt;
-  sessionId: string | null;
 }) {
   if (receipt.kind === "unavailable") {
     return (
       <>
-        <h1 className="font-serif text-4xl text-ink">Purchase confirmation</h1>
+        <h1 className="font-serif text-4xl text-ink">Checkout not confirmed</h1>
         <p className="mt-4 max-w-xl text-muted">
-          We could not confirm a paid Stripe Checkout Session, so this page does
-          not show an amount.
+          This is not a completed order. We could not load a paid Stripe
+          Checkout Session, so this page does not show a product, tier, or
+          amount.
         </p>
         <p className="mt-4 max-w-xl text-muted">{UNAVAILABLE_COPY[receipt.reason]}</p>
         <p className="mt-4 max-w-xl text-muted">
           If you were charged, sign in with the email you used at checkout.
-          Access is granted only after the webhook writes the purchase.
+          Access is granted only after the webhook writes the purchase. Stripe
+          emails a receipt for successful Checkout payments.
         </p>
-        {sessionId ? (
-          <p className="mt-4 break-all font-mono text-sm text-muted">
-            Reference {sessionId}
-          </p>
-        ) : null}
         <ReceiptLinks />
       </>
     );
@@ -77,7 +72,8 @@ export function CheckoutReceiptView({
     <>
       <h1 className="font-serif text-4xl text-ink">Purchase confirmation</h1>
       <p className="mt-4 max-w-xl text-muted">
-        This page is your purchase confirmation. Keep it for your records.
+        This page is your purchase confirmation. Stripe emails a receipt for
+        this payment to the checkout address.
       </p>
       <dl className="mt-8 max-w-md border border-rule px-5 py-4 text-sm">
         <ReceiptRow label="Product" value={receipt.productName} />
@@ -104,11 +100,6 @@ export function CheckoutReceiptView({
         Access is granted only after the webhook writes the purchase. Sign in
         with the checkout email if the guide is still locked.
       </p>
-      {sessionId ? (
-        <p className="mt-4 break-all font-mono text-sm text-muted">
-          Reference {sessionId}
-        </p>
-      ) : null}
       <ReceiptLinks />
     </>
   );

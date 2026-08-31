@@ -42,6 +42,12 @@ export function checkoutOffer(tierId: PricingTierId) {
   };
 }
 
+export function catalogAmountUsdForTier(tier: BuyerProductTier): number {
+  const priceId =
+    tier === "guide" ? "79" : tier === "toolkit" ? "149" : "349";
+  return checkoutOffer(priceId).amountUsd;
+}
+
 export function stripeCheckoutLineItem(tierId: PricingTierId) {
   const offer = checkoutOffer(tierId);
   return {
@@ -50,7 +56,7 @@ export function stripeCheckoutLineItem(tierId: PricingTierId) {
       currency: "usd" as const,
       unit_amount: offer.unitAmountCents,
       product_data: {
-        name: offer.productName,
+        name: `${offer.productName} — ${offer.tierLabel}`,
         description: offer.tierLabel,
       },
     },

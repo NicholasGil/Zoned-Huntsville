@@ -5,6 +5,7 @@ import { PageShell } from "@/components/page-shell";
 import { getCallSlot, type CallSlotQuery } from "@/lib/call-slots";
 import { getEntitlement } from "@/lib/entitlement";
 import { getOwnEntitlements, getSignedInAdminState } from "@/lib/facts";
+import { loadLastPayment } from "@/lib/load-last-payment";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function AccountPage({
   const entitlement = await getEntitlement();
   const identity = await getSignedInAdminState();
   const rows = entitlement.kind === "signed-in" ? await getOwnEntitlements() : [];
+  const lastPayment = await loadLastPayment(rows);
   const unavailable: CallSlotQuery = { kind: "unavailable" };
   const callSlot =
     entitlement.kind === "signed-in" ? await getCallSlot() : unavailable;
@@ -69,6 +71,29 @@ export default async function AccountPage({
           </dd>
         </div>
       </dl>
+
+      {lastPayment.kind === "recorded" ? (
+        <section className="mt-10 max-w-md">
+          <h2 className="font-serif text-2xl text-ink">Last payment</h2>
+          <dl className="mt-4 border border-rule px-5 py-4 text-sm">
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted">Amount</dt>
+              <dd>{lastPayment.amountDisplay ?? "Not returned by Stripe"}</dd>
+            </div>
+            <div className="mt-3 flex justify-between gap-4">
+              <dt className="text-muted">Date</dt>
+              <dd>{lastPayment.dateDisplay}</dd>
+            </div>
+            <div className="mt-3 flex justify-between gap-4">
+              <dt className="text-muted">Tier</dt>
+              <dd>{lastPayment.tierLabel ?? "Not returned"}</dd>
+            </div>
+          </dl>
+          <p className="mt-3 text-sm text-muted">
+            Stripe emails a receipt for the card charge.
+          </p>
+        </section>
+      ) : null}
 
       {!(entitlement.kind === "signed-in" && entitlement.hasGuide) ? (
         <section className="mt-10 max-w-md">

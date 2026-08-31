@@ -5,9 +5,20 @@ import { loadCheckoutReceipt } from "@/lib/load-checkout-receipt";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Purchase confirmation",
-};
+export async function generateMetadata({
+  searchParams,
+}: PageProps<"/checkout/success">): Promise<Metadata> {
+  const query = await searchParams;
+  const sessionId =
+    typeof query.session_id === "string" ? query.session_id : null;
+  const receipt = await loadCheckoutReceipt(sessionId);
+  return {
+    title:
+      receipt.kind === "confirmed"
+        ? "Purchase confirmation"
+        : "Checkout not confirmed",
+  };
+}
 
 export default async function CheckoutSuccessPage({
   searchParams,
@@ -19,7 +30,7 @@ export default async function CheckoutSuccessPage({
 
   return (
     <PageShell>
-      <CheckoutReceiptView receipt={receipt} sessionId={sessionId} />
+      <CheckoutReceiptView receipt={receipt} />
     </PageShell>
   );
 }

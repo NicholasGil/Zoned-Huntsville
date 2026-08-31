@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import { checkoutOffer, stripeCheckoutLineItem } from "./checkout-offer.ts";
 import {
   mapCheckoutSession,
+  mapLastPayment,
   receiptHasInventedAmount,
   unavailableReceipt,
 } from "./checkout-receipt.ts";
@@ -15,7 +16,7 @@ describe("stripeCheckoutLineItem", () => {
         currency: "usd",
         unit_amount: 7900,
         product_data: {
-          name: "The Huntsville School Guide",
+          name: "The Huntsville School Guide — Guide",
           description: "Guide",
         },
       },
@@ -24,7 +25,7 @@ describe("stripeCheckoutLineItem", () => {
       currency: "usd",
       unit_amount: 14900,
       product_data: {
-        name: "The Huntsville School Guide",
+        name: "The Huntsville School Guide — Toolkit",
         description: "Toolkit",
       },
     });
@@ -32,7 +33,7 @@ describe("stripeCheckoutLineItem", () => {
       currency: "usd",
       unit_amount: 34900,
       product_data: {
-        name: "The Huntsville School Guide",
+        name: "The Huntsville School Guide — Call",
         description: "Call",
       },
     });
@@ -159,5 +160,52 @@ describe("mapCheckoutSession", () => {
 
     assert.deepEqual(receipt, { kind: "unavailable", reason: "not-paid" });
     assert.equal(receiptHasInventedAmount(receipt), false);
+  });
+});
+
+describe("mapLastPayment", () => {
+  it("does not invent a last payment when there is no entitlement", () => {
+    const view = mapLastPayment({ entitlement: null, session: null });
+    assert.deepEqual(view, { kind: "none" });
+    assert.equal("amountDisplay" in view, false);
+  });
+
+  it("maps amount, date, and tier from an entitlement plus a paid Stripe session", () => {
+    const view = mapLastPayment({
+      entitlement: {
+        tier: "guide",
+        purchased_at: "2026-08-31T00:00:00.000Z",
+      },
+      session: {
+        payment_status: "paid",
+        amount_total: 7900,
+        currency: "usd",
+      },
+    });
+
+    assert.deepEqual(view, {
+      kind: "recorded",
+      productName: "The Huntsville School Guide",
+      tierLabel: "Guide",
+      amountDisplay: "$79",
+      dateDisplay: "Aug 31, 2026",
+    });
+  });
+
+  it("uses the catalog amount for a known entitlement tier when Stripe has no amount", () => {
+    const view = mapLastPayment({
+      entitlement: {
+        tier: "toolkit",
+        purchased_at: "2026-01-15T12:00:00.000Z",
+      },
+      session: null,
+    });
+
+    assert.equal(view.kind, "recorded");
+    if (view.kind === "recorded") {
+      assert.equal(view.tierLabel, "Toolkit");
+      assert.equal(view.amountDisplay, "$149");
+      assert.equal(view.dateDisplay, "Jan 15, 2026");
+    }
   });
 });

@@ -1,6 +1,7 @@
 import {
   PRODUCT_NAME,
   TIER_BUYER_LABEL,
+  catalogAmountUsdForTier,
   type BuyerProductTier,
 } from "./checkout-offer.ts";
 
@@ -37,6 +38,16 @@ export type CheckoutReceipt =
   | {
       kind: "unavailable";
       reason: "missing-session" | "stripe-unset" | "retrieve-failed" | "not-paid";
+    };
+
+export type LastPaymentView =
+  | { kind: "none" }
+  | {
+      kind: "recorded";
+      productName: string;
+      tierLabel: string | null;
+      amountDisplay: string | null;
+      dateDisplay: string;
     };
 
 const PRICE_ID_TIER = {
@@ -181,4 +192,48 @@ export function mapCheckoutSession(session: StripeSessionLike | null): CheckoutR
 
 export function receiptHasInventedAmount(receipt: CheckoutReceipt): boolean {
   return receipt.kind === "confirmed" && receipt.amountUsd !== null;
+}
+
+export function formatPurchaseDate(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return iso;
+  }
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
+export function productTierFromEntitlement(
+  raw: string | null | undefined,
+): BuyerProductTier | null {
+  return productTierFromToken(raw);
+}
+
+export function mapLastPayment(input: {
+  entitlement: { tier: string; purchased_at: string } | null;
+  session: StripeSessionLike | null;
+}): LastPaymentView {
+  if (!input.entitlement) {
+    return { kind: "none" };
+  }
+
+  const tier = productTierFromToken(input.entitlement.tier);
+  const stripeAmount =
+    input.session && input.session.payment_status === "paid"
+      ? readAmountUsd(input.session)
+      : null;
+  const amountUsd =
+    stripeAmount ?? (tier ? catalogAmountUsdForTier(tier) : null);
+
+  return {
+    kind: "recorded",
+    productName: PRODUCT_NAME,
+    tierLabel: tier ? TIER_BUYER_LABEL[tier] : null,
+    amountDisplay: amountUsd === null ? null : formatPaidUsd(amountUsd),
+    dateDisplay: formatPurchaseDate(input.entitlement.purchased_at),
+  };
 }
