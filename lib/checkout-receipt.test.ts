@@ -9,9 +9,9 @@ import {
 
 describe("checkoutOffer", () => {
   it("restates only the three catalog prices on the pay CTA", () => {
-    assert.deepEqual(checkoutOffer("79").payCta, "Pay $79 — Guide");
-    assert.deepEqual(checkoutOffer("149").payCta, "Pay $149 — Toolkit");
-    assert.deepEqual(checkoutOffer("349").payCta, "Pay $349 — Call");
+    assert.equal(checkoutOffer("79").payCta, "Pay $79 — Guide");
+    assert.equal(checkoutOffer("149").payCta, "Pay $149 — Toolkit");
+    assert.equal(checkoutOffer("349").payCta, "Pay $349 — Call");
     assert.equal(checkoutOffer("79").productName, "The Huntsville School Guide");
     assert.equal(checkoutOffer("149").amountUsd, 149);
     assert.equal(checkoutOffer("349").tierLabel, "Call");
