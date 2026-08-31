@@ -95,7 +95,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
       "one-application / lottery / PK–5 vs 6–12 essay-interview-audition mechanics, sibling priority, transportation, and IEP applicants on the live HCS magnet page",
       "fall 2026 application window for 2027–28 magnet entry",
       "whether Columbia High still publishes an IB Diploma magnet",
-      "Academy for Science & Foreign Language elementary campus URL and IB PYP/MYP wording",
+      "current-year IB PYP/MYP program naming on the live HCS magnet page or a current ASFL program page",
       "magnet office phone (256) 428-6987 from older secondary copy — live HCS arts article published 256-924-1113",
     ],
     matchesFact: (fact) =>

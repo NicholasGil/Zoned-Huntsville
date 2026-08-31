@@ -310,9 +310,18 @@ insert into public.facts (
   (
     'school',
     'asfl-magnet',
+    'elementary_campus_url',
+    'https://www.huntsvillecityschools.org/o/asfle',
+    'https://www.huntsvillecityschools.org/o/asfle',
+    '2026-08-31',
+    'official_page'
+  ),
+  (
+    'school',
+    'asfl-magnet',
     'focus',
-    'Official HCS school site publishes Academy for Science & Foreign Language Middle School. ⟦VERIFY: elementary campus URL, STEM + language / IB PYP/MYP wording on the live HCS magnet page⟧',
-    'https://www.huntsvillecityschools.org/o/asflms',
+    'Official HCS school sites publish Academy for Science & Foreign Language Elementary School and Academy for Science & Foreign Language Middle School. Official elementary news also publishes IB Students of the Month / IB learner-profile articles. ⟦VERIFY: current-year IB PYP/MYP program naming on the live HCS magnet page or a current ASFL program page⟧',
+    'https://www.huntsvillecityschools.org/o/asfle',
     '2026-08-31',
     'official_page'
   ),

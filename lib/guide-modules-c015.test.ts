@@ -144,6 +144,19 @@ describe("C-015 C-016 C-019 module fill", () => {
     );
     assert.ok(nextWindow);
     assert.match(nextWindow.value, /VERIFY/);
+    const asflCampus = facts.find(
+      (fact) =>
+        fact.entity_slug === "asfl-magnet" &&
+        fact.field === "elementary_campus_url",
+    );
+    assert.ok(asflCampus);
+    assert.match(asflCampus.value, /\/o\/asfle/);
+    assert.equal(
+      guideModule.unverified.some((item) =>
+        item.includes("elementary campus URL"),
+      ),
+      false,
+    );
   });
 
   it("adds per-district registration documents and keeps rolling Madison County dates as VERIFY", () => {

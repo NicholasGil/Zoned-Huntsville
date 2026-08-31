@@ -117,6 +117,7 @@ export const FACT_FIELD_LABELS: Record<string, string> = {
   lottery: "Selection",
   focus: "Focus",
   also_known_as: "Also called",
+  elementary_campus_url: "Elementary campus",
 };
 
 export function fieldLabel(field: string): string {

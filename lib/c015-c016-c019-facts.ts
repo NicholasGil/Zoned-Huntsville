@@ -30,6 +30,7 @@ const NCTHS = "https://www.huntsvillecityschools.org/o/ncths";
 const AAA_ELEM = "https://www.huntsvillecityschools.org/o/aaaes";
 const AAA_MID = "https://www.huntsvillecityschools.org/o/aaams";
 const ASFL_MID = "https://www.huntsvillecityschools.org/o/asflms";
+const ASFL_ELEM = "https://www.huntsvillecityschools.org/o/asfle";
 const WILLIAMS_MAGNET =
   "https://www.huntsvillecityschools.org/o/wlms/page/williams-magnet-program";
 const WILLIAMS_AGT_ARTICLE =
@@ -317,9 +318,16 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
   official(
     "school",
     "asfl-magnet",
+    "elementary_campus_url",
+    ASFL_ELEM,
+    ASFL_ELEM,
+  ),
+  official(
+    "school",
+    "asfl-magnet",
     "focus",
-    "Official HCS school site publishes Academy for Science & Foreign Language Middle School. ⟦VERIFY: elementary campus URL, STEM + language / IB PYP/MYP wording on the live HCS magnet page⟧",
-    ASFL_MID,
+    "Official HCS school sites publish Academy for Science & Foreign Language Elementary School and Academy for Science & Foreign Language Middle School. Official elementary news also publishes IB Students of the Month / IB learner-profile articles. ⟦VERIFY: current-year IB PYP/MYP program naming on the live HCS magnet page or a current ASFL program page⟧",
+    ASFL_ELEM,
   ),
 
   official(
