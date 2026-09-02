@@ -1,8 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { setStoredAuthNext } from "@/lib/auth-next-cookie";
 import { parseEmail } from "@/lib/email";
 import { getAppEnv } from "@/lib/env";
+import { authConfirmRedirectTo } from "@/lib/purchase-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function requestPurchaseEmailLink(formData: FormData) {
@@ -24,7 +26,7 @@ export async function requestPurchaseEmailLink(formData: FormData) {
   const { error } = await supabase.auth.signInWithOtp({
     email: parsed.email,
     options: {
-      emailRedirectTo: `${env.siteUrl}/auth/confirm?next=/account`,
+      emailRedirectTo: authConfirmRedirectTo(env.siteUrl),
     },
   });
 
@@ -32,5 +34,6 @@ export async function requestPurchaseEmailLink(formData: FormData) {
     redirect("/account?error=send-failed");
   }
 
+  await setStoredAuthNext("/account");
   redirect("/account?status=link-sent");
 }

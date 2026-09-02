@@ -27,6 +27,10 @@ export type PurchaseAuthAdmin = {
         data: { users: PurchaseAuthUser[] };
         error: { message: string } | null;
       }>;
+      getUserByEmail?: (email: string) => Promise<{
+        data: { user: PurchaseAuthUser | null };
+        error: { message: string } | null;
+      }>;
     };
     signInWithOtp: (params: {
       email: string;
@@ -46,7 +50,8 @@ export type PurchaseAuthAdmin = {
  * GoTrue accepts any path on the project Site URL host. When Site URL is a
  * different host, allowlist entries are exact (query string included). The
  * project allowlist has `/auth/confirm` with no query. `/auth/confirm` already
- * defaults `next` to `/guide`, so purchase and login share this URL.
+ * defaults `next` to `/guide`, so purchase, login, and account share this URL.
+ * Account stores `/account` in-app and applies it after the session exists.
  */
 export function authConfirmRedirectTo(siteUrl: string): string {
   const origin = siteUrl.replace(/\/+$/, "");
@@ -99,19 +104,15 @@ export async function ensureConfirmedAuthUser(
     return created.data.user.id;
   }
 
-  const listed = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
-  const normalized = email.toLowerCase();
-  const user = (listed.data.users ?? []).find(
-    (candidate) => (candidate.email ?? "").toLowerCase() === normalized,
-  );
-  if (!user) {
+  const found = await findAuthUserByEmail(admin, email);
+  if (!found) {
     throw new PurchaseAuthError(
       created.error?.message ??
-        listed.error?.message ??
         "Could not create or load the Auth user for this purchase email.",
       { code: created.error?.code },
     );
   }
+  const user = found;
 
   if (!user.email_confirmed_at) {
     const updated = await admin.auth.admin.updateUserById(user.id, {
@@ -126,4 +127,44 @@ export async function ensureConfirmedAuthUser(
   }
 
   return user.id;
+}
+
+/**
+ * Prefer Admin `getUserByEmail` so lookup does not depend on the first
+ * page of `listUsers`. Paginate only when that method is missing or errors.
+ */
+export async function findAuthUserByEmail(
+  admin: PurchaseAuthAdmin,
+  email: string,
+): Promise<PurchaseAuthUser | null> {
+  const normalized = email.toLowerCase();
+
+  if (admin.auth.admin.getUserByEmail) {
+    const byEmail = await admin.auth.admin.getUserByEmail(email);
+    if (byEmail.data.user) {
+      return byEmail.data.user;
+    }
+    if (!byEmail.error) {
+      return null;
+    }
+  }
+
+  let page = 1;
+  for (;;) {
+    const listed = await admin.auth.admin.listUsers({ page, perPage: 200 });
+    const users = listed.data.users ?? [];
+    const user = users.find(
+      (candidate) => (candidate.email ?? "").toLowerCase() === normalized,
+    );
+    if (user) {
+      return user;
+    }
+    if (users.length < 200 || listed.error) {
+      return null;
+    }
+    page += 1;
+    if (page > 20) {
+      return null;
+    }
+  }
 }

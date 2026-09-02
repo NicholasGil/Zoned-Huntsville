@@ -3,19 +3,22 @@ import {
   disposeAuthConfirm,
   establishConfirmSession,
   planAuthConfirm,
+  resolveConfirmNext,
 } from "@/lib/auth-confirm";
+import { consumeStoredAuthNext, peekStoredAuthNext } from "@/lib/auth-next-cookie";
 import { getAppEnv } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const env = getAppEnv();
+  const storedNext = await peekStoredAuthNext();
   const plan = planAuthConfirm({
     code: searchParams.get("code"),
     tokenHash: searchParams.get("token_hash"),
     token: searchParams.get("token"),
     type: searchParams.get("type"),
-    next: searchParams.get("next"),
+    next: resolveConfirmNext(searchParams.get("next"), storedNext),
   });
   const disposition = disposeAuthConfirm(plan, env.supabase.kind === "present");
 
@@ -39,5 +42,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=auth", env.siteUrl));
   }
 
+  await consumeStoredAuthNext();
   return NextResponse.redirect(new URL(disposition.plan.next, env.siteUrl));
 }

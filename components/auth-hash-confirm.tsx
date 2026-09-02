@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { clearStoredAuthNext } from "@/app/auth/confirm/actions";
 import { AuthConfirmStatus } from "@/components/auth-confirm-status";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
@@ -59,6 +60,7 @@ export function AuthHashConfirm({ next }: { next: string }) {
       }
 
       await supabase.rpc("link_my_entitlements");
+      await clearStoredAuthNext();
       if (!cancelled) {
         window.location.replace(next);
       }

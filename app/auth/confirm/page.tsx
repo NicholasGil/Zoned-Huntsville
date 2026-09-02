@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AuthHashConfirm } from "@/components/auth-hash-confirm";
-import { disposeAuthConfirm, planAuthConfirm } from "@/lib/auth-confirm";
+import {
+  disposeAuthConfirm,
+  planAuthConfirm,
+  resolveConfirmNext,
+} from "@/lib/auth-confirm";
+import { peekStoredAuthNext } from "@/lib/auth-next-cookie";
 import { getAppEnv } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
@@ -26,12 +31,13 @@ export default async function AuthConfirmPage({
 }: PageProps<"/auth/confirm">) {
   const query = await searchParams;
   const env = getAppEnv();
+  const storedNext = await peekStoredAuthNext();
   const plan = planAuthConfirm({
     code: firstQueryValue(query.code),
     tokenHash: firstQueryValue(query.token_hash),
     token: firstQueryValue(query.token),
     type: firstQueryValue(query.type),
-    next: firstQueryValue(query.next),
+    next: resolveConfirmNext(firstQueryValue(query.next), storedNext),
   });
   const disposition = disposeAuthConfirm(plan, env.supabase.kind === "present");
 
