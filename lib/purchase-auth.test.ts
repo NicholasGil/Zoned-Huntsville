@@ -4,6 +4,7 @@ import { PurchaseAuthError } from "./auth-error.ts";
 import {
   authConfirmRedirectTo,
   ensureConfirmedAuthUser,
+  findAuthUserByEmail,
   purchaseMagicLinkRedirectTo,
   sendConfirmedPurchaseMagicLink,
   type PurchaseAuthAdmin,
@@ -64,6 +65,16 @@ function createAdminMock(options: {
             error: options.existing ? null : { message: "missing user" },
           };
         },
+        async getUserByEmail(email) {
+          calls.push(`getUserByEmail:${email}`);
+          if (
+            options.existing &&
+            (options.existing.email ?? "").toLowerCase() === email.toLowerCase()
+          ) {
+            return { data: { user: options.existing }, error: null };
+          }
+          return { data: { user: null }, error: null };
+        },
       },
       async signInWithOtp(params) {
         calls.push(
@@ -109,13 +120,125 @@ describe("ensureConfirmedAuthUser", () => {
     assert.equal(id, "old-user");
     assert.deepEqual(calls, [
       "createUser:buyer@example.com:confirm=true",
-      "listUsers",
+      "getUserByEmail:buyer@example.com",
       "updateUserById:old-user:confirm=true",
     ]);
+    assert.equal(
+      calls.some((call) => call === "listUsers"),
+      false,
+    );
     assert.equal(
       calls.some((call) => call.startsWith("generateLink:")),
       false,
     );
+  });
+
+  it("confirms an existing user found past the first 200 listUsers rows", async () => {
+    const later: PurchaseAuthUser = {
+      id: "later-user",
+      email: "buyer@example.com",
+      email_confirmed_at: null,
+    };
+    const filler = Array.from({ length: 200 }, (_, index) => ({
+      id: `other-${index}`,
+      email: `other-${index}@example.com`,
+    }));
+    const calls: string[] = [];
+    const admin: PurchaseAuthAdmin = {
+      auth: {
+        admin: {
+          async createUser() {
+            calls.push("createUser");
+            return {
+              data: { user: null },
+              error: { message: "already registered", code: "email_exists" },
+            };
+          },
+          async updateUserById(id, attributes) {
+            calls.push(`updateUserById:${id}:confirm=${attributes.email_confirm}`);
+            return {
+              data: { user: { id, email_confirmed_at: "2026-08-30T00:00:00Z" } },
+              error: null,
+            };
+          },
+          async listUsers(params) {
+            const page = params?.page ?? 1;
+            calls.push(`listUsers:${page}`);
+            if (page === 1) {
+              return { data: { users: filler }, error: null };
+            }
+            return { data: { users: [later] }, error: null };
+          },
+        },
+        async signInWithOtp() {
+          return { error: null };
+        },
+      },
+    };
+
+    const id = await ensureConfirmedAuthUser(admin, "buyer@example.com");
+    assert.equal(id, "later-user");
+    assert.deepEqual(calls, [
+      "createUser",
+      "listUsers:1",
+      "listUsers:2",
+      "updateUserById:later-user:confirm=true",
+    ]);
+  });
+});
+
+describe("findAuthUserByEmail", () => {
+  it("uses getUserByEmail instead of scanning the first listUsers page", async () => {
+    const { admin, calls } = createAdminMock({
+      existing: {
+        id: "page-two-user",
+        email: "buyer@example.com",
+        email_confirmed_at: "2026-08-30T00:00:00Z",
+      },
+    });
+    const user = await findAuthUserByEmail(admin, "buyer@example.com");
+    assert.equal(user?.id, "page-two-user");
+    assert.deepEqual(calls, ["getUserByEmail:buyer@example.com"]);
+  });
+
+  it("paginates listUsers when getUserByEmail is unavailable", async () => {
+    const later: PurchaseAuthUser = {
+      id: "later-user",
+      email: "buyer@example.com",
+      email_confirmed_at: "2026-08-30T00:00:00Z",
+    };
+    const filler = Array.from({ length: 200 }, (_, index) => ({
+      id: `other-${index}`,
+      email: `other-${index}@example.com`,
+    }));
+    const calls: string[] = [];
+    const admin: PurchaseAuthAdmin = {
+      auth: {
+        admin: {
+          async createUser() {
+            return { data: { user: null }, error: { message: "unused" } };
+          },
+          async updateUserById() {
+            return { data: { user: null }, error: { message: "unused" } };
+          },
+          async listUsers(params) {
+            const page = params?.page ?? 1;
+            calls.push(`listUsers:${page}`);
+            if (page === 1) {
+              return { data: { users: filler }, error: null };
+            }
+            return { data: { users: [later] }, error: null };
+          },
+        },
+        async signInWithOtp() {
+          return { error: null };
+        },
+      },
+    };
+
+    const user = await findAuthUserByEmail(admin, "buyer@example.com");
+    assert.equal(user?.id, "later-user");
+    assert.deepEqual(calls, ["listUsers:1", "listUsers:2"]);
   });
 });
 

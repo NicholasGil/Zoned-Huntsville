@@ -46,16 +46,16 @@ The five-email marketing sequence lives in `content/email-sequence.md` for later
 | `/sample` | Huntsville City Schools profile and email opt-in. Opt-in writes a lead and attempts Resend delivery of that profile. |
 | `/checkout/success` | Post-Stripe redirect shell. |
 | `/login` | Supabase magic-link request. |
-| `/auth/confirm` | Auth callback page. Query `code` or `token_hash`+`type` go to `/auth/confirm/exchange` (sets the session, runs `link_my_entitlements`, redirects to `next` or `/guide`). Implicit hash tokens are finished on this page so `/login?error=auth` is not the outcome of a valid first mail. |
+| `/auth/confirm` | Auth callback page. Magic-link `emailRedirectTo` is this bare path (no `?next=`). After the session exists, query `next` or an in-app stored path is used; otherwise `/guide`. Query `code` or `token_hash`+`type` go to `/auth/confirm/exchange` (sets the session, runs `link_my_entitlements`, then redirects). Implicit hash tokens are finished on this page so `/login?error=auth` is not the outcome of a valid first mail. |
 | `/guide` | Gated module index shell. |
 | `/guide/[module]` | Gated module content shell. |
 | `/guide/tools` | Gated, Toolkit tier only. |
-| `/account` | Signed-in entitlements, a purchase-email magic-link form, and call remaining from paid `call` rows this month. |
+| `/account` | Signed-in entitlements, a purchase-email magic-link form, and call remaining from paid `call` rows this month. The account form sends the same bare `/auth/confirm` redirect; after session, in-app next is `/account`. |
 | `/admin/stale-facts` | Admin-only facts with `verified_at` older than 90 days, plus correction reports. |
 | `/legal/terms` `/legal/privacy` `/legal/refunds` `/legal/disclaimer` | Draft legal placeholders. |
 | `/contact` | Contact form. Forwards to `CONTACT_TO` when Resend is configured. |
 | `/api/checkout` | Creates a Stripe Checkout Session when keys exist; otherwise 503. |
-| `/api/webhooks/stripe` | Verifies the Stripe signature, dedupes on `event.id`, inserts an entitlements row, confirms the Auth user so signup mail is not sent, then sends one magic link to `/auth/confirm?next=/guide`. After the 2xx, may also send a plain purchase receipt. |
+| `/api/webhooks/stripe` | Verifies the Stripe signature, dedupes on `event.id`, inserts an entitlements row, confirms the Auth user so signup mail is not sent, then sends one magic link to `/auth/confirm` (bare path; confirm defaults `next` to `/guide`). After the 2xx, may also send a plain purchase receipt. |
 | `/api/corrections` | Inserts a corrections row. Returns 202. Pings `CONTACT_TO` when Resend is configured. |
 | `/api/toolkit` | Toolkit download gate. 401 anonymous, 403 without toolkit/call, 200 when entitled. |
 

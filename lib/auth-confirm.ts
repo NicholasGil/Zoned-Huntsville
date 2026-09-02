@@ -42,6 +42,22 @@ export function safeNextPath(value: string | null | undefined): string {
   return value;
 }
 
+/**
+ * Email redirect URLs stay at `/auth/confirm` (no `?next=`). After a
+ * session exists, an in-app stored path (account) can override the
+ * `/guide` default. A query `next` still wins for older links.
+ */
+export function resolveConfirmNext(
+  queryNext: string | null | undefined,
+  storedNext: string | null | undefined,
+): string {
+  const query = emptyToNull(queryNext);
+  if (query) {
+    return safeNextPath(query);
+  }
+  return safeNextPath(storedNext ?? null);
+}
+
 export function isEmailOtpType(value: string | null): value is EmailOtpType {
   return value !== null && (EMAIL_OTP_TYPES as readonly string[]).includes(value);
 }

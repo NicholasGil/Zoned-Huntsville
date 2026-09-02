@@ -4,6 +4,7 @@ import {
   disposeAuthConfirm,
   establishConfirmSession,
   planAuthConfirm,
+  resolveConfirmNext,
   type ConfirmSupabase,
 } from "./auth-confirm.ts";
 
@@ -71,6 +72,27 @@ describe("planAuthConfirm", () => {
   it("rejects open-redirect next values", () => {
     assert.equal(planAuthConfirm({ next: "https://evil.example" }).next, "/guide");
     assert.equal(planAuthConfirm({ next: "//evil.example" }).next, "/guide");
+  });
+});
+
+describe("resolveConfirmNext", () => {
+  it("defaults to /guide when neither query nor stored next is set", () => {
+    assert.equal(resolveConfirmNext(null, null), "/guide");
+    assert.equal(resolveConfirmNext(undefined, undefined), "/guide");
+  });
+
+  it("uses the in-app stored path after session when the email URL has no next", () => {
+    assert.equal(resolveConfirmNext(null, "/account"), "/account");
+    assert.equal(resolveConfirmNext("", "/account"), "/account");
+  });
+
+  it("lets a query next win for older links", () => {
+    assert.equal(resolveConfirmNext("/guide", "/account"), "/guide");
+  });
+
+  it("rejects open-redirect stored values", () => {
+    assert.equal(resolveConfirmNext(null, "https://evil.example"), "/guide");
+    assert.equal(resolveConfirmNext(null, "//evil.example"), "/guide");
   });
 });
 
