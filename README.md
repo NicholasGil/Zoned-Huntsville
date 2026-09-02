@@ -55,7 +55,7 @@ The five-email marketing sequence lives in `content/email-sequence.md` for later
 | `/legal/terms` `/legal/privacy` `/legal/refunds` `/legal/disclaimer` | Draft legal placeholders. |
 | `/contact` | Contact form. Forwards to `CONTACT_TO` when Resend is configured. |
 | `/api/checkout` | Creates a Stripe Checkout Session when keys exist; otherwise 503. |
-| `/api/webhooks/stripe` | Verifies the Stripe signature, dedupes on `event.id`, inserts an entitlements row, confirms the Auth user so signup mail is not sent, then sends one magic link to `/auth/confirm?next=/guide`. After the 2xx, may also send a plain purchase receipt. |
+| `/api/webhooks/stripe` | Verifies the Stripe signature, dedupes on `event.id`, inserts an entitlements row, confirms the Auth user so signup mail is not sent, then sends one magic link to `/auth/confirm` (bare path; confirm defaults `next` to `/guide`). After the 2xx, may also send a plain purchase receipt. |
 | `/api/corrections` | Inserts a corrections row. Returns 202. Pings `CONTACT_TO` when Resend is configured. |
 | `/api/toolkit` | Toolkit download gate. 401 anonymous, 403 without toolkit/call, 200 when entitled. |
 
