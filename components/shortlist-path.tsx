@@ -31,7 +31,7 @@ function PathRadio({
 }) {
   const id = `shortlist-path-${value}`;
   return (
-    <label htmlFor={id} className="mt-2 flex items-center gap-2 text-ink">
+    <label htmlFor={id} className="flex min-h-11 items-center gap-3 text-text">
       <input
         id={id}
         type="radio"
@@ -61,30 +61,30 @@ function ShortlistOutput({
   }
 
   return (
-    <section className="mt-8 border border-rule bg-paper-raised px-5 py-5" aria-live="polite">
-      <h3 className="font-serif text-2xl text-ink">Your 3-item shortlist</h3>
-      <p className="mt-2 text-sm text-muted">
+    <section className="mt-8 rounded-lg border border-border bg-surface px-5 py-5" aria-live="polite">
+      <h3 className="font-sans text-2xl font-semibold text-text">Your 3-item shortlist</h3>
+      <p className="mt-2 text-sm text-text-muted">
         Commute anchor: {commuteAnchor.trim() || "not entered yet"}
         {commuteLimit.trim() ? ` · Your limit: ${commuteLimit.trim()}` : ""}
       </p>
-      <p className="mt-1 text-sm text-muted">
+      <p className="mt-1 text-sm text-text-muted">
         Budget you entered: {budget.trim() || "not entered yet"}
       </p>
-      <ol className="mt-4 list-decimal space-y-3 pl-5 text-ink">
+      <ol className="mt-4 list-decimal space-y-3 pl-5 text-text">
         {items.map((item) => (
           <li key={item.label}>
             <p>{item.label}</p>
-            {item.detail ? <p className="mt-1 text-sm text-muted">{item.detail}</p> : null}
+            {item.detail ? <p className="mt-1 text-sm text-text-muted">{item.detail}</p> : null}
             {item.href ? (
               <p className="mt-1 text-sm">
-                <a href={item.href} className="text-brick hover:underline">
+                <a href={item.href} className="text-action underline underline-offset-4 hover:text-action-hover">
                   Official website
                 </a>
               </p>
             ) : null}
             {item.locatorHref ? (
               <p className="mt-1 text-sm">
-                <a href={item.locatorHref} className="text-brick hover:underline">
+                <a href={item.locatorHref} className="text-action underline underline-offset-4 hover:text-action-hover">
                   Official zone locator
                 </a>
               </p>
@@ -150,8 +150,8 @@ export function ShortlistPath({
 
   return (
     <div className="mt-10 max-w-xl">
-      <h2 className="font-serif text-2xl text-ink">10-minute shortlist path</h2>
-      <p className="mt-3 text-muted">
+      <h2 className="font-sans text-2xl font-semibold text-text">10-minute shortlist path</h2>
+      <p className="mt-3 text-text-muted">
         This edition does not publish commute times, budget cutoffs, or school
         rankings. Enter your own commute and budget, pick a path, and the
         shortlist is built from sourced system and school facts already in the
@@ -159,8 +159,8 @@ export function ShortlistPath({
       </p>
 
       <section className="mt-8">
-        <h3 className="font-serif text-xl text-ink">1. Commute anchor</h3>
-        <label htmlFor="shortlist-commute" className="mt-3 block text-sm text-ink">
+        <h3 className="font-sans text-xl font-semibold text-text">1. Commute anchor</h3>
+        <label htmlFor="shortlist-commute" className="mt-3 block text-sm text-text">
           Where will you live or commute from?
         </label>
         <input
@@ -168,9 +168,9 @@ export function ShortlistPath({
           type="text"
           value={commuteAnchor}
           onChange={(event) => setCommuteAnchor(event.target.value)}
-          className="mt-2 w-full border border-rule bg-paper px-3 py-2"
+          className="mt-2 min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         />
-        <label htmlFor="shortlist-commute-limit" className="mt-4 block text-sm text-ink">
+        <label htmlFor="shortlist-commute-limit" className="mt-4 block text-sm text-text">
           Your commute limit (you set this; this edition has no sourced threshold)
         </label>
         <input
@@ -178,21 +178,21 @@ export function ShortlistPath({
           type="text"
           value={commuteLimit}
           onChange={(event) => setCommuteLimit(event.target.value)}
-          className="mt-2 w-full border border-rule bg-paper px-3 py-2"
+          className="mt-2 min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         />
-        <p className="mt-3 text-sm text-muted">
+        <p className="mt-3 text-sm text-text-muted">
           Use each official zone locator to see which public school an address
-          returns. The three locators below are the ones already sourced. That
-          is a source capability, not a ranking.
+          returns. The locators below are the ones already sourced in this
+          edition. That is a source capability, not a ranking.
         </p>
-        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-ink">
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-text">
           {locatorSystems.map((system) => (
             <li key={system.slug}>
               {system.name}
               {system.zoneLocatorUrl ? (
                 <>
                   {" — "}
-                  <a href={system.zoneLocatorUrl} className="text-brick hover:underline">
+                  <a href={system.zoneLocatorUrl} className="text-action underline underline-offset-4 hover:text-action-hover">
                     zone locator
                   </a>
                 </>
@@ -201,7 +201,7 @@ export function ShortlistPath({
           ))}
         </ul>
         {noLocator.length > 0 ? (
-          <p className="mt-3 text-sm text-muted">
+          <p className="mt-3 text-sm text-text-muted">
             {noLocator.map((system) => system.name).join(" and ")} have official
             websites in this edition but no sourced zone locator yet.
           </p>
@@ -209,8 +209,8 @@ export function ShortlistPath({
       </section>
 
       <section className="mt-8">
-        <h3 className="font-serif text-xl text-ink">2. Budget</h3>
-        <label htmlFor="shortlist-budget" className="mt-3 block text-sm text-ink">
+        <h3 className="font-sans text-xl font-semibold text-text">2. Budget</h3>
+        <label htmlFor="shortlist-budget" className="mt-3 block text-sm text-text">
           What will you spend? (you enter this; this edition does not invent a cutoff)
         </label>
         <input
@@ -218,23 +218,23 @@ export function ShortlistPath({
           type="text"
           value={budget}
           onChange={(event) => setBudget(event.target.value)}
-          className="mt-2 w-full border border-rule bg-paper px-3 py-2"
+          className="mt-2 min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         />
-        <p className="mt-3 text-sm text-muted">
+        <p className="mt-3 text-sm text-text-muted">
           Private-school tuition is unpublished in this edition. State ESA
           amounts are in Paying For It.
         </p>
       </section>
 
       <section className="mt-8">
-        <h3 className="font-serif text-xl text-ink">3. Public, private, or homeschool</h3>
+        <h3 className="font-sans text-xl font-semibold text-text">3. Public, private, or homeschool</h3>
         <fieldset className="mt-3 border-0 p-0">
-          <legend className="text-sm text-muted">Choose one path</legend>
+          <legend className="text-sm text-text-muted">Choose one path</legend>
           <PathRadio
             value="public"
             current={path}
             onChange={setPath}
-            label="Public — look up a zoned school in the three sourced locators"
+            label="Public — look up a zoned school in the sourced locators"
           />
           <PathRadio
             value="private"
@@ -253,10 +253,10 @@ export function ShortlistPath({
 
       {path === "public" ? (
         <section className="mt-8">
-          <h3 className="font-serif text-xl text-ink">
+          <h3 className="font-sans text-xl font-semibold text-text">
             4. Write in what each locator returned
           </h3>
-          <p className="mt-3 text-sm text-muted">
+          <p className="mt-3 text-sm text-text-muted">
             Optional. Type the school name the official locator showed for your
             address. This edition does not invent those names.
           </p>
@@ -264,7 +264,7 @@ export function ShortlistPath({
             <div key={system.slug} className="mt-4">
               <label
                 htmlFor={`locator-school-${system.slug}`}
-                className="block text-sm text-ink"
+                className="block text-sm text-text"
               >
                 School returned by {system.name}
               </label>
@@ -278,7 +278,7 @@ export function ShortlistPath({
                     [system.slug]: event.target.value,
                   }))
                 }
-                className="mt-2 w-full border border-rule bg-paper px-3 py-2"
+                className="mt-2 min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
               />
             </div>
           ))}
@@ -287,8 +287,8 @@ export function ShortlistPath({
 
       {path === "private" ? (
         <section className="mt-8">
-          <h3 className="font-serif text-xl text-ink">4. Pick three private schools</h3>
-          <p className="mt-3 text-sm text-muted">
+          <h3 className="font-sans text-xl font-semibold text-text">4. Pick three private schools</h3>
+          <p className="mt-3 text-sm text-text-muted">
             These are the private schools already named in the seed. Choosing
             three is your shortlist, not a ranking from this guide.
           </p>
@@ -297,7 +297,7 @@ export function ShortlistPath({
               const id = `private-pick-${school.slug}`;
               return (
                 <li key={school.slug}>
-                  <label htmlFor={id} className="flex items-center gap-2 text-ink">
+                  <label htmlFor={id} className="flex min-h-11 items-center gap-3 text-text">
                     <input
                       id={id}
                       type="checkbox"

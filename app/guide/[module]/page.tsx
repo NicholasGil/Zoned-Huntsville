@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { primaryButton, quietLink } from "@/components/button-styles";
 import { FactList } from "@/components/fact-list";
 import { AccessGate } from "@/components/gate";
 import { LeaseCheck } from "@/components/lease-check";
@@ -9,6 +10,7 @@ import { ShortlistPath } from "@/components/shortlist-path";
 import { VerifyToken } from "@/components/verify-token";
 import { canReadGuide, getEntitlement } from "@/lib/entitlement";
 import { getPublishedFacts } from "@/lib/facts";
+import { firstPathStep, nextFirstPathStep } from "@/lib/first-path";
 import { GUIDE_MODULES, getGuideModule } from "@/lib/guide-modules";
 import {
   FIVE_SYSTEM_SLUGS,
@@ -72,51 +74,109 @@ export default async function GuideModulePage({
       })
     : facts;
 
+  const isStartHere = guideModule.slug === "start-here";
+  const pathStep = firstPathStep(guideModule.slug);
+  const nextStep = nextFirstPathStep(guideModule.slug);
+
+  const shortlist = isStartHere ? (
+    <ShortlistPath
+      systems={optionsFromFacts(seedFacts, FIVE_SYSTEM_SLUGS)}
+      privateSchools={optionsFromFacts(seedFacts, PRIVATE_SCHOOL_SLUGS)}
+      churchSchool={
+        seedFacts.find(
+          (fact) =>
+            fact.entity_slug === "alabama-homeschool" &&
+            fact.field === "church_school_definition",
+        )?.value ?? ""
+      }
+      privateTutor={
+        seedFacts.find(
+          (fact) =>
+            fact.entity_slug === "alabama-homeschool" &&
+            fact.field === "private_tutor_hours",
+        )?.value ?? ""
+      }
+    />
+  ) : null;
+
+  const factList =
+    orderedFacts.length > 0 ? <FactList facts={orderedFacts} /> : null;
+
   return (
     <PageShell>
-      <p className="text-sm uppercase tracking-[0.16em] text-muted">
-        Module {guideModule.number}
+      <p className="text-xs uppercase tracking-[0.16em] text-text-muted">
+        {pathStep
+          ? `Module ${guideModule.number} · ${pathStep.minutes}`
+          : `Module ${guideModule.number} of ${GUIDE_MODULES.length}`}
       </p>
-      <h1 className="mt-3 font-serif text-4xl text-ink">{guideModule.title}</h1>
-      <p className="mt-4 max-w-xl text-muted">{guideModule.purpose}</p>
+      <h1 className="mt-2 max-w-2xl font-sans text-[32px] font-semibold leading-tight text-text sm:text-4xl">
+        {guideModule.title}
+      </h1>
+      <p className="mt-4 max-w-xl text-text-muted">
+        {pathStep ? pathStep.outcome : guideModule.purpose}
+      </p>
       {guideModule.slug === "zones-and-addresses" ? (
         <LeaseCheck facts={orderedFacts} />
       ) : null}
-      {orderedFacts.length > 0 ? <FactList facts={orderedFacts} /> : null}
-      {guideModule.slug === "start-here" ? (
-        <ShortlistPath
-          systems={optionsFromFacts(seedFacts, FIVE_SYSTEM_SLUGS)}
-          privateSchools={optionsFromFacts(seedFacts, PRIVATE_SCHOOL_SLUGS)}
-          churchSchool={
-            seedFacts.find(
-              (fact) =>
-                fact.entity_slug === "alabama-homeschool" &&
-                fact.field === "church_school_definition",
-            )?.value ?? ""
-          }
-          privateTutor={
-            seedFacts.find(
-              (fact) =>
-                fact.entity_slug === "alabama-homeschool" &&
-                fact.field === "private_tutor_hours",
-            )?.value ?? ""
-          }
-        />
-      ) : null}
+      {isStartHere ? (
+        <>
+          {shortlist}
+          {factList ? (
+            <section aria-labelledby="sources-heading" className="mt-12 max-w-xl">
+              <h2
+                id="sources-heading"
+                className="font-sans text-xl font-semibold text-text"
+              >
+                The sourced facts behind this shortlist
+              </h2>
+              <p className="mt-2 text-sm text-text-muted">
+                Each system&apos;s name, website, and zone locator, with the
+                official page it came from and the date we checked it.
+              </p>
+              {factList}
+            </section>
+          ) : null}
+        </>
+      ) : (
+        factList
+      )}
       {guideModule.unverified.length > 0 ? (
-        <div className="mt-10 max-w-xl space-y-3 text-muted">
-          {guideModule.unverified.map((item) => (
-            <p key={item}>
-              <VerifyToken>{item}</VerifyToken>
-            </p>
-          ))}
-        </div>
+        <section
+          aria-labelledby="unverified-heading"
+          className="mt-12 max-w-xl border-t border-border pt-6"
+        >
+          <h2
+            id="unverified-heading"
+            className="text-xs font-semibold uppercase tracking-[0.16em] text-text-muted"
+          >
+            Not yet confirmed in this edition
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm text-text-muted">
+            {guideModule.unverified.map((item) => (
+              <li key={item}>
+                <VerifyToken>{item}</VerifyToken>
+              </li>
+            ))}
+          </ul>
+        </section>
       ) : null}
-      <p className="mt-10">
-        <Link href="/guide" className="text-brick hover:underline">
+      <nav
+        aria-label="Continue reading"
+        className="mt-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
+      >
+        {nextStep ? (
+          <Link href={`/guide/${nextStep.slug}`} className={primaryButton}>
+            Next: {nextStep.label}
+          </Link>
+        ) : pathStep ? (
+          <Link href="/guide" className={primaryButton}>
+            Back to your guide
+          </Link>
+        ) : null}
+        <Link href="/guide" className={quietLink}>
           All modules
         </Link>
-      </p>
+      </nav>
     </PageShell>
   );
 }

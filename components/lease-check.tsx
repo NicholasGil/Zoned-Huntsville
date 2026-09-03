@@ -15,15 +15,15 @@ export function LeaseCheck({ facts }: { facts: PublishedFact[] }) {
 
   return (
     <section className="mt-10 max-w-xl">
-      <h2 className="font-serif text-2xl text-ink">
+      <h2 className="font-sans text-2xl font-semibold text-text">
         Check the zone before you sign a lease
       </h2>
-      <p className="mt-4 text-muted">
+      <p className="mt-4 text-text-muted">
         Use that system&apos;s official locator or district instruction. Do not
         trust realtor or listing maps. Confirm the zone before you sign.
       </p>
       {howTos.length > 0 ? (
-        <ul className="mt-4 list-disc space-y-3 pl-5 text-ink">
+        <ul className="mt-4 list-disc space-y-3 pl-5 text-text">
           {howTos.map((fact) => (
             <li key={`${fact.entity_slug}:${fact.field}`}>
               <SourcedFact fact={fact} />
@@ -32,7 +32,7 @@ export function LeaseCheck({ facts }: { facts: PublishedFact[] }) {
         </ul>
       ) : null}
       {rezoning ? (
-        <p className="mt-6 text-ink">
+        <p className="mt-6 text-text">
           Live rezoning risk (Madison City Schools):{" "}
           <SourcedFact fact={rezoning} />
         </p>
