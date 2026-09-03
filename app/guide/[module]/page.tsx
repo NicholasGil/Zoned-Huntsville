@@ -13,6 +13,7 @@ import { getPublishedFacts } from "@/lib/facts";
 import { firstPathStep, nextFirstPathStep } from "@/lib/first-path";
 import { GUIDE_MODULES, getGuideModule } from "@/lib/guide-modules";
 import {
+  FIVE_SYSTEM_PROFILE_FIELDS,
   FIVE_SYSTEM_SLUGS,
   HCS_MAGNET_SLUGS,
   PRIVATE_SCHOOL_SLUGS,
@@ -70,7 +71,13 @@ export default async function GuideModulePage({
   const orderedFacts = slugRanks
     ? [...facts].sort((a, b) => {
         const bySlug = slugOrder(a.entity_slug, slugRanks) - slugOrder(b.entity_slug, slugRanks);
-        return bySlug !== 0 ? bySlug : a.field.localeCompare(b.field);
+        if (bySlug !== 0) {
+          return bySlug;
+        }
+        const byField =
+          slugOrder(a.field, FIVE_SYSTEM_PROFILE_FIELDS) -
+          slugOrder(b.field, FIVE_SYSTEM_PROFILE_FIELDS);
+        return byField !== 0 ? byField : a.field.localeCompare(b.field);
       })
     : facts;
 

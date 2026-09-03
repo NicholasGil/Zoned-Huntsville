@@ -150,12 +150,11 @@ export function ShortlistPath({
 
   return (
     <div className="mt-10 max-w-xl">
-      <h2 className="font-sans text-2xl font-semibold text-text">10-minute shortlist path</h2>
+      <h2 className="font-sans text-2xl font-semibold text-text">Three steps, one shortlist</h2>
       <p className="mt-3 text-text-muted">
-        This edition does not publish commute times, budget cutoffs, or school
-        rankings. Enter your own commute and budget, pick a path, and the
-        shortlist is built from sourced system and school facts already in the
-        guide.
+        You set the commute and the budget; this edition publishes no commute
+        times, budget cutoffs, or school rankings. Pick a path and the shortlist
+        is built from sourced system and school facts already in the guide.
       </p>
 
       <section className="mt-8">
@@ -202,8 +201,9 @@ export function ShortlistPath({
         </ul>
         {noLocator.length > 0 ? (
           <p className="mt-3 text-sm text-text-muted">
-            {noLocator.map((system) => system.name).join(" and ")} have official
-            websites in this edition but no sourced zone locator yet.
+            {noLocator.map((system) => system.name).join(" and ")}{" "}
+            {noLocator.length === 1 ? "has an official website" : "have official websites"}{" "}
+            in this edition but no sourced zone locator yet.
           </p>
         ) : null}
       </section>
