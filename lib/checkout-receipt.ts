@@ -194,6 +194,18 @@ export function receiptHasInventedAmount(receipt: CheckoutReceipt): boolean {
   return receipt.kind === "confirmed" && receipt.amountUsd !== null;
 }
 
+/**
+ * Buyer-facing "what you bought" line. Names only the tier the session
+ * actually returned; a Guide-only session never reads as Toolkit or Call.
+ */
+export function purchaseSummaryLabel(
+  receipt: Extract<CheckoutReceipt, { kind: "confirmed" }>,
+): string {
+  return receipt.tierLabel
+    ? `${receipt.productName} — ${receipt.tierLabel}`
+    : receipt.productName;
+}
+
 export function formatPurchaseDate(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) {

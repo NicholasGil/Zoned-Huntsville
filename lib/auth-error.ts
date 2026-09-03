@@ -84,12 +84,27 @@ export function toPublicAuthError(error: {
   return { message, code, status };
 }
 
+/**
+ * Buyer-facing headline for a failed send. Plain language only; the raw
+ * Auth message stays available via formatLoginSendFailedDetail for support.
+ */
 export function formatLoginSendFailedCopy(detail: AuthErrorFields): string {
-  if (detail.message.length > 0) {
-    const code = detail.code ? ` (${detail.code})` : "";
-    return `Supabase did not send the link. ${detail.message}${code}`;
+  if (detail.code === "over_email_send_rate_limit") {
+    return "We sent a link to that address a moment ago. Give it a minute to arrive before asking for another.";
   }
-  return "Supabase did not send the link. Check the project auth settings.";
+  if (detail.code === "email_provider_disabled" || detail.code === "otp_disabled") {
+    return "Email sign-in is switched off on this site right now. Please contact us and we'll get you in.";
+  }
+  return "We couldn't send the link just now. Try again in a minute, or contact us if it keeps happening.";
+}
+
+/** Raw Auth message and code, for the small support line under the headline. */
+export function formatLoginSendFailedDetail(detail: AuthErrorFields): string | null {
+  if (detail.message.length === 0 && !detail.code) {
+    return null;
+  }
+  const code = detail.code ? ` (${detail.code})` : "";
+  return `${detail.message}${code}`.trim();
 }
 
 export function loginSendFailedPath(error: {
