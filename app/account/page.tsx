@@ -99,9 +99,9 @@ export default async function AccountPage({
         <section className="mt-10 max-w-md">
           <h2 className="font-serif text-2xl text-ink">Purchase email</h2>
           <p className="mt-3 text-sm text-muted">
-            If you checked out with a different address, request a magic link
-            there. Access will not appear on this session until that email
-            signs in.
+            If you checked out with a different address, enter it here and
+            we&apos;ll send a link that opens the guide. Access will not appear
+            on this session until that email signs in.
           </p>
           <form action={requestPurchaseEmailLink} className="mt-6">
             <label htmlFor="purchase-email" className="block text-sm text-ink">
@@ -117,9 +117,9 @@ export default async function AccountPage({
             />
             <button
               type="submit"
-              className="mt-4 bg-brick px-4 py-2.5 text-sm text-paper hover:bg-brick-dark"
+              className="mt-4 inline-flex min-h-11 items-center justify-center rounded-md bg-action px-6 py-3 text-sm font-semibold text-text-on-action outline-none hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:bg-action-active"
             >
-              Email me a sign-in link
+              Send link
             </button>
           </form>
         </section>
@@ -142,7 +142,8 @@ export default async function AccountPage({
       ) : null}
       {status === "link-sent" ? (
         <p className="mt-4 text-sm text-muted" role="status">
-          If that address is accepted, a sign-in email is on the way.
+          Link sent. Check your inbox (and spam) for the sign-in email. Opening
+          that link signs you in and takes you straight to the guide.
         </p>
       ) : null}
 

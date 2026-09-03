@@ -99,6 +99,80 @@ export async function sendPurchaseMagicLink(email: string): Promise<void> {
   await sendConfirmedPurchaseMagicLink(admin, env.siteUrl, email);
 }
 
+type AdminClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
+
+export type PaidSessionResult = Extract<
+  FulfillmentResult,
+  { kind: "ignored" | "applied" | "invalid" | "write-failed" }
+>;
+
+/**
+ * Write the entitlement for one paid Checkout Session. Upserts on
+ * stripe_session_id, so the webhook and the thank-you page unlock can both
+ * call this for the same session without a double write.
+ */
+export async function applyPaidCheckoutSession(
+  admin: AdminClient,
+  session: Stripe.Checkout.Session,
+): Promise<PaidSessionResult> {
+  if (session.payment_status !== "paid") {
+    return { kind: "ignored" };
+  }
+
+  const email = readCheckoutEmail(session);
+  const tier = readProductTier(session);
+  if (!email) {
+    return { kind: "invalid", reason: "Checkout session has no customer email." };
+  }
+  if (!tier) {
+    return { kind: "invalid", reason: "Checkout session metadata.tier is missing or unknown." };
+  }
+
+  let userId: string | null = null;
+  if (
+    typeof session.client_reference_id === "string" &&
+    session.client_reference_id.length > 0
+  ) {
+    try {
+      const { data: existing } = await admin.auth.admin.getUserById(
+        session.client_reference_id,
+      );
+      if (existing.user) {
+        userId = existing.user.id;
+      }
+    } catch {
+      userId = null;
+    }
+  }
+  const paymentIntentId = readPaymentIntentId(session.payment_intent);
+
+  const { data, error } = await admin
+    .from("entitlements")
+    .upsert(
+      {
+        email,
+        user_id: userId,
+        stripe_session_id: session.id,
+        stripe_payment_intent: paymentIntentId,
+        tier,
+      },
+      { onConflict: "stripe_session_id" },
+    )
+    .select("id")
+    .single();
+
+  if (error || !data) {
+    return { kind: "write-failed", reason: error?.message ?? "Entitlement write failed." };
+  }
+
+  return {
+    kind: "applied",
+    entitlementId: data.id,
+    email,
+    amountUsd: readPaidAmountUsd(session),
+  };
+}
+
 export async function fulfillStripeEvent(
   event: Stripe.Event,
 ): Promise<FulfillmentResult> {
@@ -115,64 +189,11 @@ export async function fulfillStripeEvent(
       return { kind: "duplicate" };
     }
 
-    const session = event.data.object;
-    if (session.payment_status !== "paid") {
-      return { kind: "ignored" };
+    const result = await applyPaidCheckoutSession(admin, event.data.object);
+    if (result.kind === "applied") {
+      await markProcessed(event.id);
     }
-
-    const email = readCheckoutEmail(session);
-    const tier = readProductTier(session);
-    if (!email) {
-      return { kind: "invalid", reason: "Checkout session has no customer email." };
-    }
-    if (!tier) {
-      return { kind: "invalid", reason: "Checkout session metadata.tier is missing or unknown." };
-    }
-
-    let userId: string | null = null;
-    if (
-      typeof session.client_reference_id === "string" &&
-      session.client_reference_id.length > 0
-    ) {
-      try {
-        const { data: existing } = await admin.auth.admin.getUserById(
-          session.client_reference_id,
-        );
-        if (existing.user) {
-          userId = existing.user.id;
-        }
-      } catch {
-        userId = null;
-      }
-    }
-    const paymentIntentId = readPaymentIntentId(session.payment_intent);
-
-    const { data, error } = await admin
-      .from("entitlements")
-      .upsert(
-        {
-          email,
-          user_id: userId,
-          stripe_session_id: session.id,
-          stripe_payment_intent: paymentIntentId,
-          tier,
-        },
-        { onConflict: "stripe_session_id" },
-      )
-      .select("id")
-      .single();
-
-    if (error || !data) {
-      return { kind: "write-failed", reason: error?.message ?? "Entitlement write failed." };
-    }
-
-    await markProcessed(event.id);
-    return {
-      kind: "applied",
-      entitlementId: data.id,
-      email,
-      amountUsd: readPaidAmountUsd(session),
-    };
+    return result;
   }
 
   if (event.type === "charge.refunded") {

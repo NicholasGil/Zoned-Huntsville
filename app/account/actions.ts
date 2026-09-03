@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { setStoredAuthNext } from "@/lib/auth-next-cookie";
+import { consumeStoredAuthNext } from "@/lib/auth-next-cookie";
 import { parseEmail } from "@/lib/email";
 import { getAppEnv } from "@/lib/env";
 import { authConfirmRedirectTo } from "@/lib/purchase-auth";
@@ -34,6 +34,8 @@ export async function requestPurchaseEmailLink(formData: FormData) {
     redirect("/account?error=send-failed");
   }
 
-  await setStoredAuthNext("/account");
+  // The link must land in /guide (the /auth/confirm default), so clear any
+  // older stored destination instead of pointing the buyer back here.
+  await consumeStoredAuthNext();
   redirect("/account?status=link-sent");
 }

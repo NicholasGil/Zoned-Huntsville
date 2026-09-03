@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import {
   checkoutOffer,
@@ -8,9 +9,36 @@ import {
 import {
   mapCheckoutSession,
   mapLastPayment,
+  purchaseSummaryLabel,
   receiptHasInventedAmount,
   unavailableReceipt,
 } from "./checkout-receipt.ts";
+
+const receiptViewSource = readFileSync(
+  new URL("../components/checkout-receipt.tsx", import.meta.url),
+  "utf8",
+);
+const successPageSource = readFileSync(
+  new URL("../app/checkout/success/page.tsx", import.meta.url),
+  "utf8",
+);
+
+const BUYER_JARGON = [
+  "webhook",
+  "Checkout Session",
+  "session_id",
+  "Not returned by Stripe",
+  "Purchase confirmation",
+  "Checkout not confirmed",
+] as const;
+
+const FAKE_PROOF = [
+  "testimonial",
+  "5-star",
+  "families served",
+  "customers love",
+  "as seen in",
+] as const;
 
 describe("stripeCheckoutLineItem", () => {
   it("names the product and maps only the three catalog prices", () => {
@@ -185,6 +213,97 @@ describe("mapCheckoutSession", () => {
 
     assert.deepEqual(receipt, { kind: "unavailable", reason: "not-paid" });
     assert.equal(receiptHasInventedAmount(receipt), false);
+  });
+});
+
+describe("purchaseSummaryLabel", () => {
+  it("names only the tier the session returned", () => {
+    const guide = mapCheckoutSession({
+      payment_status: "paid",
+      amount_total: 7900,
+      currency: "usd",
+      metadata: { tier: "79" },
+    });
+    assert.equal(guide.kind, "confirmed");
+    if (guide.kind === "confirmed") {
+      const label = purchaseSummaryLabel(guide);
+      assert.equal(label, "The Huntsville School Guide — Guide");
+      assert.doesNotMatch(label, /toolkit/i);
+      assert.doesNotMatch(label, /call/i);
+    }
+
+    const call = mapCheckoutSession({
+      payment_status: "paid",
+      amount_total: 34900,
+      currency: "usd",
+      metadata: { tier: "call" },
+    });
+    assert.equal(call.kind, "confirmed");
+    if (call.kind === "confirmed") {
+      assert.equal(purchaseSummaryLabel(call), "The Huntsville School Guide — Call");
+    }
+  });
+
+  it("falls back to the product name when the tier is unknown", () => {
+    const receipt = mapCheckoutSession({
+      payment_status: "paid",
+      amount_total: 500,
+      currency: "usd",
+    });
+    assert.equal(receipt.kind, "confirmed");
+    if (receipt.kind === "confirmed") {
+      assert.equal(receipt.tierLabel, null);
+      assert.equal(purchaseSummaryLabel(receipt), "The Huntsville School Guide");
+    }
+  });
+});
+
+describe("checkout success buyer copy", () => {
+  it("never shows plumbing terms to buyers", () => {
+    for (const term of BUYER_JARGON) {
+      assert.equal(
+        receiptViewSource.toLowerCase().includes(term.toLowerCase()),
+        false,
+        `checkout-receipt.tsx must not contain "${term}"`,
+      );
+    }
+    assert.equal(successPageSource.includes("Purchase confirmation"), false);
+    assert.equal(successPageSource.includes("Checkout not confirmed"), false);
+    assert.equal(successPageSource.includes("webhook"), false);
+  });
+
+  it("does not invent social proof or outcomes", () => {
+    const lower = receiptViewSource.toLowerCase();
+    for (const term of FAKE_PROOF) {
+      assert.equal(lower.includes(term), false, `must not contain "${term}"`);
+    }
+    assert.doesNotMatch(receiptViewSource, /guarantee[sd]? (a )?(spot|seat|placement)/i);
+  });
+
+  it("keeps the receipt note and makes Open the guide the post-pay action", () => {
+    assert.match(receiptViewSource, /Stripe emails a receipt/);
+    assert.match(receiptViewSource, /min-h-11/);
+    assert.match(receiptViewSource, /href="\/guide"/);
+    assert.match(receiptViewSource, /Open the guide/);
+    assert.match(receiptViewSource, /purchaseSummaryLabel\(receipt\)/);
+    assert.match(receiptViewSource, /receipt\.amountDisplay/);
+    assert.match(receiptViewSource, /receipt\.email/);
+    assert.doesNotMatch(receiptViewSource, /check your inbox/i);
+    assert.doesNotMatch(receiptViewSource, /may take a minute/i);
+    assert.doesNotMatch(
+      receiptViewSource,
+      /font-serif|text-brick|text-ink\b|border-rule|(?<!text-)text-muted/,
+    );
+  });
+
+  it("does not make pricing or Send link the primary action after a paid checkout", () => {
+    const confirmed = receiptViewSource.slice(receiptViewSource.indexOf("function ConfirmedView"));
+    assert.equal(confirmed.includes("/#pricing"), false);
+    assert.equal(confirmed.includes("Send link"), false);
+    assert.match(confirmed, /access\.kind === "ready"/);
+    const primaryGuide = confirmed.indexOf('href="/guide" className={primaryButton}');
+    assert.ok(primaryGuide >= 0);
+    assert.ok(primaryGuide < confirmed.indexOf('id="order-heading"'));
   });
 });
 

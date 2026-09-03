@@ -1,109 +1,203 @@
 import Link from "next/link";
-import type { CheckoutReceipt } from "@/lib/checkout-receipt";
+import {
+  purchaseSummaryLabel,
+  type CheckoutReceipt,
+} from "@/lib/checkout-receipt";
+import type { CheckoutAccess } from "@/lib/checkout-unlock";
+
+const focusRing =
+  "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+
+const primaryButton = `inline-flex min-h-11 items-center justify-center rounded-md bg-action px-6 py-3 text-sm font-semibold text-text-on-action hover:bg-action-hover active:bg-action-active ${focusRing}`;
+
+const secondaryButton = `inline-flex min-h-11 items-center justify-center rounded-md border border-text bg-transparent px-6 py-3 text-sm font-semibold text-text hover:border-action ${focusRing}`;
+
+const quietLink = `inline-flex min-h-11 items-center text-sm text-text-muted underline-offset-4 hover:text-text hover:underline ${focusRing}`;
+
+const inlineLink = `font-semibold text-action underline underline-offset-4 hover:text-action-hover ${focusRing}`;
 
 const UNAVAILABLE_COPY = {
   "missing-session":
-    "No session_id was supplied, so Stripe was not asked for a checkout session.",
+    "This link didn't include a checkout reference, so there was nothing for us to look up.",
   "stripe-unset":
-    "Stripe is not configured on this site, so this page cannot load a checkout session.",
+    "Checkout lookups aren't available on this site right now, so we can't show an order here.",
   "retrieve-failed":
-    "Stripe did not return this checkout session. The session id may be invalid, expired, or unreachable.",
+    "We couldn't find a checkout that matches this link. It may have expired, or the link may be incomplete.",
   "not-paid":
-    "Stripe has not marked this checkout session as paid.",
+    "This checkout hasn't been completed, so there's no payment to confirm.",
 } as const;
 
-function ReceiptRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function OrderRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4">
-      <dt className="text-muted">{label}</dt>
-      <dd className="text-right">{value}</dd>
+    <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
+      <dt className="text-text-muted">{label}</dt>
+      <dd className="font-semibold text-text sm:text-right break-words">{value}</dd>
     </div>
   );
 }
 
-function ReceiptLinks() {
+function QuietLinks({
+  links,
+}: {
+  links: ReadonlyArray<{ href: string; label: string }>;
+}) {
   return (
-    <p className="mt-8 flex flex-wrap gap-x-5 gap-y-2">
-      <Link href="/#pricing" className="text-brick hover:underline">
-        Return to pricing
-      </Link>
-      <Link href="/account" className="text-brick hover:underline">
-        Account
-      </Link>
-      <Link href="/contact" className="text-brick hover:underline">
-        Contact
-      </Link>
-      <Link href="/login" className="text-brick hover:underline">
-        Sign in
-      </Link>
+    <p className="mt-6 flex flex-wrap gap-x-6">
+      {links.map((link) => (
+        <Link key={link.href} href={link.href} className={quietLink}>
+          {link.label}
+        </Link>
+      ))}
     </p>
+  );
+}
+
+function UnavailableView({
+  reason,
+}: {
+  reason: Extract<CheckoutReceipt, { kind: "unavailable" }>["reason"];
+}) {
+  return (
+    <>
+      <h1 className="font-sans text-4xl font-semibold text-text">
+        We couldn&apos;t confirm this order
+      </h1>
+      <p className="mt-4 max-w-xl text-text-muted">
+        This isn&apos;t a completed order, so there&apos;s no product or amount
+        to show here. {UNAVAILABLE_COPY[reason]}
+      </p>
+
+      <section
+        aria-labelledby="charged-heading"
+        className="mt-8 max-w-xl rounded-lg border border-border bg-surface px-5 py-5"
+      >
+        <h2 id="charged-heading" className="font-sans text-xl font-semibold text-text">
+          If your card was charged
+        </h2>
+        <p className="mt-3 text-text-muted">
+          Sign in with the email you used at checkout and we&apos;ll send a link
+          that opens the guide. Stripe emails a receipt for every successful
+          payment, so if you have one, the payment went through and we can sort
+          out access.
+        </p>
+      </section>
+
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <Link href="/login" className={primaryButton}>
+          Sign in with checkout email
+        </Link>
+        <Link href="/contact" className={secondaryButton}>
+          Contact
+        </Link>
+      </div>
+      <QuietLinks
+        links={[
+          { href: "/account", label: "Account" },
+          { href: "/#pricing", label: "Return to pricing" },
+        ]}
+      />
+    </>
+  );
+}
+
+function ConfirmedView({
+  receipt,
+  access,
+}: {
+  receipt: Extract<CheckoutReceipt, { kind: "confirmed" }>;
+  access: CheckoutAccess;
+}) {
+  const ready = access.kind === "ready";
+  const missingDetails = receipt.amountDisplay === null || receipt.email === null;
+  const checkoutEmail = receipt.email ?? "the email you used at checkout";
+
+  return (
+    <>
+      <p className="text-xs uppercase tracking-[0.16em] text-action">
+        Payment received
+      </p>
+      <h1 className="mt-2 font-sans text-4xl font-semibold text-text">
+        Thank you — your order is confirmed.
+      </h1>
+      <p className="mt-4 max-w-xl text-text-muted">
+        {ready
+          ? `Your payment went through, and this browser is signed in as ${access.email}. You can open the guide right now.`
+          : "Your payment went through. One more step to get in: sign in with the email you used at checkout, and we'll send a link that opens the guide."}
+      </p>
+
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        {ready ? (
+          <Link href="/guide" className={primaryButton}>
+            Open the guide
+          </Link>
+        ) : (
+          <Link href="/login" className={primaryButton}>
+            Sign in to open the guide
+          </Link>
+        )}
+      </div>
+
+      <section
+        aria-labelledby="order-heading"
+        className="mt-10 max-w-md rounded-lg border border-border bg-surface px-5 py-5"
+      >
+        <h2
+          id="order-heading"
+          className="text-xs font-semibold uppercase tracking-[0.16em] text-text-muted"
+        >
+          Your order
+        </h2>
+        <dl className="mt-4 space-y-3 text-sm">
+          <OrderRow label="What you bought" value={purchaseSummaryLabel(receipt)} />
+          {receipt.amountDisplay ? (
+            <OrderRow label="Amount paid" value={receipt.amountDisplay} />
+          ) : null}
+          {receipt.email ? <OrderRow label="Email" value={receipt.email} /> : null}
+        </dl>
+        <p className="mt-4 text-xs text-text-muted">
+          Stripe emails a receipt for this payment to {checkoutEmail}.
+          {missingDetails
+            ? " Some details didn't come back from checkout; that receipt has the full record."
+            : ""}
+        </p>
+      </section>
+
+      <section aria-labelledby="access-heading" className="mt-8 max-w-xl">
+        <h2 id="access-heading" className="font-sans text-xl font-semibold text-text">
+          Getting in later
+        </h2>
+        <p className="mt-3 text-text-muted">
+          {ready
+            ? "You're signed in here, so the guide opens straight away in this browser. "
+            : ""}
+          On another device, or if you get signed out,{" "}
+          <Link href="/login" className={inlineLink}>
+            sign in
+          </Link>{" "}
+          with {checkoutEmail} and we&apos;ll email you a link that opens the
+          guide. No password needed.
+        </p>
+      </section>
+
+      <QuietLinks
+        links={[
+          { href: "/account", label: "Account" },
+          { href: "/contact", label: "Contact" },
+        ]}
+      />
+    </>
   );
 }
 
 export function CheckoutReceiptView({
   receipt,
+  access,
 }: {
   receipt: CheckoutReceipt;
+  access: CheckoutAccess;
 }) {
   if (receipt.kind === "unavailable") {
-    return (
-      <>
-        <h1 className="font-serif text-4xl text-ink">Checkout not confirmed</h1>
-        <p className="mt-4 max-w-xl text-muted">
-          This is not a completed order. We could not load a paid Stripe
-          Checkout Session, so this page does not show a product, tier, or
-          amount.
-        </p>
-        <p className="mt-4 max-w-xl text-muted">{UNAVAILABLE_COPY[receipt.reason]}</p>
-        <p className="mt-4 max-w-xl text-muted">
-          If you were charged, sign in with the email you used at checkout.
-          Access is granted only after the webhook writes the purchase. Stripe
-          emails a receipt for successful Checkout payments.
-        </p>
-        <ReceiptLinks />
-      </>
-    );
+    return <UnavailableView reason={receipt.reason} />;
   }
-
-  return (
-    <>
-      <h1 className="font-serif text-4xl text-ink">Purchase confirmation</h1>
-      <p className="mt-4 max-w-xl text-muted">
-        This page is your purchase confirmation. Stripe emails a receipt for
-        this payment to the checkout address.
-      </p>
-      <dl className="mt-8 max-w-md border border-rule px-5 py-4 text-sm">
-        <ReceiptRow label="Product" value={receipt.productName} />
-        <div className="mt-3">
-          <ReceiptRow
-            label="Tier"
-            value={receipt.tierLabel ?? "Not returned by Stripe"}
-          />
-        </div>
-        <div className="mt-3">
-          <ReceiptRow
-            label="Amount paid"
-            value={receipt.amountDisplay ?? "Not returned by Stripe"}
-          />
-        </div>
-        <div className="mt-3">
-          <ReceiptRow
-            label="Email"
-            value={receipt.email ?? "Not returned by Stripe"}
-          />
-        </div>
-      </dl>
-      <p className="mt-6 max-w-xl text-muted">
-        Access is granted only after the webhook writes the purchase. Sign in
-        with the checkout email if the guide is still locked.
-      </p>
-      <ReceiptLinks />
-    </>
-  );
+  return <ConfirmedView receipt={receipt} access={access} />;
 }

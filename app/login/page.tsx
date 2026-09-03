@@ -36,14 +36,14 @@ export default async function LoginPage({
 
   return (
     <PageShell>
-      <h1 className="font-serif text-4xl text-ink">Sign in</h1>
-      <p className="mt-4 max-w-xl text-muted">
-        Request a Supabase magic link. No password. The link lands on
-        /auth/confirm.
+      <h1 className="font-sans text-4xl font-semibold text-text">Sign in</h1>
+      <p className="mt-4 max-w-xl text-text-muted">
+        Enter the email you used at checkout and we&apos;ll send a link that
+        opens the guide. No password needed.
       </p>
 
       <form action={requestMagicLink} className="mt-10 max-w-md">
-        <label htmlFor="login-email" className="block text-sm text-ink">
+        <label htmlFor="login-email" className="block text-sm text-text">
           Email
         </label>
         <input
@@ -52,40 +52,42 @@ export default async function LoginPage({
           type="email"
           required
           autoComplete="email"
-          className="mt-2 w-full border border-rule bg-paper px-3 py-2"
+          className="mt-2 min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         />
         <button
           type="submit"
-          className="mt-4 bg-brick px-4 py-2.5 text-sm text-paper hover:bg-brick-dark"
+          className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-action px-6 py-3 text-sm font-semibold text-text-on-action outline-none hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:bg-action-active sm:w-auto"
         >
-          Email me a sign-in link
+          Send link
         </button>
       </form>
 
       {error === "invalid-email" ? (
-        <p className="mt-4 text-sm text-brick" role="alert">
-          That email address is not valid.
+        <p className="mt-4 max-w-md text-sm text-danger" role="alert">
+          That email address doesn&apos;t look right. Check it and try again.
         </p>
       ) : null}
       {error === "not-configured" ? (
-        <p className="mt-4 text-sm text-brick" role="alert">
-          Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and
-          NEXT_PUBLIC_SUPABASE_ANON_KEY.
+        <p className="mt-4 max-w-md text-sm text-danger" role="alert">
+          Sign-in isn&apos;t available on this site right now. Set
+          NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.
         </p>
       ) : null}
       {sendFailedCopy ? (
-        <p className="mt-4 text-sm text-brick" role="alert">
+        <p className="mt-4 max-w-md text-sm text-danger" role="alert">
           {sendFailedCopy}
         </p>
       ) : null}
       {error === "auth" ? (
-        <p className="mt-4 text-sm text-brick" role="alert">
-          The magic-link callback could not create a session.
+        <p className="mt-4 max-w-md text-sm text-danger" role="alert">
+          That sign-in link didn&apos;t work. It may have expired or already
+          been used. Send a new one below.
         </p>
       ) : null}
       {status === "sent" ? (
-        <p className="mt-4 text-sm text-muted" role="status">
-          If that address is accepted, a sign-in email is on the way.
+        <p className="mt-4 max-w-md text-sm text-text" role="status">
+          Link sent. Check your inbox (and spam) for the sign-in email. Opening
+          that link signs you in and takes you straight to the guide.
         </p>
       ) : null}
     </PageShell>

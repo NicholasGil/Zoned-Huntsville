@@ -50,8 +50,8 @@ export type PurchaseAuthAdmin = {
  * GoTrue accepts any path on the project Site URL host. When Site URL is a
  * different host, allowlist entries are exact (query string included). The
  * project allowlist has `/auth/confirm` with no query. `/auth/confirm` already
- * defaults `next` to `/guide`, so purchase, login, and account share this URL.
- * Account stores `/account` in-app and applies it after the session exists.
+ * defaults `next` to `/guide`, so purchase, login, and account share this URL
+ * and every emailed link lands in the guide.
  */
 export function authConfirmRedirectTo(siteUrl: string): string {
   const origin = siteUrl.replace(/\/+$/, "");
