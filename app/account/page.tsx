@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requestPurchaseEmailLink } from "@/app/account/actions";
 import { PageShell } from "@/components/page-shell";
+import { SendLinkForm, SendLinkStatus } from "@/components/send-link-form";
 import { getCallSlot, type CallSlotQuery } from "@/lib/call-slots";
 import { getEntitlement } from "@/lib/entitlement";
 import { getOwnEntitlements, getSignedInAdminState } from "@/lib/facts";
@@ -103,48 +104,23 @@ export default async function AccountPage({
             we&apos;ll send a link that opens the guide. Access will not appear
             on this session until that email signs in.
           </p>
-          <form action={requestPurchaseEmailLink} className="mt-6">
-            <label htmlFor="purchase-email" className="block text-sm text-ink">
-              Checkout email
-            </label>
-            <input
-              id="purchase-email"
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              className="mt-2 w-full border border-rule bg-paper px-3 py-2"
-            />
-            <button
-              type="submit"
-              className="mt-4 inline-flex min-h-11 items-center justify-center rounded-md bg-action px-6 py-3 text-sm font-semibold text-text-on-action outline-none hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:bg-action-active"
-            >
-              Send link
-            </button>
-          </form>
+          <SendLinkForm
+            action={requestPurchaseEmailLink}
+            inputId="purchase-email"
+            label="Checkout email"
+            className="mt-6"
+          />
+          <SendLinkStatus
+            sent={status === "link-sent"}
+            error={
+              error === "invalid-email" ||
+              error === "not-configured" ||
+              error === "send-failed"
+                ? error
+                : null
+            }
+          />
         </section>
-      ) : null}
-
-      {error === "invalid-email" ? (
-        <p className="mt-4 text-sm text-brick" role="alert">
-          That email address is not valid.
-        </p>
-      ) : null}
-      {error === "not-configured" ? (
-        <p className="mt-4 text-sm text-brick" role="alert">
-          Supabase is not configured.
-        </p>
-      ) : null}
-      {error === "send-failed" ? (
-        <p className="mt-4 text-sm text-brick" role="alert">
-          Supabase did not send the link.
-        </p>
-      ) : null}
-      {status === "link-sent" ? (
-        <p className="mt-4 text-sm text-muted" role="status">
-          Link sent. Check your inbox (and spam) for the sign-in email. Opening
-          that link signs you in and takes you straight to the guide.
-        </p>
       ) : null}
 
       {entitlement.kind === "signed-in" && entitlement.hasCall ? (
