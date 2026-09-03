@@ -10,6 +10,7 @@ import {
   successHref,
   UNLOCK_MAX_AGE_SECONDS,
   unlockHref,
+  unlockMarkerId,
   type UnlockAuthAdmin,
   type UnlockSessionClient,
 } from "./checkout-unlock.ts";
@@ -219,6 +220,15 @@ describe("post-pay path wiring", () => {
     assert.match(unlockRouteSource, /applyPaidCheckoutSession\(admin, session\)/);
     assert.match(unlockRouteSource, /isCheckoutUnlockFresh\(session\)/);
     assert.match(unlockRouteSource, /signInBrowserAsCheckoutEmail\(/);
+  });
+
+  it("unlock is one-shot per Checkout Session", () => {
+    assert.equal(unlockMarkerId("cs_1"), "checkout-unlock:cs_1");
+    assert.match(unlockRouteSource, /reason: "already-used"/);
+    const check = unlockRouteSource.indexOf('.eq("event_id", marker)');
+    const signIn = unlockRouteSource.indexOf("signInBrowserAsCheckoutEmail(admin, supabase, email)");
+    const mark = unlockRouteSource.indexOf('.insert({ event_id: marker })');
+    assert.ok(check >= 0 && check < signIn && signIn < mark);
   });
 
   it("success page redirects through unlock instead of asking for email", () => {

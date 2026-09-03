@@ -83,6 +83,15 @@ export function isCheckoutUnlockFresh(
   return nowSeconds - session.created <= UNLOCK_MAX_AGE_SECONDS;
 }
 
+/**
+ * processed_events row that marks a Checkout Session as already used to sign
+ * a browser in. The success URL lives in browser history, so unlock is
+ * one-shot; any later device takes the sign-in-with-checkout-email path.
+ */
+export function unlockMarkerId(sessionId: string): string {
+  return `checkout-unlock:${sessionId}`;
+}
+
 export type UnlockOutcome =
   | { kind: "signed-in" }
   | {
@@ -94,6 +103,7 @@ export type UnlockOutcome =
         | "not-paid"
         | "no-email"
         | "stale"
+        | "already-used"
         | "supabase-unset"
         | "auth-user"
         | "generate-link"

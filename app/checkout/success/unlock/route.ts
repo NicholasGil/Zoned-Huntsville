@@ -6,6 +6,7 @@ import {
   SUCCESS_PATH,
   signInBrowserAsCheckoutEmail,
   successHref,
+  unlockMarkerId,
   type UnlockOutcome,
 } from "@/lib/checkout-unlock";
 import { getAppEnv } from "@/lib/env";
@@ -54,6 +55,16 @@ async function unlock(sessionId: string): Promise<UnlockOutcome> {
     return { kind: "failed", reason: "supabase-unset" };
   }
 
+  const marker = unlockMarkerId(session.id);
+  const { data: used } = await admin
+    .from("processed_events")
+    .select("event_id")
+    .eq("event_id", marker)
+    .maybeSingle();
+  if (used) {
+    return { kind: "failed", reason: "already-used" };
+  }
+
   const email = receipt.email.toLowerCase();
   try {
     await ensureConfirmedAuthUser(admin, email);
@@ -71,7 +82,11 @@ async function unlock(sessionId: string): Promise<UnlockOutcome> {
     });
   }
 
-  return signInBrowserAsCheckoutEmail(admin, supabase, email);
+  const outcome = await signInBrowserAsCheckoutEmail(admin, supabase, email);
+  if (outcome.kind === "signed-in") {
+    await admin.from("processed_events").insert({ event_id: marker });
+  }
+  return outcome;
 }
 
 export async function GET(request: Request) {
