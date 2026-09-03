@@ -10,20 +10,20 @@ export function SourcedFact({ fact }: { fact: SourcedFactView }) {
   return (
     <span>
       {isHttpUrl(fact.value) ? (
-        <a href={fact.value} className="break-all text-brick hover:underline">
+        <a href={fact.value} className="break-all text-action underline underline-offset-4 hover:text-action-hover">
           {fact.value}
         </a>
       ) : (
         fact.value
       )}
       {isSecondaryFact(fact) ? (
-        <span className="text-brick"> unconfirmed — verify directly</span>
+        <span className="text-danger"> unconfirmed — verify directly</span>
       ) : null}
-      <span className="text-muted">
+      <span className="text-text-muted">
         {" "}
         (
         {isHttpUrl(fact.source_url) ? (
-          <a href={fact.source_url} className="text-brick hover:underline">
+          <a href={fact.source_url} className="text-action underline underline-offset-4 hover:text-action-hover">
             source
           </a>
         ) : (

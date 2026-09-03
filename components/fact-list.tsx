@@ -42,12 +42,12 @@ export function FactList({ facts }: { facts: PublishedFact[] }) {
         const key = first ? first.entity_slug : "empty";
         return (
           <section key={key}>
-            <h3 className="font-serif text-2xl text-ink">{entityHeading(group)}</h3>
+            <h3 className="font-sans text-2xl font-semibold text-text">{entityHeading(group)}</h3>
             <dl className="mt-4 space-y-3">
               {group.map((fact) => (
                 <div key={fact.id ?? factKey(fact)}>
-                  <dt className="text-sm text-muted">{fieldLabel(fact.field)}</dt>
-                  <dd className="mt-1 text-ink">
+                  <dt className="text-sm text-text-muted">{fieldLabel(fact.field)}</dt>
+                  <dd className="mt-1 text-text">
                     <SourcedFact fact={fact} />
                   </dd>
                 </div>

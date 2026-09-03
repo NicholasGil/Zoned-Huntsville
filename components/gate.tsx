@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { primaryButton, secondaryButton } from "@/components/button-styles";
 import type { Entitlement } from "@/lib/entitlement";
 
 export function AccessGate({
@@ -21,14 +22,14 @@ export function AccessGate({
         : "You are signed in, but this page requires a paid guide purchase.";
 
   return (
-    <section className="border border-rule bg-paper-raised px-6 py-8">
-      <h1 className="font-serif text-3xl text-ink">{title}</h1>
-      <p className="mt-4 max-w-xl text-muted">{reason}</p>
-      <div className="mt-6 flex flex-wrap gap-4 text-sm">
-        <Link href="/login" className="text-brick hover:underline">
+    <section className="rounded-lg border border-border bg-surface px-6 py-8">
+      <h1 className="font-sans text-3xl font-semibold text-text">{title}</h1>
+      <p className="mt-4 max-w-xl text-text-muted">{reason}</p>
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <Link href="/login" className={primaryButton}>
           Request a magic link
         </Link>
-        <Link href="/" className="text-brick hover:underline">
+        <Link href="/#pricing" className={secondaryButton}>
           See pricing
         </Link>
       </div>
