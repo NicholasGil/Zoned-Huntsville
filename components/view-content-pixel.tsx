@@ -1,11 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import { trackMetaEvent, viewContentSampleParams } from "@/lib/meta-pixel";
+import {
+  hasTrackedOnce,
+  markTrackedOnce,
+  trackMetaEvent,
+  viewContentSampleParams,
+} from "@/lib/meta-pixel";
 
 export function ViewContentPixel() {
   useEffect(() => {
-    trackMetaEvent("ViewContent", viewContentSampleParams());
+    const key = "meta_pixel:viewcontent:sample";
+    if (hasTrackedOnce(key)) {
+      return;
+    }
+    if (trackMetaEvent("ViewContent", viewContentSampleParams())) {
+      markTrackedOnce(key);
+    }
   }, []);
 
   return null;
