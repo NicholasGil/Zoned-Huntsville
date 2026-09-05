@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { AttributionCapture } from "@/components/attribution-capture";
+import { MetaPixel } from "@/components/meta-pixel";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { hero, site } from "@/lib/site";
@@ -32,6 +34,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${plexSans.variable} ${plexMono.variable}`}>
       <body className="flex min-h-screen flex-col antialiased">
+        <AttributionCapture />
+        <MetaPixel />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />

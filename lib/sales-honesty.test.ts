@@ -222,7 +222,7 @@ describe("held product rails", () => {
 
   it("does not change Stripe amounts, metadata.tier, or webhook", () => {
     assert.match(checkoutOfferSource, /unit_amount: offer\.unitAmountCents/);
-    assert.match(checkoutOfferSource, /metadata: \{ tier: tierId \}/);
+    assert.match(checkoutOfferSource, /checkoutSessionMetadata\(tierId, attribution\)/);
     assert.match(checkoutOfferSource, /mode: "payment"/);
     assert.equal(
       pricingTiers.map((tier) => tier.amountUsd).join(","),

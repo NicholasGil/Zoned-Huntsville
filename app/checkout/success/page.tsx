@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { CheckoutReceiptView } from "@/components/checkout-receipt";
 import { PageShell } from "@/components/page-shell";
+import { PurchasePixel } from "@/components/purchase-pixel";
 import { planCheckoutAccess } from "@/lib/checkout-unlock";
 import { getSignedInAdminState } from "@/lib/facts";
 import { loadCheckoutReceipt } from "@/lib/load-checkout-receipt";
@@ -46,6 +47,7 @@ export default async function CheckoutSuccessPage({
 
   return (
     <PageShell>
+      <PurchasePixel receipt={receipt} sessionId={sessionId} />
       <CheckoutReceiptView receipt={receipt} access={access} />
     </PageShell>
   );

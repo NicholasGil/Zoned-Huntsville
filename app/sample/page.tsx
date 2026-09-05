@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CheckoutForm } from "@/components/checkout-form";
 import { PageShell } from "@/components/page-shell";
 import { SampleOptInForm } from "@/components/sample-opt-in-form";
+import { ViewContentPixel } from "@/components/view-content-pixel";
 import { SourcedFact } from "@/components/sourced-fact";
 import { fieldLabel, huntsvilleCitySampleFacts } from "@/lib/seed-facts";
 import { hero } from "@/lib/site";
@@ -19,6 +20,7 @@ export default function SamplePage() {
 
   return (
     <PageShell>
+      <ViewContentPixel />
       <h1 className="font-serif text-4xl text-ink">Huntsville City Schools</h1>
       <p className="mt-4 max-w-xl text-muted">
         This is the free district profile. Other districts stay in the paid

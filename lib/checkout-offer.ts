@@ -1,3 +1,8 @@
+import {
+  checkoutSessionMetadata,
+  checkoutSuccessUrl,
+  type Attribution,
+} from "./attribution.ts";
 import { pricingTiers, site, type PricingTierId } from "./site.ts";
 
 export const PRODUCT_NAME = site.name;
@@ -74,13 +79,14 @@ export function stripeCheckoutLineItem(tierId: PricingTierId) {
 export function stripeCheckoutSessionParams(
   tierId: PricingTierId,
   siteUrl: string,
+  attribution: Attribution = {},
 ) {
   const origin = siteUrl.replace(/\/+$/, "");
   return {
     mode: "payment" as const,
     line_items: [stripeCheckoutLineItem(tierId)],
-    success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: checkoutSuccessUrl(origin, attribution),
     cancel_url: `${origin}/#pricing`,
-    metadata: { tier: tierId },
+    metadata: checkoutSessionMetadata(tierId, attribution),
   };
 }
