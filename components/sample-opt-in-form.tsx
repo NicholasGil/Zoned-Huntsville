@@ -1,7 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { submitSampleOptIn, type SampleState } from "@/app/sample/actions";
+import {
+  hasTrackedOnce,
+  leadEventParams,
+  markTrackedOnce,
+  trackMetaEvent,
+} from "@/lib/meta-pixel";
 
 const initial: SampleState = { kind: "idle" };
 
@@ -13,6 +19,19 @@ export function SampleOptInForm({
   submitLabel?: string;
 }) {
   const [state, action, pending] = useActionState(submitSampleOptIn, initial);
+
+  useEffect(() => {
+    if (state.kind !== "received") {
+      return;
+    }
+    const key = "meta_pixel:lead:sample";
+    if (hasTrackedOnce(key)) {
+      return;
+    }
+    if (trackMetaEvent("Lead", leadEventParams())) {
+      markTrackedOnce(key);
+    }
+  }, [state.kind]);
 
   return (
     <form action={action} className={className}>

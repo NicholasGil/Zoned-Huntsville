@@ -34,6 +34,8 @@ Open [http://localhost:3000](http://localhost:3000). Turbopack is the default bu
 
 Named environment variables are listed in `.env.example`. Leave them empty to run without live Stripe, Supabase, or Resend.
 
+`NEXT_PUBLIC_META_PIXEL_ID` is the Meta / Facebook Pixel ID. It is public because the browser loads `fbevents.js`. Leave it empty to no-op the pixel. Set it in Vercel Production (and Preview if you need to test ads). Changing a `NEXT_PUBLIC_` value requires a new deploy. The pixel records PageView on public pages, InitiateCheckout when a buyer submits a checkout form, Lead after a successful sample opt-in, and Purchase on `/checkout/success` only after Stripe reports the session paid. Landing-page `utm_*`, `fbclid`, and `gclid` values are stored first-party and copied onto the Stripe Checkout Session metadata and `success_url`.
+
 `RESEND_API_KEY`, `EMAIL_FROM`, and `CONTACT_TO` are server-only. Do not put them behind `NEXT_PUBLIC_`. Missing keys skip outbound mail. Sample and contact forms still return success. The Stripe webhook still returns 2xx.
 
 The five-email marketing sequence lives in `content/email-sequence.md` for later paste into Kit / ConvertKit. Do not send that sequence until a physical mailbox exists and Kit is connected. This app must not implement marketing unsubscribe. Kit owns that.

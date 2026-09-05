@@ -94,6 +94,30 @@ describe("stripeCheckoutLineItem", () => {
       assert.equal(params.cancel_url, "https://example.com/#pricing");
     }
   });
+
+  it("copies UTMs and fbclid onto metadata and success_url without dropping tier", () => {
+    const params = stripeCheckoutSessionParams("79", "https://example.com", {
+      utm_source: "facebook",
+      utm_medium: "paid",
+      utm_campaign: "guide",
+      utm_content: "hero",
+      utm_term: "school+guide",
+      fbclid: "IwAR.test",
+      gclid: "Cjw.test",
+    });
+
+    assert.equal(params.metadata.tier, "79");
+    assert.equal(params.metadata.utm_source, "facebook");
+    assert.equal(params.metadata.utm_medium, "paid");
+    assert.equal(params.metadata.utm_campaign, "guide");
+    assert.equal(params.metadata.fbclid, "IwAR.test");
+    assert.equal(params.metadata.gclid, "Cjw.test");
+    assert.match(params.success_url, /session_id=\{CHECKOUT_SESSION_ID\}/);
+    assert.match(params.success_url, /utm_source=facebook/);
+    assert.match(params.success_url, /fbclid=IwAR\.test/);
+    assert.match(params.success_url, /gclid=Cjw\.test/);
+    assert.equal(params.line_items[0]?.price_data.unit_amount, 7900);
+  });
 });
 
 describe("mapCheckoutSession", () => {
@@ -113,6 +137,7 @@ describe("mapCheckoutSession", () => {
       tierLabel: "Guide",
       amountUsd: 79,
       amountDisplay: "$79",
+      currency: "usd",
       email: "buyer@example.com",
     });
   });
@@ -133,6 +158,7 @@ describe("mapCheckoutSession", () => {
       assert.equal(receipt.tierLabel, "Toolkit");
       assert.equal(receipt.amountUsd, 149);
       assert.equal(receipt.amountDisplay, "$149");
+      assert.equal(receipt.currency, "usd");
       assert.equal(receipt.email, "toolkit-buyer@example.com");
     }
   });
@@ -158,6 +184,7 @@ describe("mapCheckoutSession", () => {
       assert.equal(receipt.tierLabel, "Call");
       assert.equal(receipt.amountUsd, 349);
       assert.equal(receipt.amountDisplay, "$349");
+      assert.equal(receipt.currency, "usd");
     }
   });
 
@@ -198,6 +225,7 @@ describe("mapCheckoutSession", () => {
       assert.equal(receipt.tierLabel, "Guide");
       assert.equal(receipt.amountUsd, null);
       assert.equal(receipt.amountDisplay, null);
+      assert.equal(receipt.currency, "usd");
       assert.equal(receipt.email, "buyer@example.com");
     }
     assert.equal(receiptHasInventedAmount(receipt), false);

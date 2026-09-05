@@ -35,8 +35,16 @@ export default function PrivacyPage() {
       <h2 className="pt-4 font-serif text-2xl text-ink">Cookies and analytics</h2>
       <p>
         Sign-in uses session cookies from Supabase. Checkout error messages on
-        the sales page read a query string in the browser. This codebase does
-        not include a separate analytics product.
+        the sales page read a query string in the browser. When a Meta Pixel ID
+        is configured, this site loads Meta&apos;s fbevents script and records
+        PageView plus checkout and lead events (InitiateCheckout, Lead, and
+        Purchase after a confirmed payment) so ad performance can be measured.
+        Meta may set cookies and receive the page URL, browser information, and
+        those events. We also store advertising click IDs (fbclid, and gclid if
+        present) and UTM parameters in first-party browser storage so they can
+        be written onto the Stripe Checkout Session and the post-payment success
+        URL. If no Pixel ID is set, that script does not load. This codebase
+        does not include another analytics product besides the Meta Pixel.
       </p>
       <h2 className="pt-4 font-serif text-2xl text-ink">Retention</h2>
       <p>

@@ -33,6 +33,7 @@ export type CheckoutReceipt =
       tierLabel: string | null;
       amountUsd: number | null;
       amountDisplay: string | null;
+      currency: string | null;
       email: string | null;
     }
   | {
@@ -78,6 +79,14 @@ function readEmail(session: StripeSessionLike): string | null {
     return session.customer_email.trim();
   }
   return null;
+}
+
+function readCurrency(session: StripeSessionLike): string | null {
+  if (typeof session.currency !== "string") {
+    return null;
+  }
+  const currency = session.currency.trim().toLowerCase();
+  return currency.length > 0 ? currency : null;
 }
 
 function readAmountUsd(session: StripeSessionLike): number | null {
@@ -186,6 +195,7 @@ export function mapCheckoutSession(session: StripeSessionLike | null): CheckoutR
     tierLabel: tier ? TIER_BUYER_LABEL[tier] : null,
     amountUsd,
     amountDisplay: amountUsd === null ? null : formatPaidUsd(amountUsd),
+    currency: readCurrency(session),
     email: readEmail(session),
   };
 }

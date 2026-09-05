@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
+import { ATTRIBUTION_KEYS, captureAttributionForCheckout } from "@/lib/attribution";
+import { initiateCheckoutParams, trackMetaEvent } from "@/lib/meta-pixel";
 import type { PricingTierId } from "@/lib/site";
 
 const focusRing =
@@ -58,9 +60,23 @@ export function CheckoutForm({
       action="/api/checkout"
       method="post"
       className={className}
-      onSubmit={() => setSubmitting(true)}
+      onSubmit={(event) => {
+        const form = event.currentTarget;
+        const attribution = captureAttributionForCheckout();
+        for (const key of ATTRIBUTION_KEYS) {
+          const input = form.elements.namedItem(key);
+          if (input instanceof HTMLInputElement) {
+            input.value = attribution[key] ?? "";
+          }
+        }
+        trackMetaEvent("InitiateCheckout", initiateCheckoutParams(tierId));
+        setSubmitting(true);
+      }}
     >
       <input type="hidden" name="tier" value={tierId} />
+      {ATTRIBUTION_KEYS.map((key) => (
+        <input key={key} type="hidden" name={key} defaultValue="" />
+      ))}
       <CheckoutSubmitButton
         label={label}
         buttonClass={buttonClass}

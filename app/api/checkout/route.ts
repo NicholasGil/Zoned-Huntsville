@@ -1,25 +1,42 @@
 import { NextResponse } from "next/server";
+import {
+  attributionFromFormData,
+  parseAttributionRecord,
+  type Attribution,
+} from "@/lib/attribution";
 import { stripeCheckoutSessionParams } from "@/lib/checkout-offer";
 import { getAppEnv } from "@/lib/env";
 import { isPricingTierId } from "@/lib/site";
 import { getStripe } from "@/lib/stripe";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-async function readTier(request: Request): Promise<string | null> {
+type CheckoutRequest = {
+  tier: string | null;
+  attribution: Attribution;
+};
+
+async function readCheckoutRequest(request: Request): Promise<CheckoutRequest> {
   const contentType = request.headers.get("content-type") ?? "";
 
   if (contentType.includes("application/json")) {
     const body: unknown = await request.json();
-    if (typeof body === "object" && body !== null && "tier" in body) {
-      const tier = body.tier;
-      return typeof tier === "string" ? tier : null;
+    if (typeof body !== "object" || body === null) {
+      return { tier: null, attribution: {} };
     }
-    return null;
+    const record = body as Record<string, unknown>;
+    const tier = record.tier;
+    return {
+      tier: typeof tier === "string" ? tier : null,
+      attribution: parseAttributionRecord(record),
+    };
   }
 
   const form = await request.formData();
   const tier = form.get("tier");
-  return typeof tier === "string" ? tier : null;
+  return {
+    tier: typeof tier === "string" ? tier : null,
+    attribution: attributionFromFormData(form),
+  };
 }
 
 function wantsHtml(request: Request): boolean {
@@ -34,7 +51,7 @@ function wantsHtml(request: Request): boolean {
 
 export async function POST(request: Request) {
   const env = getAppEnv();
-  const tierValue = await readTier(request);
+  const { tier: tierValue, attribution } = await readCheckoutRequest(request);
   const html = wantsHtml(request);
 
   if (!tierValue || !isPricingTierId(tierValue)) {
@@ -67,7 +84,7 @@ export async function POST(request: Request) {
 
   const session = await stripe.checkout.sessions.create(
     {
-      ...stripeCheckoutSessionParams(tierValue, env.siteUrl),
+      ...stripeCheckoutSessionParams(tierValue, env.siteUrl, attribution),
       ...(user?.id ? { client_reference_id: user.id } : {}),
       ...(user?.email ? { customer_email: user.email } : {}),
     },
