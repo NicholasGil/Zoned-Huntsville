@@ -87,7 +87,7 @@ describe("checkoutSuccessUrl and metadata", () => {
   it("keeps the Stripe session placeholder unencoded", () => {
     assert.equal(
       checkoutSuccessUrl("https://example.com/"),
-      "https://example.com/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+      "https://example.com/thank-you?session_id={CHECKOUT_SESSION_ID}",
     );
   });
 

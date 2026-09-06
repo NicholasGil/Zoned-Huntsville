@@ -127,6 +127,9 @@ export function attributionFromFormData(form: FormData): Attribution {
   return parseAttributionRecord(record);
 }
 
+/** Canonical post-pay page; Stripe Checkout success_url lands here. */
+export const THANK_YOU_PATH = "/thank-you";
+
 export function checkoutSuccessUrl(origin: string, attribution: Attribution = {}): string {
   const params = new URLSearchParams();
   params.set("session_id", "{CHECKOUT_SESSION_ID}");
@@ -139,7 +142,7 @@ export function checkoutSuccessUrl(origin: string, attribution: Attribution = {}
   const query = params
     .toString()
     .replace("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}");
-  return `${origin.replace(/\/+$/, "")}/checkout/success?${query}`;
+  return `${origin.replace(/\/+$/, "")}${THANK_YOU_PATH}?${query}`;
 }
 
 export function checkoutSessionMetadata(

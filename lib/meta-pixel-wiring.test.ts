@@ -15,8 +15,8 @@ const sampleFormSource = readFileSync(
   new URL("../components/sample-opt-in-form.tsx", import.meta.url),
   "utf8",
 );
-const successPageSource = readFileSync(
-  new URL("../app/checkout/success/page.tsx", import.meta.url),
+const thankYouPageSource = readFileSync(
+  new URL("../app/thank-you/page.tsx", import.meta.url),
   "utf8",
 );
 const checkoutApiSource = readFileSync(
@@ -62,12 +62,14 @@ describe("meta pixel wiring", () => {
     assert.match(checkoutApiSource, /attributionFromFormData|parseAttributionRecord/);
   });
 
-  it("fires Lead after sample opt-in success and Purchase only on checkout success", () => {
+  it("fires Lead after sample opt-in success and Purchase only on /thank-you", () => {
     assert.match(sampleFormSource, /state\.kind !== "received"/);
     assert.match(sampleFormSource, /Lead/);
-    assert.match(successPageSource, /PurchasePixel/);
-    assert.match(successPageSource, /receipt=\{receipt\}/);
-    assert.equal(existsSync(new URL("../app/thank-you", import.meta.url)), false);
+    assert.match(thankYouPageSource, /PurchasePixel/);
+    assert.match(thankYouPageSource, /receipt=\{receipt\}/);
+    assert.equal(existsSync(new URL("../app/thank-you/page.tsx", import.meta.url)), true);
+    // One post-pay page only: the old path is a redirect, not a second copy.
+    assert.equal(existsSync(new URL("../app/checkout/success", import.meta.url)), false);
     assert.equal(existsSync(new URL("../app/thanks", import.meta.url)), false);
     assert.equal(existsSync(new URL("../app/success", import.meta.url)), false);
   });

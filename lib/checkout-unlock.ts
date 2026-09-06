@@ -1,3 +1,4 @@
+import { ATTRIBUTION_KEYS, THANK_YOU_PATH, type Attribution } from "./attribution.ts";
 import type { CheckoutReceipt } from "./checkout-receipt.ts";
 
 /**
@@ -16,8 +17,13 @@ export type CheckoutAccess =
   | { kind: "needs-sign-in" }
   | { kind: "none" };
 
-export const UNLOCK_PATH = "/checkout/success/unlock";
-export const SUCCESS_PATH = "/checkout/success";
+export { THANK_YOU_PATH };
+export const UNLOCK_PATH = `${THANK_YOU_PATH}/unlock`;
+/**
+ * Pre-move post-pay URL. Kept only as a redirect (next.config.ts) so
+ * Checkout Sessions created before the move still land on the thank-you page.
+ */
+export const LEGACY_SUCCESS_PATH = "/checkout/success";
 
 /** Checkout Session ids are only useful for unlock for a limited window. */
 export const UNLOCK_MAX_AGE_SECONDS = 24 * 60 * 60;
@@ -29,14 +35,33 @@ export function sameEmail(a: string | null | undefined, b: string | null | undef
   return a.trim().toLowerCase() === b.trim().toLowerCase();
 }
 
-export function unlockHref(sessionId: string): string {
+function appendAttribution(params: URLSearchParams, attribution: Attribution): void {
+  for (const key of ATTRIBUTION_KEYS) {
+    const value = attribution[key];
+    if (value) {
+      params.set(key, value);
+    }
+  }
+}
+
+/**
+ * Landing-page attribution rides along through the unlock bounce so the
+ * thank-you URL the Purchase pixel fires on still carries utm_* and fbclid.
+ */
+export function unlockHref(sessionId: string, attribution: Attribution = {}): string {
   const params = new URLSearchParams({ session_id: sessionId });
+  appendAttribution(params, attribution);
   return `${UNLOCK_PATH}?${params.toString()}`;
 }
 
-export function successHref(sessionId: string, unlock: "ok" | "failed"): string {
+export function thankYouHref(
+  sessionId: string,
+  unlock: "ok" | "failed",
+  attribution: Attribution = {},
+): string {
   const params = new URLSearchParams({ session_id: sessionId, unlock });
-  return `${SUCCESS_PATH}?${params.toString()}`;
+  appendAttribution(params, attribution);
+  return `${THANK_YOU_PATH}?${params.toString()}`;
 }
 
 export function planCheckoutAccess(input: {
@@ -44,6 +69,7 @@ export function planCheckoutAccess(input: {
   sessionId: string | null;
   signedInEmail: string | null;
   unlockParam: string | null;
+  attribution?: Attribution;
 }): CheckoutAccess {
   const { receipt } = input;
   if (receipt.kind !== "confirmed") {
@@ -62,7 +88,7 @@ export function planCheckoutAccess(input: {
     return { kind: "needs-sign-in" };
   }
 
-  return { kind: "unlock", href: unlockHref(input.sessionId) };
+  return { kind: "unlock", href: unlockHref(input.sessionId, input.attribution ?? {}) };
 }
 
 /**
