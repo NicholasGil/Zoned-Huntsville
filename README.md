@@ -34,7 +34,7 @@ Open [http://localhost:3000](http://localhost:3000). Turbopack is the default bu
 
 Named environment variables are listed in `.env.example`. Leave them empty to run without live Stripe, Supabase, or Resend.
 
-`NEXT_PUBLIC_META_PIXEL_ID` is the Meta / Facebook Pixel ID. It is public because the browser loads `fbevents.js`. Leave it empty to no-op the pixel. Set it in Vercel Production (and Preview if you need to test ads). Changing a `NEXT_PUBLIC_` value requires a new deploy. The pixel records PageView on public pages, InitiateCheckout when a buyer submits a checkout form, Lead after a successful sample opt-in, and Purchase on `/checkout/success` only after Stripe reports the session paid. Landing-page `utm_*`, `fbclid`, and `gclid` values are stored first-party and copied onto the Stripe Checkout Session metadata and `success_url`.
+`NEXT_PUBLIC_META_PIXEL_ID` is the Meta / Facebook Pixel ID. It is public because the browser loads `fbevents.js`. Leave it empty to no-op the pixel. Set it in Vercel Production (and Preview if you need to test ads). Changing a `NEXT_PUBLIC_` value requires a new deploy. The pixel records PageView on public pages, InitiateCheckout when a buyer submits a checkout form, Lead after a successful sample opt-in, and Purchase on `/thank-you` only after Stripe reports the session paid. Landing-page `utm_*`, `fbclid`, and `gclid` values are stored first-party and copied onto the Stripe Checkout Session metadata and `success_url`.
 
 `RESEND_API_KEY`, `EMAIL_FROM`, and `CONTACT_TO` are server-only. Do not put them behind `NEXT_PUBLIC_`. Missing keys skip outbound mail. Sample and contact forms still return success. The Stripe webhook still returns 2xx.
 
@@ -46,7 +46,8 @@ The five-email marketing sequence lives in `content/email-sequence.md` for later
 | --- | --- |
 | `/` | Sales page. Specified hero copy and $79 / $149 / $349 prices. |
 | `/sample` | Huntsville City Schools profile and email opt-in. Opt-in writes a lead and attempts Resend delivery of that profile. |
-| `/checkout/success` | Post-Stripe redirect shell. |
+| `/thank-you` | Canonical post-pay page. Stripe `success_url` is `/thank-you?session_id={CHECKOUT_SESSION_ID}` plus attribution params. Loads the paid Checkout Session, bounces a signed-out browser through `/thank-you/unlock` (signs it in as the checkout email, no mail), then shows Open the guide. Purchase pixel fires only on a confirmed paid session. |
+| `/checkout/success` | Old post-pay path. 308 redirect to `/thank-you` with the query string intact (`/checkout/success/unlock` likewise redirects to `/thank-you/unlock`). |
 | `/login` | Supabase magic-link request. |
 | `/auth/confirm` | Auth callback page. Magic-link `emailRedirectTo` is this bare path (no `?next=`). After the session exists, query `next` or an in-app stored path is used; otherwise `/guide`. Query `code` or `token_hash`+`type` go to `/auth/confirm/exchange` (sets the session, runs `link_my_entitlements`, then redirects). Implicit hash tokens are finished on this page so `/login?error=auth` is not the outcome of a valid first mail. |
 | `/guide` | Gated module index shell. |

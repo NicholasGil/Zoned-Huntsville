@@ -7,20 +7,23 @@ import {
   planCheckoutAccess,
   sameEmail,
   signInBrowserAsCheckoutEmail,
-  successHref,
+  THANK_YOU_PATH,
+  thankYouHref,
   UNLOCK_MAX_AGE_SECONDS,
+  UNLOCK_PATH,
   unlockHref,
   unlockMarkerId,
   type UnlockAuthAdmin,
   type UnlockSessionClient,
 } from "./checkout-unlock.ts";
+import nextConfig from "../next.config.ts";
 
 const unlockRouteSource = readFileSync(
-  new URL("../app/checkout/success/unlock/route.ts", import.meta.url),
+  new URL("../app/thank-you/unlock/route.ts", import.meta.url),
   "utf8",
 );
-const successPageSource = readFileSync(
-  new URL("../app/checkout/success/page.tsx", import.meta.url),
+const thankYouPageSource = readFileSync(
+  new URL("../app/thank-you/page.tsx", import.meta.url),
   "utf8",
 );
 const accountActionSource = readFileSync(
@@ -56,7 +59,21 @@ describe("planCheckoutAccess", () => {
     });
     assert.deepEqual(access, {
       kind: "unlock",
-      href: "/checkout/success/unlock?session_id=cs_test_1",
+      href: "/thank-you/unlock?session_id=cs_test_1",
+    });
+  });
+
+  it("carries landing attribution through the unlock bounce", () => {
+    const access = planCheckoutAccess({
+      receipt: paidGuide,
+      sessionId: "cs_test_1",
+      signedInEmail: null,
+      unlockParam: null,
+      attribution: { utm_source: "facebook", fbclid: "IwAR.test" },
+    });
+    assert.deepEqual(access, {
+      kind: "unlock",
+      href: "/thank-you/unlock?session_id=cs_test_1&utm_source=facebook&fbclid=IwAR.test",
     });
   });
 
@@ -122,10 +139,16 @@ describe("unlock helpers", () => {
     assert.equal(sameEmail("a@b.com", ""), false);
   });
 
-  it("builds encoded redirect targets", () => {
-    assert.equal(unlockHref("cs_test_a b"), "/checkout/success/unlock?session_id=cs_test_a+b");
-    assert.equal(successHref("cs_1", "ok"), "/checkout/success?session_id=cs_1&unlock=ok");
-    assert.equal(successHref("cs_1", "failed"), "/checkout/success?session_id=cs_1&unlock=failed");
+  it("builds encoded redirect targets under /thank-you", () => {
+    assert.equal(THANK_YOU_PATH, "/thank-you");
+    assert.equal(UNLOCK_PATH, "/thank-you/unlock");
+    assert.equal(unlockHref("cs_test_a b"), "/thank-you/unlock?session_id=cs_test_a+b");
+    assert.equal(thankYouHref("cs_1", "ok"), "/thank-you?session_id=cs_1&unlock=ok");
+    assert.equal(thankYouHref("cs_1", "failed"), "/thank-you?session_id=cs_1&unlock=failed");
+    assert.equal(
+      thankYouHref("cs_1", "ok", { utm_campaign: "guide", gclid: "Cjw.test" }),
+      "/thank-you?session_id=cs_1&unlock=ok&utm_campaign=guide&gclid=Cjw.test",
+    );
   });
 
   it("only unlocks from a paid session created within the window", () => {
@@ -231,9 +254,33 @@ describe("post-pay path wiring", () => {
     assert.ok(check >= 0 && check < signIn && signIn < mark);
   });
 
-  it("success page redirects through unlock instead of asking for email", () => {
-    assert.match(successPageSource, /planCheckoutAccess\(/);
-    assert.match(successPageSource, /redirect\(access\.href\)/);
+  it("thank-you page redirects through unlock instead of asking for email", () => {
+    assert.match(thankYouPageSource, /planCheckoutAccess\(/);
+    assert.match(thankYouPageSource, /redirect\(access\.href\)/);
+    assert.match(thankYouPageSource, /attribution: parseAttributionRecord\(query\)/);
+    assert.match(unlockRouteSource, /parseAttributionSearch\(search\)/);
+    assert.match(unlockRouteSource, /thankYouHref\(sessionId, .*, attribution\)/);
+    assert.doesNotMatch(unlockRouteSource, /checkout\/success/);
+  });
+
+  it("keeps the old /checkout/success URLs alive as redirects to /thank-you", async () => {
+    const redirects = await nextConfig.redirects?.();
+    assert.ok(redirects);
+    const success = redirects.find((rule) => rule.source === "/checkout/success");
+    const unlock = redirects.find((rule) => rule.source === "/checkout/success/unlock");
+    assert.deepEqual(success, {
+      source: "/checkout/success",
+      destination: "/thank-you",
+      permanent: true,
+    });
+    assert.deepEqual(unlock, {
+      source: "/checkout/success/unlock",
+      destination: "/thank-you/unlock",
+      permanent: true,
+    });
+    // Next passes the request query through when the destination has none,
+    // so session_id and utm_* survive the hop.
+    assert.equal(success?.destination.includes("?"), false);
   });
 
   it("account sign-in links land in /guide, not back on /account", () => {

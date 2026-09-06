@@ -19,7 +19,7 @@ const receiptViewSource = readFileSync(
   "utf8",
 );
 const successPageSource = readFileSync(
-  new URL("../app/checkout/success/page.tsx", import.meta.url),
+  new URL("../app/thank-you/page.tsx", import.meta.url),
   "utf8",
 );
 
@@ -89,7 +89,7 @@ describe("stripeCheckoutLineItem", () => {
       assert.equal(params.line_items[0]?.price_data.unit_amount, unitAmount);
       assert.equal(
         params.success_url,
-        "https://example.com/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+        "https://example.com/thank-you?session_id={CHECKOUT_SESSION_ID}",
       );
       assert.equal(params.cancel_url, "https://example.com/#pricing");
     }

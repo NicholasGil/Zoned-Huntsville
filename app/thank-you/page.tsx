@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { parseAttributionRecord } from "@/lib/attribution";
 import { CheckoutReceiptView } from "@/components/checkout-receipt";
 import { PageShell } from "@/components/page-shell";
 import { PurchasePixel } from "@/components/purchase-pixel";
@@ -15,7 +16,7 @@ function firstQueryValue(value: string | string[] | undefined): string | null {
 
 export async function generateMetadata({
   searchParams,
-}: PageProps<"/checkout/success">): Promise<Metadata> {
+}: PageProps<"/thank-you">): Promise<Metadata> {
   const query = await searchParams;
   const receipt = await loadCheckoutReceipt(firstQueryValue(query.session_id));
   return {
@@ -27,9 +28,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function CheckoutSuccessPage({
+export default async function ThankYouPage({
   searchParams,
-}: PageProps<"/checkout/success">) {
+}: PageProps<"/thank-you">) {
   const query = await searchParams;
   const sessionId = firstQueryValue(query.session_id);
   const receipt = await loadCheckoutReceipt(sessionId);
@@ -39,6 +40,7 @@ export default async function CheckoutSuccessPage({
     sessionId,
     signedInEmail: identity.email,
     unlockParam: firstQueryValue(query.unlock),
+    attribution: parseAttributionRecord(query),
   });
 
   if (access.kind === "unlock") {

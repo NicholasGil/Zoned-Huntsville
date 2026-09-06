@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { logAuthSendError, redactEmail } from "@/lib/auth-error";
 import { mapCheckoutSession } from "@/lib/checkout-receipt";
+import { parseAttributionSearch } from "@/lib/attribution";
 import {
   isCheckoutUnlockFresh,
-  SUCCESS_PATH,
   signInBrowserAsCheckoutEmail,
-  successHref,
+  THANK_YOU_PATH,
+  thankYouHref,
   unlockMarkerId,
   type UnlockOutcome,
 } from "@/lib/checkout-unlock";
@@ -90,11 +91,11 @@ async function unlock(sessionId: string): Promise<UnlockOutcome> {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+  const { search, searchParams } = new URL(request.url);
   const env = getAppEnv();
   const sessionId = searchParams.get("session_id");
   if (!sessionId) {
-    return NextResponse.redirect(new URL(SUCCESS_PATH, env.siteUrl));
+    return NextResponse.redirect(new URL(THANK_YOU_PATH, env.siteUrl));
   }
 
   const outcome = await unlock(sessionId);
@@ -102,7 +103,11 @@ export async function GET(request: Request) {
     console.error({ event: "checkout.unlock.failed", reason: outcome.reason });
   }
 
+  const attribution = parseAttributionSearch(search);
   return NextResponse.redirect(
-    new URL(successHref(sessionId, outcome.kind === "signed-in" ? "ok" : "failed"), env.siteUrl),
+    new URL(
+      thankYouHref(sessionId, outcome.kind === "signed-in" ? "ok" : "failed", attribution),
+      env.siteUrl,
+    ),
   );
 }
