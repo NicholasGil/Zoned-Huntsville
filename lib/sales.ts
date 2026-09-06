@@ -69,7 +69,7 @@ export const salesCopy = {
     {
       question: "How do I open the guide after I pay?",
       answer:
-        "Stripe takes the payment. A magic-link email goes to the checkout address. Open the link, then go to /guide. If you bought with a different email than the one you are signed in with, request a link from /account.",
+        "Stripe takes the payment and sends you back to a thank-you page with an Open the guide button. Click it and you are in. If you come back later on another device, use Send link on /login or /account with your checkout email and we email you a sign-in link.",
     },
     {
       question: "How do refunds work?",
