@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/legal-page";
-import { VerifyToken } from "@/components/verify-token";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -60,8 +59,7 @@ export default function PrivacyPage() {
         <Link href="/contact" className="text-brick hover:underline">
           contact form
         </Link>
-        .{" "}
-        <VerifyToken>physical mailbox for CAN-SPAM</VerifyToken>
+        .
       </p>
     </LegalPage>
   );

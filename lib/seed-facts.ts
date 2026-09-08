@@ -85,6 +85,8 @@ export const FACT_FIELD_LABELS: Record<string, string> = {
   private_tutor_hours: "Private-tutor hours",
   attendance_register: "Attendance register",
   home_education_options: "Home-education options",
+  cover_school_list: "Cover-school list",
+  sgo_amounts: "SGO award and credit amounts",
   official_portal: "Official portal",
   applications_2026_27: "2026–27 applications",
   approved_2026_27: "2026–27 approvals",
@@ -532,18 +534,18 @@ const EXISTING_SEED_FACTS: readonly SeedFact[] = [
     entity_slug: "holy-spirit-regional",
     field: "name",
     value: "Holy Spirit Regional Catholic School",
-    source_url: "⟦VERIFY: Holy Spirit Regional diocesan prospectus URL⟧",
+    source_url: "https://hstigers.org/",
     verified_at: "2026-08-01",
-    verification_method: "secondary",
+    verification_method: "official_page",
   },
   {
     entity_type: "school",
     entity_slug: "holy-spirit-regional",
     field: "grades",
     value: "PreK-4 through 8",
-    source_url: "⟦VERIFY: Holy Spirit Regional diocesan prospectus URL⟧",
+    source_url: "https://hstigers.org/",
     verified_at: "2026-08-01",
-    verification_method: "secondary",
+    verification_method: "official_page",
   },
   {
     entity_type: "school",
@@ -724,6 +726,16 @@ export const MODULE_FILL_FACTS: readonly SeedFact[] = [
   },
   {
     entity_type: "policy",
+    entity_slug: "alabama-homeschool",
+    field: "cover_school_list",
+    value:
+      "This edition does not publish a Huntsville-area cover-school list.",
+    source_url: ED_GOV_AL_HOMESCHOOL,
+    verified_at: "2026-09-08",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
     entity_slug: "alabama-choose-act",
     field: "name",
     value: "Alabama CHOOSE Act",
@@ -796,9 +808,9 @@ export const MODULE_FILL_FACTS: readonly SeedFact[] = [
     entity_slug: "alabama-choose-act",
     field: "next_cycle",
     value:
-      "The application process for the 2027–28 academic year will begin in January 2027",
+      "The application process for the 2027–28 academic year will begin in January 2027 and will be available to all Alabama families, regardless of household income.",
     source_url: IVEY_CHOOSE_FUNDING_2026_07,
-    verified_at: "2026-08-31",
+    verified_at: "2026-09-08",
     verification_method: "official_page",
   },
   {
@@ -858,6 +870,16 @@ export const MODULE_FILL_FACTS: readonly SeedFact[] = [
       "334-242-1200 (corporate taxpayers needing assistance with My Alabama Taxes or reserving an SGO tax credit)",
     source_url: DOR_ACCOUNTABILITY_ACT,
     verified_at: "2026-08-31",
+    verification_method: "official_page",
+  },
+  {
+    entity_type: "policy",
+    entity_slug: "alabama-accountability-act",
+    field: "sgo_amounts",
+    value:
+      "This edition does not publish current SGO scholarship award amounts or annual tax-credit reservation caps. ALDOR publishes guidance documents and SGO annual and quarterly reports on its Accountability Act page.",
+    source_url: DOR_ACCOUNTABILITY_ACT,
+    verified_at: "2026-09-08",
     verification_method: "official_page",
   },
 ];

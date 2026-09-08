@@ -62,6 +62,8 @@ function readProductTier(session: Stripe.Checkout.Session): EntitlementTier | nu
   return productTierFromPrice(raw);
 }
 
+type AdminClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
+
 async function alreadyProcessed(eventId: string): Promise<boolean> {
   const admin = createSupabaseAdminClient();
   if (!admin) {
@@ -89,6 +91,32 @@ async function markProcessed(eventId: string): Promise<void> {
   }
 }
 
+async function recordPaymentEvent(
+  admin: AdminClient,
+  input: {
+    eventId: string;
+    eventType: string;
+    result: FulfillmentResult["kind"];
+    reason?: string;
+  },
+): Promise<void> {
+  const { error } = await admin.from("payment_event_log").insert({
+    event_id: input.eventId,
+    event_type: input.eventType,
+    result: input.result,
+    reason: input.reason ?? null,
+  });
+  if (error) {
+    console.error({
+      event: "payment_event_log.write_failed",
+      eventId: input.eventId,
+      eventType: input.eventType,
+      result: input.result,
+      message: error.message,
+    });
+  }
+}
+
 export async function sendPurchaseMagicLink(email: string): Promise<void> {
   const admin = createSupabaseAdminClient();
   const env = getAppEnv();
@@ -98,8 +126,6 @@ export async function sendPurchaseMagicLink(email: string): Promise<void> {
 
   await sendConfirmedPurchaseMagicLink(admin, env.siteUrl, email);
 }
-
-type AdminClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
 
 export type PaidSessionResult = Extract<
   FulfillmentResult,
@@ -181,30 +207,44 @@ export async function fulfillStripeEvent(
     return { kind: "missing-admin" };
   }
 
+  const logResult = async (result: FulfillmentResult): Promise<FulfillmentResult> => {
+    const reason =
+      result.kind === "write-failed" || result.kind === "invalid"
+        ? result.reason
+        : undefined;
+    await recordPaymentEvent(admin, {
+      eventId: event.id,
+      eventType: event.type,
+      result: result.kind,
+      reason,
+    });
+    return result;
+  };
+
   if (
     event.type === "checkout.session.completed" ||
     event.type === "checkout.session.async_payment_succeeded"
   ) {
     if (await alreadyProcessed(event.id)) {
-      return { kind: "duplicate" };
+      return logResult({ kind: "duplicate" });
     }
 
     const result = await applyPaidCheckoutSession(admin, event.data.object);
     if (result.kind === "applied") {
       await markProcessed(event.id);
     }
-    return result;
+    return logResult(result);
   }
 
   if (event.type === "charge.refunded") {
     if (await alreadyProcessed(event.id)) {
-      return { kind: "duplicate" };
+      return logResult({ kind: "duplicate" });
     }
 
     const charge = event.data.object;
     const paymentIntentId = readPaymentIntentId(charge.payment_intent);
     if (!paymentIntentId) {
-      return { kind: "ignored" };
+      return logResult({ kind: "ignored" });
     }
 
     const { data, error } = await admin
@@ -216,14 +256,14 @@ export async function fulfillStripeEvent(
       .maybeSingle();
 
     if (error) {
-      return { kind: "write-failed", reason: error.message };
+      return logResult({ kind: "write-failed", reason: error.message });
     }
     if (!data) {
-      return { kind: "ignored" };
+      return logResult({ kind: "ignored" });
     }
     await markProcessed(event.id);
-    return { kind: "refunded", entitlementId: data.id };
+    return logResult({ kind: "refunded", entitlementId: data.id });
   }
 
-  return { kind: "ignored" };
+  return logResult({ kind: "ignored" });
 }

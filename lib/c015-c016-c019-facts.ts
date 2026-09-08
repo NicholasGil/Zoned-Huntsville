@@ -390,7 +390,7 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "district",
     "madison-city",
     "transfer_policy",
-    "Published admission language is limited to school-age children who reside within Madison City School Zone. No open-enrollment mechanism is published on the enrollment page. ⟦VERIFY: confirm zero exceptions by phone⟧",
+    "Published admission language is limited to school-age children who reside within Madison City School Zone. No open-enrollment mechanism is published on the enrollment page. Non-resident exceptions are not published on the enrollment page — call the district.",
     MCS_ENROLLMENT,
   ),
 

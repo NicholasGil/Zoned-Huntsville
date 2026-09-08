@@ -75,6 +75,15 @@ insert into public.facts (
   ),
   (
     'policy',
+    'alabama-homeschool',
+    'cover_school_list',
+    'This edition does not publish a Huntsville-area cover-school list.',
+    'https://www.ed.gov/birth-grade-12-education/education-choice/state-regulation-of-private-and-home-schools/alabama-state-regulations-of-private-and-home-schools',
+    '2026-09-08',
+    'official_page'
+  ),
+  (
+    'policy',
     'alabama-choose-act',
     'name',
     'Alabama CHOOSE Act',
@@ -140,9 +149,9 @@ insert into public.facts (
     'policy',
     'alabama-choose-act',
     'next_cycle',
-    'The application process for the 2027–28 academic year will begin in January 2027',
+    'The application process for the 2027–28 academic year will begin in January 2027 and will be available to all Alabama families, regardless of household income.',
     'https://governor.alabama.gov/newsroom/2026/07/governor-ivey-announces-funding-for-choose-act-education-savings-accounts-for-2026-2027-school-year/',
-    '2026-08-31',
+    '2026-09-08',
     'official_page'
   ),
   (
@@ -197,6 +206,15 @@ insert into public.facts (
     '334-242-1200 (corporate taxpayers needing assistance with My Alabama Taxes or reserving an SGO tax credit)',
     'https://www.revenue.alabama.gov/individual-corporate/alabama-accountability-act/',
     '2026-08-31',
+    'official_page'
+  ),
+  (
+    'policy',
+    'alabama-accountability-act',
+    'sgo_amounts',
+    'This edition does not publish current SGO scholarship award amounts or annual tax-credit reservation caps. ALDOR publishes guidance documents and SGO annual and quarterly reports on its Accountability Act page.',
+    'https://www.revenue.alabama.gov/individual-corporate/alabama-accountability-act/',
+    '2026-09-08',
     'official_page'
   )
 on conflict (entity_type, entity_slug, field) do update set

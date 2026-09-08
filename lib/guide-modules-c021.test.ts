@@ -78,7 +78,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     assert.equal(modulePageSource.includes("canReadGuide(entitlement)"), true);
   });
 
-  it("sources Madison City superintendent, address, and non-resident text; keeps mailing and phone exceptions as VERIFY", () => {
+  it("sources Madison City superintendent, address, and residency-only enrollment without VERIFY tokens", () => {
     const guideModule = getGuideModule("five-systems");
     assert.ok(guideModule);
     const facts = seedFactsMatching(guideModule.matchesFact);
@@ -99,6 +99,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     assert.ok(address);
     assert.match(address.value, /211 Celtic Drive/);
     assert.match(address.value, /Title IX Coordinator address/);
+    assert.match(address.value, /does not label a district mailing address/);
     assert.match(address.source_url, /district-title-ix-information/);
     const nonResident = facts.find(
       (fact) =>
@@ -107,7 +108,11 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     );
     assert.ok(nonResident);
     assert.match(nonResident.value, /reside within Madison City School Zone/);
-    assert.match(nonResident.value, /VERIFY: confirm zero exceptions by phone/);
+    assert.match(
+      nonResident.value,
+      /Non-resident exceptions are not published on the enrollment page — call the district/,
+    );
+    assert.equal(nonResident.value.includes("⟦VERIFY"), false);
     assert.equal(
       facts.some(
         (fact) =>
@@ -116,16 +121,10 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
       ),
       false,
     );
-    assert.ok(
-      guideModule.unverified.some((item) =>
-        item.includes("Madison City mailing address"),
-      ),
-    );
-    assert.ok(
-      guideModule.unverified.some((item) =>
-        item.includes("confirm zero Madison City non-resident exceptions"),
-      ),
-    );
+    assert.equal(guideModule.unverified.length, 0);
+    for (const fact of facts) {
+      assert.equal(fact.value.includes("⟦VERIFY"), false, factKey(fact));
+    }
   });
 
   it("sources Limestone County superintendent from lcsk12.org and does not re-seed the zone map", () => {
@@ -179,7 +178,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     assert.match(fillMigration, /hstigers\.org/);
   });
 
-  it("seeds official admissions notes for the seven named schools and keeps missing open dates as VERIFY", () => {
+  it("seeds official admissions notes for the seven named schools without VERIFY tokens in private facts", () => {
     const guideModule = getGuideModule("private-and-parochial");
     assert.ok(guideModule);
     const facts = seedFactsMatching(guideModule.matchesFact);
@@ -198,6 +197,18 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
         `${slug} tuition_publication`,
       );
     }
+    for (const fact of facts) {
+      assert.equal(
+        fact.value.includes("VERIFY"),
+        false,
+        `${factKey(fact)} should not contain VERIFY`,
+      );
+      assert.equal(
+        fact.source_url.includes("VERIFY"),
+        false,
+        `${factKey(fact)} source_url should not contain VERIFY`,
+      );
+    }
     const westminsterOpen = facts.find(
       (fact) =>
         fact.entity_slug === "westminster" && fact.field === "next_cycle",
@@ -209,20 +220,10 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
         (fact) =>
           fact.entity_slug === "randolph" &&
           fact.field === "admissions_process" &&
-          fact.value.includes("VERIFY"),
+          fact.value.includes("2026–27 application materials are on the admissions page"),
       ),
     );
-    assert.ok(
-      guideModule.unverified.some((item) =>
-        item.includes("applications-open dates"),
-      ),
-    );
-    assert.equal(
-      guideModule.unverified.includes(
-        "published tuition for each private school that releases a figure",
-      ),
-      false,
-    );
+    assert.deepEqual(guideModule.unverified, []);
   });
 
   it("does not publish private-school tuition figures or add Lincoln/Madison Academy", () => {
@@ -256,11 +257,18 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     ]);
   });
 
-  it("keeps the CAN-SPAM mailbox as VERIFY and describes retention without a fake day count", () => {
-    assert.match(privacySource, /physical mailbox for CAN-SPAM/);
-    assert.match(termsSource, /physical mailbox for CAN-SPAM/);
+  it("uses contact-form-only legal contact and describes retention without a fake day count", () => {
+    assert.equal(privacySource.includes("VerifyToken"), false);
+    assert.equal(termsSource.includes("VerifyToken"), false);
+    assert.equal(privacySource.includes("physical mailbox"), false);
+    assert.equal(termsSource.includes("physical mailbox"), false);
     assert.equal(privacySource.includes("P.O. Box"), false);
     assert.equal(termsSource.includes("P.O. Box"), false);
+    assert.match(privacySource, /\/contact/);
+    assert.match(termsSource, /\/contact/);
+    assert.match(termsSource, /Open the guide/);
+    assert.match(termsSource, /\/thank-you/);
+    assert.match(termsSource, /Send link/);
     assert.match(privacySource, /Entitlement rows stay/);
     assert.match(privacySource, /leads\s+table/);
     assert.equal(

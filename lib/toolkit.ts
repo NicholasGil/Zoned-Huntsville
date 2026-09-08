@@ -11,10 +11,12 @@ export const TOOLKIT_SHIPPED = [
   "Sourced application windows",
 ] as const;
 
+export const NOT_PUBLISHED = "not published";
+
 export const TOOLKIT_UNIMPLEMENTED = [
   {
     name: "Call Script Pack",
-    verify: "this edition does not invent admissions questions",
+    detail: "This edition does not invent admissions questions.",
   },
 ] as const;
 
@@ -76,6 +78,10 @@ export type ApplicationWindow = {
 
 export function isVerifyValue(value: string): boolean {
   return value.includes("⟦VERIFY");
+}
+
+export function isPublishedFactValue(value: string): boolean {
+  return !isVerifyValue(value);
 }
 
 export function splitSourcedChecklistItems(value: string): string[] {

@@ -47,9 +47,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Start Here: The 10-Minute Shortlist",
     purpose:
       "commute → budget → public/private/homeschool → 3-school shortlist",
-    unverified: [
-      "10-minute shortlist worksheet and the commute or budget thresholds it uses",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       fact.entity_type === "district" &&
       fiveSystemSlugs.includes(fact.entity_slug) &&
@@ -63,10 +61,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "The Five Systems",
     purpose:
       "Huntsville City, Madison City, Madison County, Athens City, Limestone County",
-    unverified: [
-      "Madison City mailing address — official pages publish 211 Celtic Drive as the Title IX Coordinator address, not as a labeled mailing address",
-      "confirm zero Madison City non-resident exceptions by phone",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       (fact.entity_type === "district" || fact.entity_type === "policy") &&
       fiveSystemSlugs.includes(fact.entity_slug) &&
@@ -78,10 +73,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Zones and Addresses",
     purpose:
       "What each system publishes for matching an address to a school, and where to confirm it.",
-    unverified: [
-      "Athens City official interactive zone locator — the district tells families to call (256) 233-6600",
-      "confirm zero Madison City non-resident exceptions by phone",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       (ZONE_FIELDS as readonly string[]).includes(fact.field),
   },
@@ -103,9 +95,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Private and Parochial",
     purpose:
       "Named private and parochial schools already verified in the seed. Tuition figures stay unpublished.",
-    unverified: [
-      "Randolph, Holy Spirit, Grace Lutheran, and St. John the Baptist applications-open dates that are not on the official admissions pages",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       fact.entity_type === "school" &&
       privateSchoolSlugs.includes(fact.entity_slug),
@@ -116,11 +106,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Homeschool and Cover Schools",
     purpose:
       "How Alabama homeschool and cover-school enrollment works for families in this metro.",
-    unverified: [
-      "Huntsville-area cover-school list",
-      "confirm section numbers against the current Alabama Legislature codebook — the legislature amends this title regularly",
-      "spec 4.2 wording that families file enrollment/attendance documentation with the cover school — confirm against the current codebook whether the filing is with the cover school, the local superintendent, or both",
-    ],
+    unverified: [],
     matchesFact: (fact) => fact.entity_slug === "alabama-homeschool",
   },
   {
@@ -129,11 +115,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Paying For It: CHOOSE Act and SGOs",
     purpose:
       "State ESA (CHOOSE Act) and scholarship-granting organizations, sourced when an official figure exists.",
-    unverified: [
-      "exact date the next CHOOSE Act cycle opens in January 2027",
-      "funding and implementation details for the 2027–28 income-cap removal were still being finalized in 2026 reporting",
-      "current Alabama Accountability Act SGO award and credit figures",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       fact.entity_slug === "alabama-choose-act" ||
       fact.entity_slug === "alabama-accountability-act",
@@ -149,7 +131,6 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
       "Limestone County Schools new-student document checklist",
       "Madison County 2026–27 start-of-year processing dates — they roll annually; reconfirm on the district page",
       "Athens City capacity limits and current-year non-resident tuition by phone",
-      "Madison City non-resident exceptions, if any, by phone",
     ],
     matchesFact: (fact) =>
       fiveSystemSlugs.includes(fact.entity_slug) &&
