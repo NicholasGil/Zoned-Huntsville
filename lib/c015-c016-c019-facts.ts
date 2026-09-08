@@ -1,6 +1,6 @@
 import type { SeedFact } from "./seed-facts.ts";
 
-const AS_OF = "2026-08-31";
+const AS_OF = "2026-09-08";
 
 const HCS_MAGNET =
   "https://www.huntsvillecityschools.org/magnet";
@@ -39,8 +39,6 @@ const JEMISON_MAGNET =
   "https://www.huntsvillecityschools.org/o/jhs/page/jemison-magnet-program";
 const COLLEGE_ACADEMY_ARTICLE =
   "https://www.huntsvillecityschools.org/o/wlms/article/1900046";
-const COLUMBIA = "https://www.huntsvillecityschools.org/o/chs";
-
 function official(
   entity_type: SeedFact["entity_type"],
   entity_slug: string,
@@ -175,7 +173,7 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "program",
     "hcs-magnets",
     "application_mechanics",
-    "⟦VERIFY: one application per student ID, lottery, PK–5 results in 4–6 weeks, 6–12 essay/interview/audition and committee review, sibling priority, transportation, and IEP applicants — confirm on the live HCS magnet page; the page body was not readable as of 2026-08-31⟧",
+    "Only one application per student based on the student's ID per application window. All magnet program applications are submitted online via the link on the Magnet Program page during the open application window. The initial application period for all programs opens each fall. Selection is not based on date of application. When more eligible students apply than spaces are available, a lottery system or other eligibility criteria is used. Pre-Kindergarten–5th grade: selection by lottery weighted by race that considers the composition of home/zoned schools. Grades 6–8 and 9–12: applicants participate in a \"Next Step\" dependent on the magnet program (audition or essay response); upon committee review a score is entered; eligible applicants exceeding available seats are selected by lottery weighted by race and committee score. Unselected eligible applicants are placed on a wait list until a seat is offered or until six weeks after the start of school.",
     HCS_MAGNET,
   ),
 
@@ -246,7 +244,7 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "school",
     "new-century-technology",
     "application_window_2027_28",
-    "⟦VERIFY: fall 2026 application window for 2027–28 entry⟧",
+    "The initial application period for all programs opens each fall.",
     HCS_MAGNET,
   ),
 
@@ -275,8 +273,8 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "school",
     "aaa-magnet",
     "grades",
-    "Elementary and middle (separate official school sites). ⟦VERIFY: published grade span on the live HCS magnet page⟧",
-    AAA_MID,
+    "Pre-K through 8th grade. The official HCS magnet page lists Pre-K–8th Grade Academy for Academics & Arts with separate elementary and middle campuses.",
+    HCS_MAGNET,
   ),
 
   official(
@@ -326,30 +324,8 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "school",
     "asfl-magnet",
     "focus",
-    "Official HCS school sites publish Academy for Science & Foreign Language Elementary School and Academy for Science & Foreign Language Middle School. Official elementary news also publishes IB Students of the Month / IB learner-profile articles. ⟦VERIFY: current-year IB PYP/MYP program naming on the live HCS magnet page or a current ASFL program page⟧",
-    ASFL_ELEM,
-  ),
-
-  official(
-    "school",
-    "columbia-ib",
-    "name",
-    "IB Diploma Programme at Columbia High School",
+    "Official HCS magnet page lists Academy for Science & Foreign Language with theme Science, Foreign Language, at ASFL Magnet Program (Elementary) and ASFL Magnet Program (Middle).",
     HCS_MAGNET,
-  ),
-  official(
-    "school",
-    "columbia-ib",
-    "website",
-    COLUMBIA,
-    COLUMBIA,
-  ),
-  official(
-    "school",
-    "columbia-ib",
-    "focus",
-    "⟦VERIFY: whether Columbia High still publishes an IB Diploma magnet on the live HCS magnet page — the current Columbia High site did not list IB as of 2026-08-31⟧",
-    COLUMBIA,
   ),
 
   official(

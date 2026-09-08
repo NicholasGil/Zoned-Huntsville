@@ -91,13 +91,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Magnets and Specialty Programs",
     purpose:
       "District magnet and specialty programs, plus statewide specialty schools that serve this metro.",
-    unverified: [
-      "one-application / lottery / PK–5 vs 6–12 essay-interview-audition mechanics, sibling priority, transportation, and IEP applicants on the live HCS magnet page",
-      "fall 2026 application window for 2027–28 magnet entry",
-      "whether Columbia High still publishes an IB Diploma magnet",
-      "current-year IB PYP/MYP program naming on the live HCS magnet page or a current ASFL program page",
-      "magnet office phone (256) 428-6987 from older secondary copy — live HCS arts article published 256-924-1113",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       (fact.entity_type === "school" && fact.entity_slug === "ascte") ||
       fact.entity_slug === "hcs-magnets" ||

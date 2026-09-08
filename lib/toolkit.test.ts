@@ -217,7 +217,7 @@ describe("C-020 toolkit", () => {
     );
   });
 
-  it("lists only sourced application windows and keeps the fall 2026 magnet window as VERIFY", () => {
+  it("lists only sourced application windows and sources the fall magnet cycle from the HCS magnet page", () => {
     const windows = applicationWindows(facts);
     const choose = windows.find(
       (row) =>
@@ -242,8 +242,12 @@ describe("C-020 toolkit", () => {
         row.fact.field === "application_window_2027_28",
     );
     assert.ok(fall2026);
-    assert.match(fall2026.fact.value, /VERIFY/);
-    assert.match(fall2026.fact.value, /fall 2026/);
+    assert.match(
+      fall2026.fact.value,
+      /initial application period for all programs opens each fall/i,
+    );
+    assert.equal(fall2026.fact.verification_method, "official_page");
+    assert.equal(fall2026.fact.value.includes("VERIFY"), false);
 
     assert.equal(
       windows.some((row) => /invented/i.test(row.fact.value)),

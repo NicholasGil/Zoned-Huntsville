@@ -110,7 +110,7 @@ describe("C-015 C-016 C-019 module fill", () => {
     );
   });
 
-  it("adds the seven HCS magnets beside ASCTE and marks New Century 2026–27 as secondary", () => {
+  it("adds the six HCS magnets beside ASCTE and marks New Century 2026–27 as secondary", () => {
     const guideModule = getGuideModule("magnets-and-specialty");
     assert.ok(guideModule);
     const facts = seedFactsMatching(guideModule.matchesFact);
@@ -143,7 +143,15 @@ describe("C-015 C-016 C-019 module fill", () => {
         fact.field === "application_window_2027_28",
     );
     assert.ok(nextWindow);
-    assert.match(nextWindow.value, /VERIFY/);
+    assert.match(nextWindow.value, /initial application period for all programs opens each fall/i);
+    assert.equal(nextWindow.value.includes("VERIFY"), false);
+    const mechanics = facts.find(
+      (fact) =>
+        fact.entity_slug === "hcs-magnets" && fact.field === "application_mechanics",
+    );
+    assert.ok(mechanics);
+    assert.equal(mechanics.value.includes("VERIFY"), false);
+    assert.match(mechanics.value, /one application per student/i);
     const asflCampus = facts.find(
       (fact) =>
         fact.entity_slug === "asfl-magnet" &&
@@ -151,12 +159,10 @@ describe("C-015 C-016 C-019 module fill", () => {
     );
     assert.ok(asflCampus);
     assert.match(asflCampus.value, /\/o\/asfle/);
-    assert.equal(
-      guideModule.unverified.some((item) =>
-        item.includes("elementary campus URL"),
-      ),
-      false,
-    );
+    assert.equal(guideModule.unverified.length, 0);
+    for (const fact of facts) {
+      assert.equal(fact.value.includes("VERIFY"), false, factKey(fact));
+    }
   });
 
   it("adds per-district registration documents and keeps rolling Madison County dates as VERIFY", () => {
