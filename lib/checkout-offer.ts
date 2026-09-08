@@ -25,6 +25,9 @@ const STRIPE_LINE_SUFFIX = {
   "349": "Guide + Toolkit + Call",
 } as const;
 
+/** Stripe tax code: General — Electronically Supplied Services (digital guide). */
+export const DIGITAL_GUIDE_TAX_CODE = "txcd_10000000";
+
 export type BuyerProductTier = keyof typeof TIER_BUYER_LABEL;
 
 export function productTierFromPriceId(priceId: PricingTierId): BuyerProductTier {
@@ -61,16 +64,28 @@ export function catalogAmountUsdForTier(tier: BuyerProductTier): number {
   return checkoutOffer(priceId).amountUsd;
 }
 
-export function stripeCheckoutLineItem(tierId: PricingTierId) {
+export function stripeCheckoutLineItem(
+  tierId: PricingTierId,
+  catalogPriceId: string | null = null,
+) {
+  if (catalogPriceId) {
+    return {
+      quantity: 1 as const,
+      price: catalogPriceId,
+    };
+  }
+
   const offer = checkoutOffer(tierId);
   return {
     quantity: 1 as const,
     price_data: {
       currency: "usd" as const,
       unit_amount: offer.unitAmountCents,
+      tax_behavior: "exclusive" as const,
       product_data: {
         name: offer.stripeLineName,
         description: STRIPE_LINE_SUFFIX[tierId],
+        tax_code: DIGITAL_GUIDE_TAX_CODE,
       },
     },
   };
@@ -80,11 +95,14 @@ export function stripeCheckoutSessionParams(
   tierId: PricingTierId,
   siteUrl: string,
   attribution: Attribution = {},
+  catalogPriceId: string | null = null,
 ) {
   const origin = siteUrl.replace(/\/+$/, "");
   return {
     mode: "payment" as const,
-    line_items: [stripeCheckoutLineItem(tierId)],
+    line_items: [stripeCheckoutLineItem(tierId, catalogPriceId)],
+    automatic_tax: { enabled: true },
+    billing_address_collection: "auto" as const,
     success_url: checkoutSuccessUrl(origin, attribution),
     cancel_url: `${origin}/#pricing`,
     metadata: checkoutSessionMetadata(tierId, attribution),

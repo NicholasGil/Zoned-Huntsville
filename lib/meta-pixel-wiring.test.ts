@@ -58,7 +58,7 @@ describe("meta pixel wiring", () => {
     assert.match(checkoutFormSource, /ATTRIBUTION_KEYS/);
     assert.match(checkoutFormSource, /form\.submit\(\)/);
     assert.match(checkoutFormSource, /writeAttributionFields/);
-    assert.match(checkoutApiSource, /stripeCheckoutSessionParams\(tierValue, env\.siteUrl, attribution\)/);
+    assert.match(checkoutApiSource, /stripeCheckoutSessionParams\(\s*tierValue,\s*env\.siteUrl,\s*attribution,\s*catalogPriceId,\s*\)/);
     assert.match(checkoutApiSource, /attributionFromFormData|parseAttributionRecord/);
   });
 

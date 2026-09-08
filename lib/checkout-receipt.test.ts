@@ -47,26 +47,32 @@ describe("stripeCheckoutLineItem", () => {
       price_data: {
         currency: "usd",
         unit_amount: 7900,
+        tax_behavior: "exclusive",
         product_data: {
           name: "The Huntsville School Guide — Guide",
           description: "Guide",
+          tax_code: "txcd_10000000",
         },
       },
     });
     assert.deepEqual(stripeCheckoutLineItem("149").price_data, {
       currency: "usd",
       unit_amount: 14900,
+      tax_behavior: "exclusive",
       product_data: {
         name: "The Huntsville School Guide — Guide + Toolkit",
         description: "Guide + Toolkit",
+        tax_code: "txcd_10000000",
       },
     });
     assert.deepEqual(stripeCheckoutLineItem("349").price_data, {
       currency: "usd",
       unit_amount: 34900,
+      tax_behavior: "exclusive",
       product_data: {
         name: "The Huntsville School Guide — Guide + Toolkit + Call",
         description: "Guide + Toolkit + Call",
+        tax_code: "txcd_10000000",
       },
     });
     assert.equal(checkoutOffer("79").amountUsd, 79);
@@ -74,7 +80,14 @@ describe("stripeCheckoutLineItem", () => {
     assert.equal(checkoutOffer("349").amountUsd, 349);
   });
 
-  it("keeps mode payment, catalog unit_amounts, and metadata.tier 79|149|349", () => {
+  it("uses a catalog Price ID when provided", () => {
+    assert.deepEqual(stripeCheckoutLineItem("79", "price_test_guide"), {
+      quantity: 1,
+      price: "price_test_guide",
+    });
+  });
+
+  it("keeps mode payment, catalog unit_amounts, Stripe Tax, and metadata.tier 79|149|349", () => {
     const expected = [
       ["79", 7900],
       ["149", 14900],
@@ -84,6 +97,8 @@ describe("stripeCheckoutLineItem", () => {
     for (const [tier, unitAmount] of expected) {
       const params = stripeCheckoutSessionParams(tier, "https://example.com");
       assert.equal(params.mode, "payment");
+      assert.deepEqual(params.automatic_tax, { enabled: true });
+      assert.equal(params.billing_address_collection, "auto");
       assert.equal(params.metadata.tier, tier);
       assert.equal(params.line_items[0]?.price_data.currency, "usd");
       assert.equal(params.line_items[0]?.price_data.unit_amount, unitAmount);
@@ -93,6 +108,22 @@ describe("stripeCheckoutLineItem", () => {
       );
       assert.equal(params.cancel_url, "https://example.com/#pricing");
     }
+  });
+
+  it("prefers catalog Price IDs on the session when provided", () => {
+    const params = stripeCheckoutSessionParams(
+      "149",
+      "https://example.com",
+      {},
+      "price_test_toolkit",
+    );
+
+    assert.deepEqual(params.line_items[0], {
+      quantity: 1,
+      price: "price_test_toolkit",
+    });
+    assert.deepEqual(params.automatic_tax, { enabled: true });
+    assert.equal(params.billing_address_collection, "auto");
   });
 
   it("copies UTMs and fbclid onto metadata and success_url without dropping tier", () => {

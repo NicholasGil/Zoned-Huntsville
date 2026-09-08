@@ -82,9 +82,17 @@ export async function POST(request: Request) {
   const idempotencyKey =
     request.headers.get("idempotency-key") ?? crypto.randomUUID();
 
+  const catalogPriceId =
+    env.stripe.kind === "present" ? env.stripe.priceIds[tierValue] : null;
+
   const session = await stripe.checkout.sessions.create(
     {
-      ...stripeCheckoutSessionParams(tierValue, env.siteUrl, attribution),
+      ...stripeCheckoutSessionParams(
+        tierValue,
+        env.siteUrl,
+        attribution,
+        catalogPriceId,
+      ),
       ...(user?.id ? { client_reference_id: user.id } : {}),
       ...(user?.email ? { customer_email: user.email } : {}),
     },
