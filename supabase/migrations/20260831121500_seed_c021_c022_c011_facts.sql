@@ -33,7 +33,7 @@ insert into public.facts (
     'district',
     'madison-city',
     'non_resident_path',
-    'Published admission language is limited to school-age children who reside within Madison City School Zone. Madison City Schools welcome all students who live within the district''s boundaries and meet state age and health requirements. No open-enrollment mechanism is published on the enrollment page. ⟦VERIFY: confirm zero exceptions by phone⟧',
+    'Published admission language is limited to school-age children who reside within Madison City School Zone. Madison City Schools welcome all students who live within the district''s boundaries and meet state age and health requirements. No open-enrollment mechanism is published on the enrollment page. Non-resident exceptions are not published on the enrollment page — call the district.',
     'https://www.madisoncity.k12.al.us/221371_3',
     '2026-08-31',
     'official_page'
