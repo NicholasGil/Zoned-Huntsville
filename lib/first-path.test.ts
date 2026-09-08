@@ -77,14 +77,9 @@ describe("first 15 minutes after purchase", () => {
         "registration-mechanics",
       ],
     );
-    const maxOnPath = Math.max(
-      ...firstPathModules().map((entry) => entry.unverified.length),
-    );
-    for (const slug of ["registration-mechanics"]) {
-      const guideModule = getGuideModule(slug);
-      assert.ok(guideModule);
-      assert.ok(guideModule.unverified.length > maxOnPath, slug);
-    }
+    const registration = getGuideModule("registration-mechanics");
+    assert.ok(registration);
+    assert.equal(registration.unverified.length, 0);
   });
 
   it("does not invent facts in the path copy", () => {

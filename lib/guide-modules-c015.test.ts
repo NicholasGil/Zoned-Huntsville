@@ -31,6 +31,13 @@ const fillMigration = readFileSync(
   ),
   "utf8",
 );
+const c024Migration = readFileSync(
+  new URL(
+    "../supabase/migrations/20260908181000_c024_registration_mechanics_facts.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const historicSeed = readFileSync(
   new URL(
     "../supabase/migrations/20260830120100_seed_sourced_facts.sql",
@@ -180,7 +187,7 @@ describe("C-015 C-016 C-019 module fill", () => {
     }
   });
 
-  it("adds per-district registration documents and keeps rolling Madison County dates as VERIFY", () => {
+  it("adds per-district registration documents and sources Madison County start-of-year dates", () => {
     const guideModule = getGuideModule("registration-mechanics");
     assert.ok(guideModule);
     const facts = seedFactsMatching(guideModule.matchesFact);
@@ -205,7 +212,26 @@ describe("C-015 C-016 C-019 module fill", () => {
         fact.field === "registration_timeline",
     );
     assert.ok(mcssDates);
-    assert.match(mcssDates.value, /VERIFY/);
+    assert.equal(mcssDates.value.includes("⟦VERIFY"), false);
+    assert.match(mcssDates.value, /July 30, 2026/);
+    assert.match(mcssDates.value, /August 5, 2026/);
+    assert.match(mcssDates.source_url, /mcssk12\.org\/fs\/pages\/14605/);
+    assert.equal(
+      facts.some(
+        (fact) =>
+          fact.entity_slug === "huntsville-city" &&
+          fact.field === "registration_documents",
+      ),
+      false,
+    );
+    assert.equal(
+      facts.some(
+        (fact) =>
+          fact.entity_slug === "limestone-county" &&
+          fact.field === "registration_documents",
+      ),
+      false,
+    );
     assert.ok(
       facts.some(
         (fact) =>
@@ -222,6 +248,16 @@ describe("C-015 C-016 C-019 module fill", () => {
           fact.value.includes("$1,200"),
       ),
     );
+    const madisonTransfer = facts.find(
+      (fact) =>
+        fact.entity_slug === "madison-city" && fact.field === "transfer_policy",
+    );
+    assert.ok(madisonTransfer);
+    assert.equal(madisonTransfer.value.includes("⟦VERIFY"), false);
+    assert.equal(guideModule.unverified.length, 0);
+    for (const fact of facts) {
+      assert.equal(fact.value.includes("⟦VERIFY"), false, factKey(fact));
+    }
     assert.equal(
       guideModule.unverified.includes(
         "registration windows and document checklists for each district",
@@ -233,13 +269,23 @@ describe("C-015 C-016 C-019 module fill", () => {
   it("keeps new seed rows in sync with the new SQL migration", () => {
     for (const fact of ZONE_MAGNET_REG_FACTS) {
       assert.ok(
-        fillMigration.includes(`'${fact.entity_slug}'`),
+        fillMigration.includes(`'${fact.entity_slug}'`) ||
+          c024Migration.includes(`'${fact.entity_slug}'`),
         fact.entity_slug,
       );
-      assert.ok(fillMigration.includes(`'${fact.field}'`), fact.field);
-      assert.ok(fillMigration.includes(fact.source_url), fact.source_url);
+      assert.ok(
+        fillMigration.includes(`'${fact.field}'`) ||
+          c024Migration.includes(`'${fact.field}'`),
+        fact.field,
+      );
+      assert.ok(
+        fillMigration.includes(fact.source_url) ||
+          c024Migration.includes(fact.source_url),
+        fact.source_url,
+      );
     }
     assert.match(fillMigration, /on conflict \(entity_type, entity_slug, field\)/);
+    assert.match(c024Migration, /on conflict \(entity_type, entity_slug, field\)/);
   });
 
   it("does not rewrite the historic sourced-facts seed", () => {

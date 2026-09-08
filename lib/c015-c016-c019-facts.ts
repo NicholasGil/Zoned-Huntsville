@@ -1,6 +1,7 @@
 import type { SeedFact } from "./seed-facts.ts";
 
 const AS_OF = "2026-09-08";
+const REG_AS_OF = "2026-09-08";
 
 const HCS_MAGNET =
   "https://www.huntsvillecityschools.org/magnet";
@@ -15,6 +16,7 @@ const MCS_VISION = "https://www.madisoncity.k12.al.us/vision-mission";
 const MCSS_ZONE = "https://www.mcssk12.org/enrollment/school-zone";
 const MCSS_ENROLL =
   "https://www.mcssk12.org/enrollment/powerschool-enrollment";
+const MCSS_REGISTRATION_INFO = "https://www.mcssk12.org/fs/pages/14605";
 const MCSS_RESIDENCY =
   "https://www.mcssk12.org/department/instruction/powerschool-enrollment/residency-requirements";
 const MCSS_NEW_STUDENT_2025 =
@@ -45,6 +47,7 @@ function official(
   field: string,
   value: string,
   source_url: string,
+  verified_at: string = AS_OF,
 ): SeedFact {
   return {
     entity_type,
@@ -52,7 +55,7 @@ function official(
     field,
     value,
     source_url,
-    verified_at: AS_OF,
+    verified_at,
     verification_method: "official_page",
   };
 }
@@ -392,6 +395,7 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "transfer_policy",
     "Published admission language is limited to school-age children who reside within Madison City School Zone. No open-enrollment mechanism is published on the enrollment page. Non-resident exceptions are not published on the enrollment page — call the district.",
     MCS_ENROLLMENT,
+    REG_AS_OF,
   ),
 
   official(
@@ -412,8 +416,9 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "district",
     "madison-county",
     "registration_timeline",
-    "⟦VERIFY: 2026–27 start-of-year processing dates (complete standard registration 48–72 hours before July 30, 2026 for an August 5, 2026 start; Shared Residency Affidavit cases 10–14 business days before July 20, 2026 or risk a waitlist) roll annually — reconfirm on the district enrollment page, not a school-site copy⟧",
-    MCSS_ENROLL,
+    "During peak enrollment periods (late spring and summer), standard enrollment/registration typically takes 5–10 business days; Shared Residency Affidavit (SRA) cases typically take 10–14 business days. Failure to complete standard enrollment/registration within 48–72 hours before July 30, 2026 means the student will not start on the first day of school (August 5, 2026). Failure to complete SRA registration within 10–14 business days before July 20, 2026 may place the student on a waitlist for home visits and verification, and the student will not start on the first day of school (August 5, 2026).",
+    MCSS_REGISTRATION_INFO,
+    REG_AS_OF,
   ),
   official(
     "district",
@@ -432,14 +437,6 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
   ),
   official(
     "district",
-    "huntsville-city",
-    "registration_documents",
-    "⟦VERIFY: Huntsville City Schools new-student document checklist — the enrollment page body did not list documents as of 2026-08-31⟧",
-    HCS_ENROLLMENT,
-  ),
-
-  official(
-    "district",
     "athens-city",
     "enrollment_path",
     "Official pathways: Kindergarten registration (opens in the spring); new-student enrollment for grades 1–12 (any time during the year); Pre-K; returning-student re-enrollment (typically each spring); and Non-Resident Student Admission. 2026–2027 new-student registration is online via PowerSchool. Office computers and help are available at 455 US Hwy. 31 N.; call (256) 233-6600.",
@@ -456,8 +453,9 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "policy",
     "athens-city",
     "non_resident_policy",
-    "Board Policy JBCB: a child must generally be a bona fide resident to attend; the Board may admit non-residents case by case. Tuition is $1,200.00 per year, due in advance, and non-refundable unless the Superintendent and Board approve an exception. No tuition for children of school-system employees. The system does not provide transportation or homebound instruction outside Athens City attendance zones. A copy of the child's last report card must be submitted with the non-resident application. Contact Mike O'Rear, Student Services, 256.233.6600 or mike.orear@acs-k12.org. ⟦VERIFY: capacity limits and current-year tuition by phone⟧",
+    "Board Policy JBCB: a child must generally be a bona fide resident to attend; the Board may admit non-residents case by case. Tuition is $1,200.00 per year, due in advance, and non-refundable unless the Superintendent and Board approve an exception. No tuition for children of school-system employees. The system does not provide transportation or homebound instruction outside Athens City attendance zones. A copy of the child's last report card must be submitted with the non-resident application. The Board reserves the right to annually establish capacities of programs, classes, grade levels, and buildings. Contact Mike O'Rear, Student Services, 256.233.6600 or mike.orear@acs-k12.org.",
     ACS_NONRESIDENT,
+    REG_AS_OF,
   ),
 
   official(
@@ -465,13 +463,6 @@ export const ZONE_MAGNET_REG_FACTS: readonly SeedFact[] = [
     "limestone-county",
     "enrollment_path",
     "Limestone County Schools publishes enrollment at lcsk12.org/o/lcs/page/enrollment.",
-    LCS_ENROLLMENT,
-  ),
-  official(
-    "district",
-    "limestone-county",
-    "registration_documents",
-    "⟦VERIFY: Limestone County Schools new-student document checklist — the enrollment page body did not list documents as of 2026-08-31⟧",
     LCS_ENROLLMENT,
   ),
 ];

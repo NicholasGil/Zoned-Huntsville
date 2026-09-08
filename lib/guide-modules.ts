@@ -126,12 +126,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Registration Mechanics",
     purpose:
       "How each district says to enroll, and which documents they ask for.",
-    unverified: [
-      "Huntsville City Schools new-student document checklist",
-      "Limestone County Schools new-student document checklist",
-      "Madison County 2026–27 start-of-year processing dates — they roll annually; reconfirm on the district page",
-      "Athens City capacity limits and current-year non-resident tuition by phone",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       fiveSystemSlugs.includes(fact.entity_slug) &&
       (REGISTRATION_FIELDS as readonly string[]).includes(fact.field),

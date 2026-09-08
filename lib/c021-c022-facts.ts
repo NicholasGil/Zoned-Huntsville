@@ -1,6 +1,7 @@
 import type { SeedFact } from "./seed-facts.ts";
 
 const AS_OF = "2026-08-31";
+const REG_AS_OF = "2026-09-08";
 
 const MCS_SUPERINTENDENT =
   "https://www.madisoncity.k12.al.us/superintendents-message";
@@ -30,6 +31,7 @@ function official(
   field: string,
   value: string,
   source_url: string,
+  verified_at: string = AS_OF,
 ): SeedFact {
   return {
     entity_type,
@@ -37,7 +39,7 @@ function official(
     field,
     value,
     source_url,
-    verified_at: AS_OF,
+    verified_at,
     verification_method: "official_page",
   };
 }
@@ -64,6 +66,7 @@ export const LEFTOVER_S2_FACTS: readonly SeedFact[] = [
     "non_resident_path",
     "Published admission language is limited to school-age children who reside within Madison City School Zone. Madison City Schools welcome all students who live within the district's boundaries and meet state age and health requirements. No open-enrollment mechanism is published on the enrollment page. Non-resident exceptions are not published on the enrollment page — call the district.",
     MCS_ENROLLMENT,
+    REG_AS_OF,
   ),
   official(
     "district",

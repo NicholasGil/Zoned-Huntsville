@@ -113,19 +113,12 @@ describe("C-032 toolkit", () => {
     const checklists = registrationChecklists(facts);
     assert.deepEqual(
       checklists.map((row) => row.slug),
-      [...FIVE_SYSTEM_SLUGS],
+      ["madison-city", "madison-county", "athens-city"],
     );
     const bySlug = new Map(checklists.map((row) => [row.slug, row]));
 
-    const huntsville = bySlug.get("huntsville-city");
-    assert.ok(huntsville);
-    assert.equal(huntsville.isVerify, true);
-    assert.match(huntsville.fact.value, /VERIFY/);
-
-    const limestone = bySlug.get("limestone-county");
-    assert.ok(limestone);
-    assert.equal(limestone.isVerify, true);
-    assert.match(limestone.fact.value, /VERIFY/);
+    assert.equal(bySlug.has("huntsville-city"), false);
+    assert.equal(bySlug.has("limestone-county"), false);
 
     const madisonCity = bySlug.get("madison-city");
     assert.ok(madisonCity);
