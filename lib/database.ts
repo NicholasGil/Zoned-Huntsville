@@ -18,6 +18,15 @@ export type ProcessedEventRow = {
   processed_at: string;
 };
 
+export type PaymentEventLogRow = {
+  id: string;
+  event_id: string;
+  event_type: string;
+  result: string;
+  reason: string | null;
+  recorded_at: string;
+};
+
 export type FactRow = {
   id: string;
   entity_type: FactEntityType;
@@ -79,6 +88,21 @@ export type Database = {
         ProcessedEventRow,
         { event_id: string; processed_at?: string },
         { processed_at?: string }
+      >;
+      payment_event_log: TableDef<
+        PaymentEventLogRow,
+        {
+          id?: string;
+          event_id: string;
+          event_type: string;
+          result: string;
+          reason?: string | null;
+          recorded_at?: string;
+        },
+        {
+          result?: string;
+          reason?: string | null;
+        }
       >;
       facts: TableDef<
         FactRow,
