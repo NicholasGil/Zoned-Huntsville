@@ -224,17 +224,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
           fact.value.includes("2026–27 application materials are on the admissions page"),
       ),
     );
-    assert.ok(
-      guideModule.unverified.some((item) =>
-        item.includes("applications-open dates"),
-      ),
-    );
-    assert.equal(
-      guideModule.unverified.includes(
-        "published tuition for each private school that releases a figure",
-      ),
-      false,
-    );
+    assert.deepEqual(guideModule.unverified, []);
   });
 
   it("does not publish private-school tuition figures or add Lincoln/Madison Academy", () => {
