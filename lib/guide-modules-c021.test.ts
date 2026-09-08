@@ -256,11 +256,18 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     ]);
   });
 
-  it("keeps the CAN-SPAM mailbox as VERIFY and describes retention without a fake day count", () => {
-    assert.match(privacySource, /physical mailbox for CAN-SPAM/);
-    assert.match(termsSource, /physical mailbox for CAN-SPAM/);
+  it("uses contact-form-only legal contact and describes retention without a fake day count", () => {
+    assert.equal(privacySource.includes("VerifyToken"), false);
+    assert.equal(termsSource.includes("VerifyToken"), false);
+    assert.equal(privacySource.includes("physical mailbox"), false);
+    assert.equal(termsSource.includes("physical mailbox"), false);
     assert.equal(privacySource.includes("P.O. Box"), false);
     assert.equal(termsSource.includes("P.O. Box"), false);
+    assert.match(privacySource, /\/contact/);
+    assert.match(termsSource, /\/contact/);
+    assert.match(termsSource, /Open the guide/);
+    assert.match(termsSource, /\/thank-you/);
+    assert.match(termsSource, /Send link/);
     assert.match(privacySource, /Entitlement rows stay/);
     assert.match(privacySource, /leads\s+table/);
     assert.equal(
