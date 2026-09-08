@@ -1,9 +1,9 @@
 import type Stripe from "stripe";
-import type { EntitlementTier } from "@/lib/database";
-import { getAppEnv } from "@/lib/env";
-import { sendConfirmedPurchaseMagicLink } from "@/lib/purchase-auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { isPriceTierMetadata, productTierFromPrice } from "@/lib/tiers";
+import type { EntitlementTier } from "./database.ts";
+import { getAppEnv } from "./env.ts";
+import { sendConfirmedPurchaseMagicLink } from "./purchase-auth.ts";
+import { createSupabaseAdminClient } from "./supabase/admin.ts";
+import { isPriceTierMetadata, productTierFromPrice } from "./tiers.ts";
 
 export type FulfillmentResult =
   | { kind: "ignored" }

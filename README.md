@@ -22,6 +22,15 @@ Public pages (`/`, `/sample`, `/legal/*`) stay static. Gated pages resolve `auth
 
 Do not invent school facts or social proof. If a number or name is not sourced, write `⟦VERIFY: description⟧`. See `CONTRIBUTING.md` and `AGENTS.md`.
 
+## Ops docs
+
+| Doc | Purpose |
+| --- | --- |
+| `docs/adr/001-one-time-tier-upgrades.md` | Full-price upgrade path; access stacks; no delta checkout. |
+| `docs/runbooks/stripe-test-mode-dry-run.md` | Test-mode checkout → webhook → entitlement → gate → refund revoke. |
+
+Run `npm test` before a Stripe dry run; fixture tests cover fulfillment writes, tier stacking, and refund revoke logic.
+
 ## Local setup
 
 ```bash

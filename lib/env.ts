@@ -1,4 +1,4 @@
-import type { PricingTierId } from "@/lib/site";
+import type { PricingTierId } from "./site.ts";
 
 type StripeEnv =
   | { kind: "missing" }

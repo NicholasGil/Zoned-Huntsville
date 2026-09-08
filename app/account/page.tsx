@@ -7,6 +7,7 @@ import { getCallSlot, type CallSlotQuery } from "@/lib/call-slots";
 import { getEntitlement } from "@/lib/entitlement";
 import { getOwnEntitlements, getSignedInAdminState } from "@/lib/facts";
 import { loadLastPayment } from "@/lib/load-last-payment";
+import { salesCopy } from "@/lib/sales";
 
 export const dynamic = "force-dynamic";
 
@@ -139,6 +140,28 @@ export default async function AccountPage({
           )}
         </section>
       ) : null}
+
+      <section className="mt-10 max-w-xl">
+        <h2 className="font-serif text-2xl text-ink">
+          {salesCopy.upgradePath.headline}
+        </h2>
+        <p className="mt-3 text-sm text-muted">{salesCopy.upgradePath.summary}</p>
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-muted">
+          {salesCopy.upgradePath.tiers.map((row) => (
+            <li key={row.to}>
+              From {row.from} to {row.to}: {row.charge}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 text-sm">
+          <Link
+            href={salesCopy.upgradePath.pricingHref}
+            className="text-brick hover:underline"
+          >
+            See pricing and checkout
+          </Link>
+        </p>
+      </section>
 
       {rows.length > 0 ? (
         <section className="mt-10">

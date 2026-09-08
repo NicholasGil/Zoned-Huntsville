@@ -86,5 +86,28 @@ export const salesCopy = {
       answer:
         "The $349 tier includes one 45-minute video call with Nicholas. There are 4 slots each month. The pricing card shows how many remain, counted from this month's paid, non-refunded call purchases.",
     },
+    {
+      question: "Can I upgrade from the $79 Guide to Toolkit or Call?",
+      answer:
+        "Yes. There is no pay-the-difference or prorated upgrade checkout. Choose the higher tier on the pricing section and pay the full listed price ($149 for Guide + Toolkit, $349 for Guide + Toolkit + Call). Each purchase is a separate Stripe charge at that price. Access stacks: Toolkit and Call include everything in lower tiers, and your account combines every active, non-refunded purchase—so the highest tier you have paid for unlocks the matching pages.",
+    },
   ],
+  upgradePath: {
+    headline: "Upgrade to a higher tier",
+    summary:
+      "There is no pay-the-difference checkout. Buy the higher tier at its full listed price from the pricing section. Each purchase is a separate charge. Access stacks across active purchases—the highest tier you have paid for wins.",
+    pricingHref: "/#pricing",
+    tiers: [
+      {
+        from: "Guide ($79)",
+        to: "Guide + Toolkit ($149)",
+        charge: "Pay $149 in full at checkout.",
+      },
+      {
+        from: "Guide ($79) or Toolkit ($149)",
+        to: "Guide + Toolkit + Call ($349)",
+        charge: "Pay $349 in full at checkout.",
+      },
+    ],
+  },
 } as const;

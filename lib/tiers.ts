@@ -1,5 +1,5 @@
-import { isPricingTierId, type PricingTierId } from "@/lib/site";
-import type { EntitlementTier } from "@/lib/database";
+import { isPricingTierId, type PricingTierId } from "./site.ts";
+import type { EntitlementTier } from "./database.ts";
 
 export const CALL_SLOTS_PER_MONTH = 4;
 

@@ -29,6 +29,10 @@ const checkoutOfferSource = readFileSync(
   new URL("./checkout-offer.ts", import.meta.url),
   "utf8",
 );
+const accountPageSource = readFileSync(
+  new URL("../app/account/page.tsx", import.meta.url),
+  "utf8",
+);
 const webhookSource = readFileSync(
   new URL("../app/api/webhooks/stripe/route.ts", import.meta.url),
   "utf8",
@@ -229,5 +233,19 @@ describe("held product rails", () => {
       "79,149,349",
     );
     assert.match(webhookSource, /stripe\.webhooks\.constructEvent/);
+  });
+
+  it("documents the full-price upgrade path on FAQ and account", () => {
+    const upgradeFaq = salesCopy.faq.find((item) =>
+      item.question.includes("upgrade"),
+    );
+    assert.ok(upgradeFaq);
+    assert.match(upgradeFaq.answer, /no pay-the-difference/i);
+    assert.match(upgradeFaq.answer, /\$149/);
+    assert.match(upgradeFaq.answer, /\$349/);
+    assert.match(upgradeFaq.answer, /Access stacks/i);
+    assert.match(accountPageSource, /salesCopy\.upgradePath\.headline/);
+    assert.match(accountPageSource, /salesCopy\.upgradePath\.summary/);
+    assert.match(accountPageSource, /salesCopy\.upgradePath\.pricingHref/);
   });
 });
