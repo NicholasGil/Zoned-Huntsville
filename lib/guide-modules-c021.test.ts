@@ -179,7 +179,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     assert.match(fillMigration, /hstigers\.org/);
   });
 
-  it("seeds official admissions notes for the seven named schools and keeps missing open dates as VERIFY", () => {
+  it("seeds official admissions notes for the seven named schools without VERIFY tokens in private facts", () => {
     const guideModule = getGuideModule("private-and-parochial");
     assert.ok(guideModule);
     const facts = seedFactsMatching(guideModule.matchesFact);
@@ -198,6 +198,18 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
         `${slug} tuition_publication`,
       );
     }
+    for (const fact of facts) {
+      assert.equal(
+        fact.value.includes("VERIFY"),
+        false,
+        `${factKey(fact)} should not contain VERIFY`,
+      );
+      assert.equal(
+        fact.source_url.includes("VERIFY"),
+        false,
+        `${factKey(fact)} source_url should not contain VERIFY`,
+      );
+    }
     const westminsterOpen = facts.find(
       (fact) =>
         fact.entity_slug === "westminster" && fact.field === "next_cycle",
@@ -209,20 +221,10 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
         (fact) =>
           fact.entity_slug === "randolph" &&
           fact.field === "admissions_process" &&
-          fact.value.includes("VERIFY"),
+          fact.value.includes("2026–27 application materials are on the admissions page"),
       ),
     );
-    assert.ok(
-      guideModule.unverified.some((item) =>
-        item.includes("applications-open dates"),
-      ),
-    );
-    assert.equal(
-      guideModule.unverified.includes(
-        "published tuition for each private school that releases a figure",
-      ),
-      false,
-    );
+    assert.deepEqual(guideModule.unverified, []);
   });
 
   it("does not publish private-school tuition figures or add Lincoln/Madison Academy", () => {

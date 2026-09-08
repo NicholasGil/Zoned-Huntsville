@@ -109,9 +109,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Private and Parochial",
     purpose:
       "Named private and parochial schools already verified in the seed. Tuition figures stay unpublished.",
-    unverified: [
-      "Randolph, Holy Spirit, Grace Lutheran, and St. John the Baptist applications-open dates that are not on the official admissions pages",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       fact.entity_type === "school" &&
       privateSchoolSlugs.includes(fact.entity_slug),

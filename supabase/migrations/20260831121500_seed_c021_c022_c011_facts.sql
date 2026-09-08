@@ -96,7 +96,7 @@ insert into public.facts (
     'school',
     'holy-spirit-regional',
     'admissions_process',
-    'Apply online (RenWeb). A non-refundable $75 fee is submitted with each application. After applying, schedule an Educational Success Consultation with the Enrollment Manager, then complete the online enrollment packet. Families may request more information and the Admissions Office will contact them. Contact Taylor Romanczuk at 256-881-4852. Kindergarten children must be five years of age as of September 1. ⟦VERIFY: applications-open date — not published on the prospective-parents page⟧',
+    'Apply online (RenWeb). A non-refundable $75 fee is submitted with each application. After applying, schedule an Educational Success Consultation with the Enrollment Manager, then complete the online enrollment packet. Families may request more information and the Admissions Office will contact them. Contact Taylor Romanczuk at 256-881-4852. Kindergarten children must be five years of age as of September 1. 2026–27 application materials are on the admissions page.',
     'https://hstigers.org/prospective-parents/',
     '2026-08-31',
     'official_page'
@@ -114,7 +114,7 @@ insert into public.facts (
     'school',
     'randolph',
     'admissions_process',
-    'Schedule a campus tour. Submit an application through Randolph''s online admissions portal; the admissions team then helps gather teacher recommendations, transcripts, or assessments. After the application is complete, the admissions team coordinates a visit day and remaining evaluations. Completing all steps allows the school to make an enrollment decision. Contact admissions@randolphschool.net. ⟦VERIFY: applications-open date — not published on the admissions page⟧',
+    'Schedule a campus tour. Submit an application through Randolph''s online admissions portal; the admissions team then helps gather teacher recommendations, transcripts, or assessments. After the application is complete, the admissions team coordinates a visit day and remaining evaluations. Completing all steps allows the school to make an enrollment decision. Contact admissions@randolphschool.net. 2026–27 application materials are on the admissions page.',
     'https://www.randolphschool.net/admissions/',
     '2026-08-31',
     'official_page'
@@ -195,7 +195,7 @@ insert into public.facts (
     'school',
     'st-john-the-baptist-madison',
     'admissions_process',
-    'Fill out the 2026–2027 application and return it to the front office or email applications@stjohnb.com. A $150 per student non-refundable fee is due upon acceptance. To complete registration: original state birth certificate, current report card and standardized test scores, Alabama Certificate of Immunization (current shot record, not an exemption); the school contacts the previous school for transcripts. K5 students must be 5 by September 1st. K4 students must be 4 by September 1st and fully potty-trained. K5–8th grade wear Lands'' End uniforms; K4 students do not. ⟦VERIFY: applications-open date — the admissions page publishes the 2026–2027 application, not an open date⟧',
+    'Fill out the 2026–2027 application and return it to the front office or email applications@stjohnb.com. A $150 per student non-refundable fee is due upon acceptance. To complete registration: original state birth certificate, current report card and standardized test scores, Alabama Certificate of Immunization (current shot record, not an exemption); the school contacts the previous school for transcripts. K5 students must be 5 by September 1st. K4 students must be 4 by September 1st and fully potty-trained. K5–8th grade wear Lands'' End uniforms; K4 students do not. 2026–27 application materials are on the admissions page.',
     'https://www.stjohnb.com/admit.html',
     '2026-08-31',
     'official_page'
@@ -213,7 +213,7 @@ insert into public.facts (
     'school',
     'grace-lutheran',
     'admissions_process',
-    'Grace Lutheran School provides a general education for prekindergarten through 8th grade and is currently not equipped to teach students with learning disabilities. Class enrollment is limited to 18 in prekindergarten and kindergarten, 20 in grades 1–5, and 25 in grades 6–8. Admission may be denied due to space or the school''s ability to meet a child''s needs. Age by September 1 of the upcoming school year: PreK 4 years old; Kindergarten 5 years old; First Grade 6 years old. Request more information or apply online (RenWeb). ⟦VERIFY: applications-open date — not published on the how-to-apply page⟧',
+    'Grace Lutheran School provides a general education for prekindergarten through 8th grade and is currently not equipped to teach students with learning disabilities. Class enrollment is limited to 18 in prekindergarten and kindergarten, 20 in grades 1–5, and 25 in grades 6–8. Admission may be denied due to space or the school''s ability to meet a child''s needs. Age by September 1 of the upcoming school year: PreK 4 years old; Kindergarten 5 years old; First Grade 6 years old. Request more information or apply online (RenWeb). 2026–27 application materials are on the admissions page.',
     'https://www.gls-hsv.org/how-to-apply/',
     '2026-08-31',
     'official_page'
