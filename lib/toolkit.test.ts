@@ -7,6 +7,7 @@ import { hero, pricingTiers } from "./site.ts";
 import {
   applicationWindows,
   comparisonRows,
+  isPublishedFactValue,
   isToolkitFact,
   officialLocatorFacts,
   registrationChecklists,
@@ -47,8 +48,23 @@ function homepageOfferText(): string {
   ].join("\n");
 }
 
-describe("C-020 toolkit", () => {
+describe("C-032 toolkit", () => {
   const facts = seedFacts.filter(isToolkitFact);
+
+  it("keeps VerifyToken and ⟦VERIFY out of toolkit worksheet UI", () => {
+    assert.equal(worksheetsSource.includes("VerifyToken"), false);
+    assert.equal(worksheetsSource.includes("⟦VERIFY"), false);
+    assert.match(worksheetsSource, /not published/);
+    assert.match(worksheetsSource, /NOT_PUBLISHED/);
+  });
+
+  it("maps VERIFY-only fact values to not published in the UI layer", () => {
+    assert.equal(isPublishedFactValue("https://example.com"), true);
+    assert.equal(
+      isPublishedFactValue("⟦VERIFY: Huntsville City Schools new-student document checklist⟧"),
+      false,
+    );
+  });
 
   it("still gates /guide/tools behind AccessGate need=toolkit", () => {
     assert.match(toolsPageSource, /AccessGate/);
@@ -254,11 +270,12 @@ describe("C-020 toolkit", () => {
   it("omits a Call Script Pack and does not invent admissions questions", () => {
     assert.equal(TOOLKIT_UNIMPLEMENTED[0]?.name, "Call Script Pack");
     assert.match(
-      TOOLKIT_UNIMPLEMENTED[0]?.verify ?? "",
+      TOOLKIT_UNIMPLEMENTED[0]?.detail ?? "",
       /does not invent admissions questions/,
     );
     assert.equal(worksheetsSource.includes("what to ask admissions"), false);
     assert.equal(worksheetsSource.includes("Ask the registrar"), false);
+    assert.equal(worksheetsSource.includes("Deadline Calendar is not implemented"), true);
   });
 
   it("does not name unimplemented worksheets on the sales page", () => {
