@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/legal-page";
-import { VerifyToken } from "@/components/verify-token";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -31,10 +30,22 @@ export default function TermsPage() {
       </p>
       <h2 className="pt-4 font-serif text-2xl text-ink">Access</h2>
       <p>
-        After payment, access is tied to the checkout email. You open the guide
-        with a Supabase magic link, not a password. The $79 tier is the guide.
-        The $149 tier adds the Toolkit. The $349 tier adds one 45-minute video
-        call with Nicholas, capped at 4 slots each month.
+        After payment, access is tied to the checkout email. On{" "}
+        <Link href="/thank-you" className="text-brick hover:underline">
+          /thank-you
+        </Link>
+        , click Open the guide to sign in without a password. If you return on
+        another device, use Send link on{" "}
+        <Link href="/login" className="text-brick hover:underline">
+          /login
+        </Link>{" "}
+        or{" "}
+        <Link href="/account" className="text-brick hover:underline">
+          /account
+        </Link>{" "}
+        with your checkout email and we email you a sign-in link. The $79 tier
+        is the guide. The $149 tier adds the Toolkit. The $349 tier adds one
+        45-minute video call with Nicholas, capped at 4 slots each month.
       </p>
       <h2 className="pt-4 font-serif text-2xl text-ink">Refunds</h2>
       <p>
@@ -56,8 +67,7 @@ export default function TermsPage() {
         <Link href="/contact" className="text-brick hover:underline">
           contact form
         </Link>
-        .{" "}
-        <VerifyToken>physical mailbox for CAN-SPAM</VerifyToken>
+        .
       </p>
     </LegalPage>
   );
