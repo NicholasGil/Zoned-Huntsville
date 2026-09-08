@@ -35,7 +35,6 @@ export const HCS_MAGNET_SLUGS = [
   "aaa-magnet",
   "lee-capa",
   "asfl-magnet",
-  "columbia-ib",
   "williams-agt",
   "jemison-college-academy",
 ] as const;

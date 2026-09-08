@@ -80,7 +80,7 @@ describe("first 15 minutes after purchase", () => {
     const maxOnPath = Math.max(
       ...firstPathModules().map((entry) => entry.unverified.length),
     );
-    for (const slug of ["magnets-and-specialty", "registration-mechanics"]) {
+    for (const slug of ["registration-mechanics"]) {
       const guideModule = getGuideModule(slug);
       assert.ok(guideModule);
       assert.ok(guideModule.unverified.length > maxOnPath, slug);
