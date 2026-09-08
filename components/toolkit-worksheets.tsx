@@ -1,17 +1,25 @@
 import { LeaseCheck } from "@/components/lease-check";
 import { SourcedFact } from "@/components/sourced-fact";
-import { VerifyToken } from "@/components/verify-token";
 import { isSecondaryFact, type PublishedFact } from "@/lib/facts";
 import { isHttpUrl } from "@/lib/seed-facts";
 import {
   applicationWindows,
   comparisonRows,
   entityName,
+  isPublishedFactValue,
+  NOT_PUBLISHED,
   officialLocatorFacts,
   registrationChecklists,
   TOOLKIT_UNIMPLEMENTED,
   zoneFacts,
 } from "@/lib/toolkit";
+
+function ToolkitFactCell({ fact }: { fact?: PublishedFact }) {
+  if (fact && isPublishedFactValue(fact.value)) {
+    return <SourcedFact fact={fact} />;
+  }
+  return <span className="text-muted">{NOT_PUBLISHED}</span>;
+}
 
 export function ToolkitWorksheets({ facts }: { facts: PublishedFact[] }) {
   const checklists = registrationChecklists(facts);
@@ -27,16 +35,14 @@ export function ToolkitWorksheets({ facts }: { facts: PublishedFact[] }) {
         </h2>
         <p className="mt-4 max-w-xl text-muted">
           Per-district lists already sourced in Registration Mechanics. Districts
-          whose enrollment page did not publish a list stay marked. Use your
-          browser&apos;s print function to print or save this page.
+          whose enrollment page did not publish a list show as not published. Use
+          your browser&apos;s print function to print or save this page.
         </p>
         {checklists.map((checklist) => (
           <div key={checklist.slug} className="mt-8 max-w-xl">
             <h3 className="font-serif text-xl text-ink">{checklist.name}</h3>
             {checklist.isVerify ? (
-              <p className="mt-3 text-ink">
-                <SourcedFact fact={checklist.fact} />
-              </p>
+              <p className="mt-3 text-muted">{NOT_PUBLISHED}</p>
             ) : (
               <>
                 <ul className="mt-4 space-y-2 text-ink">
@@ -88,7 +94,7 @@ export function ToolkitWorksheets({ facts }: { facts: PublishedFact[] }) {
                   {entityName(facts, fact.entity_slug)}
                   {": "}
                 </span>
-                <SourcedFact fact={fact} />
+                <ToolkitFactCell fact={fact} />
               </li>
             ))}
           </ul>
@@ -118,25 +124,13 @@ export function ToolkitWorksheets({ facts }: { facts: PublishedFact[] }) {
                 <tr key={row.slug} className="border-b border-rule align-top">
                   <td className="py-3 pr-4 text-ink">{row.name}</td>
                   <td className="py-3 pr-4 text-ink">
-                    {row.websiteFact ? (
-                      <SourcedFact fact={row.websiteFact} />
-                    ) : (
-                      <VerifyToken>{`published website for ${row.name}`}</VerifyToken>
-                    )}
+                    <ToolkitFactCell fact={row.websiteFact} />
                   </td>
                   <td className="py-3 pr-4 text-ink">
-                    {row.locatorFact ? (
-                      <SourcedFact fact={row.locatorFact} />
-                    ) : (
-                      <VerifyToken>{`official zone locator for ${row.name}`}</VerifyToken>
-                    )}
+                    <ToolkitFactCell fact={row.locatorFact} />
                   </td>
                   <td className="py-3 text-ink">
-                    {row.enrollmentFact ? (
-                      <SourcedFact fact={row.enrollmentFact} />
-                    ) : (
-                      <VerifyToken>{`published enrollment path for ${row.name}`}</VerifyToken>
-                    )}
+                    <ToolkitFactCell fact={row.enrollmentFact} />
                   </td>
                 </tr>
               ))}
@@ -151,7 +145,7 @@ export function ToolkitWorksheets({ facts }: { facts: PublishedFact[] }) {
         </h2>
         <p className="mt-4 max-w-xl text-muted">
           This is not a month-grid calendar. Only windows that exist as sourced
-          facts are listed. Missing windows stay marked.
+          facts are listed. Missing windows show as not published.
         </p>
         <dl className="mt-6 max-w-xl space-y-6">
           {windows.map((row) => (
@@ -160,7 +154,7 @@ export function ToolkitWorksheets({ facts }: { facts: PublishedFact[] }) {
                 {row.entityName} — {row.fieldLabel}
               </dt>
               <dd className="mt-1 text-ink">
-                <SourcedFact fact={row.fact} />
+                <ToolkitFactCell fact={row.fact} />
               </dd>
             </div>
           ))}
@@ -172,8 +166,7 @@ export function ToolkitWorksheets({ facts }: { facts: PublishedFact[] }) {
         <ul className="mt-4 max-w-xl list-disc space-y-3 pl-5 text-muted">
           {TOOLKIT_UNIMPLEMENTED.map((item) => (
             <li key={item.name}>
-              {item.name} is not implemented.{" "}
-              <VerifyToken>{item.verify}</VerifyToken>
+              {item.name} is not implemented. {item.detail}
             </li>
           ))}
           <li>
