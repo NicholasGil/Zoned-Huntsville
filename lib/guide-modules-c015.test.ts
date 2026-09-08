@@ -85,6 +85,17 @@ describe("C-015 C-016 C-019 module fill", () => {
           fact.value.includes("(256) 233-6600"),
       ),
     );
+    const athensInstruction = facts.find(
+      (fact) =>
+        fact.entity_slug === "athens-city" &&
+        fact.field === "zone_check_instruction",
+    );
+    assert.ok(athensInstruction);
+    assert.match(
+      athensInstruction.value,
+      /does not publish an interactive zone locator/,
+    );
+    assert.equal(athensInstruction.value.includes("⟦VERIFY"), false);
     assert.ok(facts.some((fact) => fact.field === "how_to_check_before_lease"));
     assert.ok(
       facts.some(
@@ -108,6 +119,10 @@ describe("C-015 C-016 C-019 module fill", () => {
       ),
       false,
     );
+    assert.equal(guideModule.unverified.length, 0);
+    for (const fact of facts) {
+      assert.equal(fact.value.includes("⟦VERIFY"), false, factKey(fact));
+    }
   });
 
   it("adds the seven HCS magnets beside ASCTE and marks New Century 2026–27 as secondary", () => {

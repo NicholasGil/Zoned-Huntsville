@@ -78,7 +78,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     assert.equal(modulePageSource.includes("canReadGuide(entitlement)"), true);
   });
 
-  it("sources Madison City superintendent, address, and non-resident text; keeps mailing and phone exceptions as VERIFY", () => {
+  it("sources Madison City superintendent, address, and residency-only enrollment without VERIFY tokens", () => {
     const guideModule = getGuideModule("five-systems");
     assert.ok(guideModule);
     const facts = seedFactsMatching(guideModule.matchesFact);
@@ -99,6 +99,7 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     assert.ok(address);
     assert.match(address.value, /211 Celtic Drive/);
     assert.match(address.value, /Title IX Coordinator address/);
+    assert.match(address.value, /does not label a district mailing address/);
     assert.match(address.source_url, /district-title-ix-information/);
     const nonResident = facts.find(
       (fact) =>
@@ -107,7 +108,11 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     );
     assert.ok(nonResident);
     assert.match(nonResident.value, /reside within Madison City School Zone/);
-    assert.match(nonResident.value, /VERIFY: confirm zero exceptions by phone/);
+    assert.match(
+      nonResident.value,
+      /Non-resident exceptions are not published on the enrollment page — call the district/,
+    );
+    assert.equal(nonResident.value.includes("⟦VERIFY"), false);
     assert.equal(
       facts.some(
         (fact) =>
@@ -116,16 +121,10 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
       ),
       false,
     );
-    assert.ok(
-      guideModule.unverified.some((item) =>
-        item.includes("Madison City mailing address"),
-      ),
-    );
-    assert.ok(
-      guideModule.unverified.some((item) =>
-        item.includes("confirm zero Madison City non-resident exceptions"),
-      ),
-    );
+    assert.equal(guideModule.unverified.length, 0);
+    for (const fact of facts) {
+      assert.equal(fact.value.includes("⟦VERIFY"), false, factKey(fact));
+    }
   });
 
   it("sources Limestone County superintendent from lcsk12.org and does not re-seed the zone map", () => {

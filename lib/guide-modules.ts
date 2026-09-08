@@ -63,10 +63,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "The Five Systems",
     purpose:
       "Huntsville City, Madison City, Madison County, Athens City, Limestone County",
-    unverified: [
-      "Madison City mailing address — official pages publish 211 Celtic Drive as the Title IX Coordinator address, not as a labeled mailing address",
-      "confirm zero Madison City non-resident exceptions by phone",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       (fact.entity_type === "district" || fact.entity_type === "policy") &&
       fiveSystemSlugs.includes(fact.entity_slug) &&
@@ -78,10 +75,7 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
     title: "Zones and Addresses",
     purpose:
       "What each system publishes for matching an address to a school, and where to confirm it.",
-    unverified: [
-      "Athens City official interactive zone locator — the district tells families to call (256) 233-6600",
-      "confirm zero Madison City non-resident exceptions by phone",
-    ],
+    unverified: [],
     matchesFact: (fact) =>
       (ZONE_FIELDS as readonly string[]).includes(fact.field),
   },
@@ -155,7 +149,6 @@ export const GUIDE_MODULES: readonly GuideModule[] = [
       "Limestone County Schools new-student document checklist",
       "Madison County 2026–27 start-of-year processing dates — they roll annually; reconfirm on the district page",
       "Athens City capacity limits and current-year non-resident tuition by phone",
-      "Madison City non-resident exceptions, if any, by phone",
     ],
     matchesFact: (fact) =>
       fiveSystemSlugs.includes(fact.entity_slug) &&
