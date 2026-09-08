@@ -72,6 +72,24 @@ describe("C-014 C-017 C-018 module fill", () => {
     assert.equal(modulePageSource.includes("canReadGuide(entitlement)"), true);
   });
 
+  it("keeps C-025, C-029, and C-031 free of VERIFY leftovers", () => {
+    for (const slug of FILLED_SLUGS) {
+      const guideModule = getGuideModule(slug);
+      assert.ok(guideModule, slug);
+      assert.deepEqual(guideModule.unverified, [], slug);
+      assert.equal(
+        guideModule.unverified.some((item) => item.includes("⟦VERIFY")),
+        false,
+        slug,
+      );
+    }
+    assert.equal(modulePageSource.includes("Not yet confirmed in this edition"), true);
+    assert.match(
+      modulePageSource,
+      /guideModule\.unverified\.length > 0/,
+    );
+  });
+
   it("wires Start Here to five-system name, website, and zone locator facts", () => {
     const guideModule = getGuideModule("start-here");
     assert.ok(guideModule);
@@ -101,6 +119,7 @@ describe("C-014 C-017 C-018 module fill", () => {
       "private_tutor_notice",
       "private_tutor_hours",
       "attendance_register",
+      "cover_school_list",
     ]) {
       assert.ok(fields.has(field), field);
     }
@@ -122,7 +141,11 @@ describe("C-014 C-017 C-018 module fill", () => {
     assert.match(byField.get("esa_participating_school")?.value ?? "", /\$7,000/);
     assert.match(byField.get("esa_home_education")?.value ?? "", /\$2,000/);
     assert.match(byField.get("application_window_2026_27")?.value ?? "", /March 31, 2026/);
+    assert.match(byField.get("next_cycle")?.value ?? "", /January 2027/);
+    assert.match(byField.get("next_cycle")?.value ?? "", /regardless of household income/);
+    assert.equal(/\bJanuary \d{1,2}, 2027\b/.test(byField.get("next_cycle")?.value ?? ""), false);
     assert.match(byField.get("income_cap_removal")?.value ?? "", /2027/);
+    assert.match(byField.get("sgo_amounts")?.value ?? "", /does not publish/);
     assert.ok(byField.get("still_active"));
     assert.ok(
       facts.every((fact) => isHttpUrl(fact.source_url)),
