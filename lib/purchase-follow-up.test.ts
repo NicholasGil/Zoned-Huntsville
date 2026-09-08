@@ -10,6 +10,14 @@ describe("fulfillmentWebhookStatus", () => {
   it("returns 200 for applied", () => {
     assert.equal(fulfillmentWebhookStatus("applied"), 200);
   });
+
+  it("returns 503 for missing-admin", () => {
+    assert.equal(fulfillmentWebhookStatus("missing-admin"), 503);
+  });
+
+  it("returns 500 for write-failed", () => {
+    assert.equal(fulfillmentWebhookStatus("write-failed"), 500);
+  });
 });
 
 describe("runAppliedPurchaseNotifications", () => {

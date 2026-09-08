@@ -1,9 +1,45 @@
 import { after, NextResponse } from "next/server";
 import { getAppEnv } from "@/lib/env";
-import { runAppliedPurchaseNotifications } from "@/lib/purchase-follow-up";
+import {
+  fulfillmentWebhookStatus,
+  runAppliedPurchaseNotifications,
+} from "@/lib/purchase-follow-up";
 import { fulfillStripeEvent, sendPurchaseMagicLink } from "@/lib/stripe-fulfillment";
 import { sendPurchaseReceipt } from "@/lib/transactional-mail";
 import { getStripe } from "@/lib/stripe";
+import { alertWebhookFulfillmentFailure } from "@/lib/webhook-ops-alert";
+
+function failureResponse(
+  event: { id: string; type: string },
+  result:
+    | { kind: "missing-admin" }
+    | { kind: "write-failed"; reason: string }
+    | { kind: "uncaught"; reason: string },
+) {
+  const httpStatus = fulfillmentWebhookStatus(
+    result.kind === "uncaught" ? "write-failed" : result.kind,
+  );
+  const reason =
+    result.kind === "missing-admin"
+      ? "Purchase write path needs NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY."
+      : result.reason;
+
+  after(() =>
+    alertWebhookFulfillmentFailure({
+      kind: result.kind === "uncaught" ? "uncaught" : result.kind,
+      eventId: event.id,
+      eventType: event.type,
+      httpStatus,
+      reason,
+    }),
+  );
+
+  if (result.kind === "missing-admin") {
+    return NextResponse.json({ error: reason }, { status: httpStatus });
+  }
+
+  return NextResponse.json({ error: reason }, { status: httpStatus });
+}
 
 export async function POST(request: Request) {
   const env = getAppEnv();
@@ -30,18 +66,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid Stripe signature." }, { status: 400 });
   }
 
-  const result = await fulfillStripeEvent(event);
+  let result;
+  try {
+    result = await fulfillStripeEvent(event);
+  } catch (error) {
+    const reason =
+      error instanceof Error ? error.message : "Webhook fulfillment threw an unexpected error.";
+    return failureResponse(event, { kind: "uncaught", reason });
+  }
+
   if (result.kind === "missing-admin") {
-    return NextResponse.json(
-      {
-        error:
-          "Purchase write path needs NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY.",
-      },
-      { status: 503 },
-    );
+    return failureResponse(event, result);
   }
   if (result.kind === "write-failed") {
-    return NextResponse.json({ error: result.reason }, { status: 500 });
+    return failureResponse(event, result);
   }
 
   if (result.kind === "applied") {
