@@ -4,13 +4,13 @@ export const salesCopy = {
   whatsInTheGuide: [
     "The $79 Guide is the 2026–27 edition.",
     "What is sourced today is The Five Systems: Huntsville City, Madison City, Madison County, Athens City, and Limestone County. Each published fact is linked to its official source and stamped with the date we verified it.",
-    "Remaining modules stay in the Guide and are marked until they are sourced. They are not sold as a finished catalog of magnets, private schools, deadlines, or registration documents.",
+    "The Guide also covers zones and addresses, magnets, private schools, homeschool paths, paying for school, and registration — each fact linked to its official source and dated. It is not sold as a complete catalog of every magnet seat, private school tuition figure, or district document.",
   ],
   offerStack: [
     {
       name: "The Guide — $79",
       detail:
-        "Sourced Five Systems material, web-based, mobile-readable, lifetime access to the 2026–27 edition. Remaining modules are marked until they are sourced.",
+        "Sourced 2026–27 Guide modules, web-based, mobile-readable, lifetime access. Every published fact is linked to its official source and dated.",
     },
     {
       name: "Guide + Toolkit — $149",
@@ -42,7 +42,7 @@ export const salesCopy = {
     {
       question: "Isn't this all free on the districts' websites?",
       answer:
-        "Yes, and it is spread across district sites, GIS tools, a state ESA portal that redirects to a vendor domain, private school sites, and a state report card most people have never opened. The Guide puts the sourced Five Systems material on one page. Remaining modules are marked until they are sourced.",
+        "Yes, and it is spread across district sites, GIS tools, a state ESA portal that redirects to a vendor domain, private school sites, and a state report card most people have never opened. The Guide puts those sources on one page — Five Systems, zones, registration, and the rest of this edition — each fact linked and dated.",
     },
     {
       question: "Won't this be out of date?",

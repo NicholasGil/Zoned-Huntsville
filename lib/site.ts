@@ -54,7 +54,7 @@ export const pricingTiers = [
     prominence: "default",
     name: "The Guide",
     includes: [
-      "The Guide: sourced Five Systems material. Remaining modules are marked until they are sourced.",
+      "The Guide: sourced 2026–27 modules across Five Systems, zones, registration, and more. Every published fact is linked and dated.",
       "Web-based, mobile-readable, lifetime access to the 2026–27 edition.",
     ],
   },
