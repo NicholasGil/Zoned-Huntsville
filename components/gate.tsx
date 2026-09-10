@@ -16,7 +16,7 @@ export function AccessGate({
 
   const reason =
     entitlement.kind === "anonymous"
-      ? "The server found no signed-in session. Request a magic link, then open the guide again."
+      ? "Enter the email you used at checkout and we open the guide here — no password needed."
       : need === "toolkit"
         ? "You are signed in, but this page requires a $149 or $349 purchase."
         : "You are signed in, but this page requires a paid guide purchase.";
@@ -27,11 +27,17 @@ export function AccessGate({
       <p className="mt-4 max-w-xl text-text-muted">{reason}</p>
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <Link href="/login" className={primaryButton}>
-          Request a magic link
+          Unlock with checkout email
         </Link>
-        <Link href="/#pricing" className={secondaryButton}>
-          See pricing
-        </Link>
+        {entitlement.kind === "anonymous" ? (
+          <Link href="/login#magic-link" className={secondaryButton}>
+            Email me a sign-in link
+          </Link>
+        ) : (
+          <Link href="/#pricing" className={secondaryButton}>
+            See pricing
+          </Link>
+        )}
       </div>
     </section>
   );

@@ -6,6 +6,7 @@ import {
 import { site } from "@/lib/site";
 
 const pageLinks = [
+  { href: "/guide", label: "Guide" },
   { href: "/sample", label: "Sample" },
   { href: "/contact", label: "Contact" },
   { href: "/account", label: "Account" },

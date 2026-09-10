@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { requestMagicLink } from "@/app/login/actions";
+import { requestMagicLink, unlockGuideWithEmail } from "@/app/login/actions";
+import {
+  GuideUnlockForm,
+  GuideUnlockStatus,
+  type GuideUnlockError,
+} from "@/components/guide-unlock-form";
 import { PageShell } from "@/components/page-shell";
 import {
   SendLinkForm,
@@ -13,18 +18,30 @@ import {
 } from "@/lib/auth-error";
 
 export const metadata: Metadata = {
-  title: "Sign in",
+  title: "Open your guide",
 };
 
-const ERRORS: ReadonlyArray<SendLinkError> = [
+const UNLOCK_ERRORS: ReadonlyArray<GuideUnlockError> = [
+  "invalid-email",
+  "not-configured",
+  "no-purchase",
+  "unlock-failed",
+  "auth",
+];
+
+const MAGIC_ERRORS: ReadonlyArray<SendLinkError> = [
   "invalid-email",
   "not-configured",
   "send-failed",
   "auth",
 ];
 
-function readError(value: string | null): SendLinkError | null {
-  return ERRORS.find((known) => known === value) ?? null;
+function readUnlockError(value: string | null): GuideUnlockError | null {
+  return UNLOCK_ERRORS.find((known) => known === value) ?? null;
+}
+
+function readMagicError(value: string | null): SendLinkError | null {
+  return MAGIC_ERRORS.find((known) => known === value) ?? null;
 }
 
 export default async function LoginPage({
@@ -32,9 +49,11 @@ export default async function LoginPage({
 }: PageProps<"/login">) {
   const query = await searchParams;
   const status = typeof query.status === "string" ? query.status : null;
-  const error = readError(typeof query.error === "string" ? query.error : null);
+  const errorParam = typeof query.error === "string" ? query.error : null;
+  const unlockError = readUnlockError(errorParam);
+  const magicError = unlockError ? null : readMagicError(errorParam);
   const authError =
-    error === "send-failed"
+    magicError === "send-failed"
       ? toPublicAuthError({
           message:
             typeof query.auth_message === "string"
@@ -51,25 +70,48 @@ export default async function LoginPage({
 
   return (
     <PageShell>
-      <h1 className="font-sans text-4xl font-semibold text-text">Sign in</h1>
+      <h1 className="font-sans text-4xl font-semibold text-text">Open your guide</h1>
       <p className="mt-4 max-w-xl text-text-muted">
-        Enter the email you used at checkout and we&apos;ll send a link that
-        opens the guide. No password needed.
+        Enter the email you used at checkout. If we find your purchase, we open
+        the guide in this browser — no password and no email to click.
       </p>
 
-      <SendLinkForm
-        action={requestMagicLink}
-        inputId="login-email"
-        label="Checkout email"
+      <GuideUnlockForm
+        action={unlockGuideWithEmail}
+        inputId="guide-unlock-email"
         className="mt-8 max-w-md"
       />
 
-      <SendLinkStatus
-        sent={status === "sent"}
-        error={error}
-        sendFailedCopy={authError ? formatLoginSendFailedCopy(authError) : null}
-        supportDetail={authError ? formatLoginSendFailedDetail(authError) : null}
-      />
+      <GuideUnlockStatus error={unlockError} />
+
+      <section
+        id="magic-link"
+        aria-labelledby="magic-link-heading"
+        className="mt-12 max-w-md border-t border-border pt-10"
+      >
+        <h2
+          id="magic-link-heading"
+          className="font-sans text-lg font-semibold text-text"
+        >
+          Prefer email instead?
+        </h2>
+        <p className="mt-2 text-sm text-text-muted">
+          On another device, we can send a one-time link to your inbox. That is
+          optional — the form above is the usual way back in.
+        </p>
+        <SendLinkForm
+          action={requestMagicLink}
+          inputId="login-email"
+          label="Checkout email"
+          className="mt-6"
+        />
+        <SendLinkStatus
+          sent={status === "sent"}
+          error={magicError}
+          sendFailedCopy={authError ? formatLoginSendFailedCopy(authError) : null}
+          supportDetail={authError ? formatLoginSendFailedDetail(authError) : null}
+        />
+      </section>
     </PageShell>
   );
 }
