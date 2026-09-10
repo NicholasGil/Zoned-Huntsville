@@ -21,6 +21,10 @@ const headerSource = readFileSync(
   new URL("../components/site-header.tsx", import.meta.url),
   "utf8",
 );
+const headerBuyButtonSource = readFileSync(
+  new URL("../components/header-buy-button.tsx", import.meta.url),
+  "utf8",
+);
 const guideIndexSource = readFileSync(
   new URL("../app/guide/page.tsx", import.meta.url),
   "utf8",
@@ -182,7 +186,10 @@ describe("first-screen buy", () => {
     assert.equal(heroSource.toLowerCase().includes("refund"), false);
     assert.match(salesCopy.heroRiskReversal, /30-day refund/);
     assert.match(salesCopy.heroRiskReversal, /Zone Promise/);
-    assert.match(hero.headline, /before you sign/i);
+    assert.equal(
+      hero.headline,
+      "Want the zone details before you sign?",
+    );
     assert.equal(
       hero.proofLineAboveFold,
       "The address decides the district — not the city name on the listing.",
@@ -225,6 +232,17 @@ describe("first-screen buy", () => {
 });
 
 describe("mobile header tap targets", () => {
+  it("keeps header buy short at every breakpoint (never hero commitment CTA)", () => {
+    assert.equal(headerBuyButtonSource.includes("I want the details"), false);
+    assert.equal(headerBuyButtonSource.includes("hero.cta"), false);
+    assert.match(headerBuyButtonSource, /label="Buy · \$79"/);
+    assert.equal(
+      headerBuyButtonSource.includes("compactLabel"),
+      false,
+      "header must not use compactLabel swap that shows long CTA on sm+",
+    );
+  });
+
   it("keeps one combined sticky bar with buy CTA", () => {
     assert.match(headerSource, /sticky top-0/);
     assert.equal(headerSource.includes("flex-col"), false);

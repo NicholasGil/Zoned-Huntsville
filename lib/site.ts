@@ -38,8 +38,7 @@ export const namedSources = {
 } as const;
 
 export const hero = {
-  headline:
-    "Want every detail on Huntsville-area school zones before you sign?",
+  headline: "Want the zone details before you sign?",
   proofLineAboveFold:
     "The address decides the district — not the city name on the listing.",
   proofBeatsBelowFold: [
