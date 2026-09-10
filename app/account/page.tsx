@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requestPurchaseEmailLink } from "@/app/account/actions";
+import { BookExpertCall } from "@/components/book-expert-call";
 import { PageShell } from "@/components/page-shell";
 import { SendLinkForm, SendLinkStatus } from "@/components/send-link-form";
 import { getCallSlot, type CallSlotQuery } from "@/lib/call-slots";
@@ -122,6 +123,14 @@ export default async function AccountPage({
             }
           />
         </section>
+      ) : null}
+
+      {entitlement.kind === "signed-in" && entitlement.hasCall ? (
+        <BookExpertCall
+          email={identity.email}
+          className="mt-10"
+          showAccountLink={false}
+        />
       ) : null}
 
       {entitlement.kind === "signed-in" && entitlement.hasCall ? (
