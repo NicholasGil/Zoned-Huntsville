@@ -21,10 +21,6 @@ const headerSource = readFileSync(
   new URL("../components/site-header.tsx", import.meta.url),
   "utf8",
 );
-const headerBuyButtonSource = readFileSync(
-  new URL("../components/header-buy-button.tsx", import.meta.url),
-  "utf8",
-);
 const guideIndexSource = readFileSync(
   new URL("../app/guide/page.tsx", import.meta.url),
   "utf8",
@@ -232,21 +228,16 @@ describe("first-screen buy", () => {
 });
 
 describe("mobile header tap targets", () => {
-  it("keeps header buy short at every breakpoint (never hero commitment CTA)", () => {
-    assert.equal(headerBuyButtonSource.includes("I want the details"), false);
-    assert.equal(headerBuyButtonSource.includes("hero.cta"), false);
-    assert.match(headerBuyButtonSource, /label="Buy · \$79"/);
-    assert.equal(
-      headerBuyButtonSource.includes("compactLabel"),
-      false,
-      "header must not use compactLabel swap that shows long CTA on sm+",
-    );
+  it("does not render a header buy CTA at any breakpoint", () => {
+    assert.equal(headerSource.includes("HeaderBuyButton"), false);
+    assert.equal(headerSource.includes("header-buy-button"), false);
+    assert.equal(headerSource.includes("Buy · $79"), false);
+    assert.equal(headerSource.includes("CheckoutForm"), false);
   });
 
-  it("keeps one combined sticky bar with buy CTA", () => {
+  it("keeps one combined sticky header bar with hamburger (no header buy)", () => {
     assert.match(headerSource, /sticky top-0/);
     assert.equal(headerSource.includes("flex-col"), false);
-    assert.match(headerSource, /HeaderBuyButton/);
     assert.match(headerSource, /truncate/);
     assert.match(headerSource, /SiteHeaderMobileMenu/);
     assert.match(headerSource, /md:hidden/);
