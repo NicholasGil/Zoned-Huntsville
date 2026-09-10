@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { parseAttributionRecord } from "@/lib/attribution";
+import { BookExpertCall } from "@/components/book-expert-call";
 import { CheckoutReceiptView } from "@/components/checkout-receipt";
 import { PageShell } from "@/components/page-shell";
 import { PurchasePixel } from "@/components/purchase-pixel";
 import { planCheckoutAccess } from "@/lib/checkout-unlock";
+import { getEntitlement } from "@/lib/entitlement";
 import { getSignedInAdminState } from "@/lib/facts";
 import { loadCheckoutReceipt } from "@/lib/load-checkout-receipt";
 
@@ -35,6 +37,7 @@ export default async function ThankYouPage({
   const sessionId = firstQueryValue(query.session_id);
   const receipt = await loadCheckoutReceipt(sessionId);
   const identity = await getSignedInAdminState();
+  const entitlement = await getEntitlement();
   const access = planCheckoutAccess({
     receipt,
     sessionId,
@@ -47,10 +50,24 @@ export default async function ThankYouPage({
     redirect(access.href);
   }
 
+  const showExpertCallNextSteps =
+    receipt.kind === "confirmed" &&
+    (receipt.tier === "call" ||
+      (entitlement.kind === "signed-in" && entitlement.hasCall));
+
+  const scheduleEmail =
+    receipt.kind === "confirmed"
+      ? receipt.email ??
+        (access.kind === "ready" ? access.email : identity.email)
+      : identity.email;
+
   return (
     <PageShell>
       <PurchasePixel receipt={receipt} sessionId={sessionId} />
       <CheckoutReceiptView receipt={receipt} access={access} />
+      {showExpertCallNextSteps ? (
+        <BookExpertCall email={scheduleEmail} className="mt-10" />
+      ) : null}
     </PageShell>
   );
 }
