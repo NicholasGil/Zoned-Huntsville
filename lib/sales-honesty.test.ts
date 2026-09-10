@@ -158,6 +158,40 @@ describe("homepage offer honesty", () => {
     }
     assert.equal(salesPageSource.toLowerCase().includes("testimonial"), false);
   });
+
+  it("describes the $349 call with an expert, not by founder name", () => {
+    const call349 = pricingTiers.find((tier) => tier.id === "349");
+    assert.ok(call349);
+    assert.match(
+      call349.includes.join("\n"),
+      /One 45-minute video call with an expert\./,
+    );
+    assert.match(
+      salesCopy.offerStack[2].detail,
+      /one 45-minute video call with an expert\. Four slots each month\./,
+    );
+    const toolkitFaq = salesCopy.faq.find((item) =>
+      item.question.includes("Toolkit"),
+    );
+    assert.ok(toolkitFaq);
+    assert.match(
+      toolkitFaq.answer,
+      /\$349 tier adds one 45-minute video call with an expert\./,
+    );
+    const cappedFaq = salesCopy.faq.find((item) =>
+      item.question.includes("call capped"),
+    );
+    assert.ok(cappedFaq);
+    assert.match(
+      cappedFaq.answer,
+      /one 45-minute video call with an expert/,
+    );
+    assert.equal(
+      homepageOfferText().includes("video call with Nicholas"),
+      false,
+    );
+    assert.match(salesCopy.whoBuiltThis, /Nicholas Gil/);
+  });
 });
 
 describe("first-screen buy", () => {
