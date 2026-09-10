@@ -59,6 +59,8 @@ function homepageOfferText(): string {
   return [
     hero.headline,
     hero.subhead,
+    hero.proofLineAboveFold,
+    ...hero.proofBeatsBelowFold,
     ...hero.proofBeats,
     hero.credibility,
     hero.guarantee,
@@ -127,6 +129,7 @@ describe("homepage offer honesty", () => {
     assert.match(mobileBuyBarSource, /variant="brick"/);
     assert.match(mobileBuyBarSource, /md:hidden/);
     assert.equal(mobileBuyBarSource.includes("hamburger"), false);
+    assert.match(mobileBuyBarSource, /pastHeroFold/);
   });
 
   it("uses the spec §4.3 official portal URLs", () => {
@@ -158,19 +161,39 @@ describe("homepage offer honesty", () => {
 });
 
 describe("first-screen buy", () => {
-  it("puts yes-question headline, proof beats, $79 pill CTA, and guarantee in the hero", () => {
+  it("puts yes-question headline, marketing proof line, and $79 pill CTA in the hero (no refund below button)", () => {
     const heroSource = heroSectionSource();
     assert.match(heroSource, /hero\.headline/);
-    assert.match(heroSource, /hero\.proofBeats/);
+    assert.match(heroSource, /hero\.proofLineAboveFold/);
+    assert.equal(
+      heroSource.includes("hero.proofBeats.map"),
+      false,
+      "hero should not render the full proof-beats list above the fold",
+    );
+    assert.match(heroSource, /HeroProofBeatsBelowFold/);
     assert.match(heroSource, /variant="pill"/);
     assert.match(heroSource, /tierId="79"/);
     assert.match(heroSource, /HeroPhonePreview/);
     assert.match(salesPageSource, /\$79/);
     assert.match(salesPageSource, /hero\.cta/);
-    assert.match(heroSource, /salesCopy\.heroRiskReversal/);
+    assert.equal(heroSource.includes("hero.guarantee"), false);
+    assert.equal(heroSource.includes("salesCopy.heroRiskReversal"), false);
+    assert.equal(heroSource.toLowerCase().includes("zone promise"), false);
+    assert.equal(heroSource.toLowerCase().includes("refund"), false);
     assert.match(salesCopy.heroRiskReversal, /30-day refund/);
     assert.match(salesCopy.heroRiskReversal, /Zone Promise/);
     assert.match(hero.headline, /before you sign/i);
+    assert.equal(
+      hero.proofLineAboveFold,
+      "The address decides the district — not the city name on the listing.",
+    );
+  });
+
+  it("defers the mobile sticky buy bar until after the hero fold", () => {
+    assert.match(mobileBuyBarSource, /"use client"/);
+    assert.match(salesPageSource, /id="hero-fold-sentinel"/);
+    assert.match(mobileBuyBarSource, /if \(!pastHeroFold\)/);
+    assert.match(mobileBuyBarSource, /window\.scrollY < 8/);
   });
 
   it("limits mid-page $79 clones to hero plus pricing", () => {

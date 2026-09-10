@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
+import { createServer } from "node:net";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -71,6 +72,28 @@ function findCommitted1280Proof(): string | null {
   return null;
 }
 
+function pickFreePort(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const server = createServer();
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        reject(new Error("could not allocate fluidity test port"));
+        return;
+      }
+      const port = address.port;
+      server.close((error) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(port);
+      });
+    });
+    server.on("error", reject);
+  });
+}
+
 async function waitForServer(baseUrl: string, timeoutMs: number): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
@@ -113,7 +136,7 @@ describe("homepage header fluidity gate", () => {
           existsSync(buildIdPath),
           "run `npm run build` before fluidity tests (or set FLUIDITY_BASE_URL)",
         );
-        const port = process.env.FLUIDITY_PORT ?? "34567";
+        const port = process.env.FLUIDITY_PORT ?? String(await pickFreePort());
         baseUrl = `http://127.0.0.1:${port}`;
         child = spawn(
           "npm",
@@ -125,6 +148,13 @@ describe("homepage header fluidity gate", () => {
           },
         );
         await waitForServer(baseUrl, 90_000);
+        const homepage = await fetch(baseUrl);
+        const html = await homepage.text();
+        assert.match(
+          html,
+          /The address decides the district — not the city name on the listing\./,
+          "fluidity server must serve the current homepage build",
+        );
       }
       browser = await chromium.launch();
     });
@@ -221,6 +251,28 @@ describe("homepage header fluidity gate", () => {
       assert.ok(
         toggleBox.width >= 44 && toggleBox.height >= 44,
         `(c) hamburger control ${toggleBox.width}×${toggleBox.height} < 44×44`,
+      );
+
+      const stickyBuyAtTop = await page.evaluate(() => {
+        const bar = document.querySelector(
+          'aside[aria-label="Get the School Guide — $79"]',
+        );
+        if (!bar) {
+          return { present: false };
+        }
+        const style = window.getComputedStyle(bar);
+        const rect = bar.getBoundingClientRect();
+        const visible =
+          style.display !== "none" &&
+          style.visibility !== "hidden" &&
+          rect.height > 0 &&
+          rect.width > 0;
+        return { present: true, visible };
+      });
+      assert.equal(
+        stickyBuyAtTop.present && stickyBuyAtTop.visible,
+        false,
+        "(e) mobile sticky buy bar must not be visible at scrollY=0",
       );
 
       if (menuOpen) {

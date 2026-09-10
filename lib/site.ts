@@ -40,8 +40,14 @@ export const namedSources = {
 export const hero = {
   headline:
     "Want every detail on Huntsville-area school zones before you sign?",
+  proofLineAboveFold:
+    "The address decides the district — not the city name on the listing.",
+  proofBeatsBelowFold: [
+    "Built for PCS / Redstone moves and local parents (Huntsville · Madison · Athens · Limestone)",
+    "Official, dated sources over star-rating fluff",
+  ] as const,
   proofBeats: [
-    "Address decides the district — not the city name on the listing",
+    "The address decides the district — not the city name on the listing.",
     "Built for PCS / Redstone moves and local parents (Huntsville · Madison · Athens · Limestone)",
     "Official, dated sources over star-rating fluff",
   ] as const,
