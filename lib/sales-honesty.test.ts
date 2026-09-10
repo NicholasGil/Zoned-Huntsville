@@ -207,19 +207,23 @@ describe("mobile header tap targets", () => {
     assert.equal(headerSource.includes("flex-col"), false);
     assert.match(headerSource, /HeaderBuyButton/);
     assert.match(headerSource, /truncate/);
-    assert.equal(headerSource.includes("hamburger"), false);
+    assert.match(headerSource, /SiteHeaderMobileMenu/);
+    assert.match(headerSource, /md:hidden/);
   });
 
-  it("keeps Sample, Contact, and Account at 44px in the same row", () => {
+  it("hides inline nav below md and exposes links in the mobile menu", () => {
     assert.match(headerSource, /href: "\/sample"/);
     assert.match(headerSource, /href: "\/account"/);
     assert.match(headerSource, /href: "\/contact"/);
     assert.equal(headerSource.includes('href: "/guide"'), false);
-    assert.match(headerSource, /min-h-11/);
-    const pageDestinations =
-      headerSource.match(/href: "\/sample"|href: "\/contact"|href: "\/account"/g) ??
-      [];
-    assert.equal(pageDestinations.length, 3);
+    assert.match(headerSource, /hidden min-w-0 flex-1 items-center justify-center gap-0 md:flex/);
+    const mobileMenuSource = readFileSync(
+      new URL("../components/site-header-mobile-menu.tsx", import.meta.url),
+      "utf8",
+    );
+    assert.match(mobileMenuSource, /aria-expanded/);
+    assert.match(mobileMenuSource, /aria-controls/);
+    assert.match(mobileMenuSource, /min-h-11/);
   });
 });
 

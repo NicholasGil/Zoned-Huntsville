@@ -278,9 +278,8 @@ describe("C-021 C-022 C-011 leftover VERIFY", () => {
     assert.equal(/\d+\s+days/.test(privacySource), false);
   });
 
-  it("does not touch Stripe, hover, or hamburger", () => {
+  it("does not touch Stripe, hover, or module-page hamburger", () => {
     assert.match(stripeSource, /STRIPE_SECRET_KEY/);
-    assert.equal(headerSource.includes("hamburger"), false);
     assert.equal(modulePageSource.includes("hamburger"), false);
   });
 
