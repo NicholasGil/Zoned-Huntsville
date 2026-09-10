@@ -217,6 +217,14 @@ describe("mobile header tap targets", () => {
     assert.match(headerSource, /href: "\/contact"/);
     assert.equal(headerSource.includes('href: "/guide"'), false);
     assert.match(headerSource, /hidden min-w-0 flex-1 items-center justify-center gap-0 md:flex/);
+    assert.match(headerSource, /mobileMenuLinks/);
+    assert.match(headerSource, /SiteHeaderMobileMenu[\s\S]*className="md:hidden"/);
+    assert.equal(
+      headerSource.includes("pageLinks.map") &&
+        headerSource.includes('className="hidden min-w-0 flex-1'),
+      true,
+      "page links must render only inside md+ nav, not on the mobile bar",
+    );
     const mobileMenuSource = readFileSync(
       new URL("../components/site-header-mobile-menu.tsx", import.meta.url),
       "utf8",
