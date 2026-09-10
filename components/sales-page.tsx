@@ -9,49 +9,58 @@ import { salesCopy } from "@/lib/sales";
 import { HeroPhonePreview } from "@/components/hero-phone-preview";
 import { edition, hero, officialPortals } from "@/lib/site";
 
+function HeroProofBeatsBelowFold() {
+  return (
+    <ul
+      className="mt-6 w-full max-w-xl space-y-2 text-left text-[13px] leading-snug text-text-muted sm:mt-8 sm:space-y-2.5 sm:text-base sm:leading-relaxed"
+      aria-label="More reasons families use this guide"
+    >
+      {hero.proofBeatsBelowFold.map((beat) => (
+        <li key={beat} className="flex gap-2.5">
+          <span
+            className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-action"
+            aria-hidden="true"
+          />
+          <span>{beat}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function SalesPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pb-28 pt-3 sm:px-6 sm:pt-10 sm:pb-24 max-md:pb-28">
+    <div className="mx-auto w-full min-w-0 max-w-4xl overflow-x-clip px-4 pb-28 pt-3 sm:px-6 sm:pt-10 sm:pb-24 max-md:pb-28">
       <Suspense fallback={null}>
         <CheckoutNotice />
       </Suspense>
       <section
         aria-labelledby="hero-heading"
-        className="mx-auto flex max-w-2xl flex-col items-center text-center"
+        className="mx-auto flex w-full min-w-0 max-w-2xl flex-col items-center text-center"
       >
         <p className="text-xs text-text-muted sm:text-sm">
           {edition} edition · five systems · Huntsville metro
         </p>
         <h1
           id="hero-heading"
-          className="mt-2 font-sans text-[26px] font-semibold leading-[1.15] text-text sm:mt-4 sm:text-[40px] sm:leading-tight"
+          className="mt-2 font-sans text-[32px] font-bold leading-[1.08] tracking-tight text-text max-md:max-w-[20rem] sm:mt-4 sm:max-w-none sm:text-[44px] sm:leading-[1.06] lg:text-[48px]"
         >
           {hero.headline}
         </h1>
-        <ul
-          className="mt-4 w-full max-w-xl space-y-2 text-left text-[13px] leading-snug text-text-muted sm:mt-6 sm:space-y-2.5 sm:text-base sm:leading-relaxed"
-          aria-label="Why this guide"
+        <p
+          className="mt-3 w-full max-w-xl text-balance text-[15px] font-medium leading-snug text-text-muted sm:mt-4 sm:text-lg sm:leading-snug"
         >
-          {hero.proofBeats.map((beat) => (
-            <li key={beat} className="flex gap-2.5">
-              <span
-                className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-action"
-                aria-hidden="true"
-              />
-              <span>{beat}</span>
-            </li>
-          ))}
-        </ul>
+          {hero.proofLineAboveFold}
+        </p>
         <CheckoutForm
           tierId="79"
           label={hero.cta}
           variant="pill"
-          className="mt-5 w-full max-w-sm sm:mt-8 [&_button]:text-base"
+          className="mt-5 w-full max-w-sm sm:mt-7"
         />
-        <p className="mt-2 max-w-sm text-[11px] font-normal leading-snug text-text-muted sm:mt-3 sm:text-sm">
-          {salesCopy.heroRiskReversal}
-        </p>
         <HeroPhonePreview />
+        <HeroProofBeatsBelowFold />
+        <div id="hero-fold-sentinel" className="h-px w-full" aria-hidden="true" />
       </section>
 
       <section aria-labelledby="problem-heading" className="mt-16 sm:mt-20">

@@ -79,7 +79,7 @@ export function CheckoutForm({
     variant === "ink"
       ? `w-full min-h-11 rounded-md border border-text bg-transparent px-6 py-3 text-sm font-semibold text-text hover:border-action ${focusRing}`
       : variant === "pill"
-        ? `w-full min-h-12 rounded-full bg-action px-6 py-3.5 text-sm font-semibold tracking-tight text-text-on-action hover:bg-action-hover active:bg-action-active ${focusRing}`
+        ? `w-full min-h-14 rounded-full bg-action px-6 py-3.5 text-base font-bold tracking-tight text-text-on-action shadow-[0_2px_0_0_rgba(15,41,66,0.35)] hover:bg-action-hover active:bg-action-active ${focusRing}`
         : `w-full ${primaryFill}`;
   const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
