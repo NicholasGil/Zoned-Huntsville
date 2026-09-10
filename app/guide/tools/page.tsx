@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AccessGate } from "@/components/gate";
+import { readGuideUnlockError } from "@/components/guide-unlock-form";
 import { PageShell } from "@/components/page-shell";
 import { ToolkitWorksheets } from "@/components/toolkit-worksheets";
 import { canReadToolkit, getEntitlement } from "@/lib/entitlement";
@@ -10,13 +11,24 @@ export const metadata: Metadata = {
   title: "Toolkit",
 };
 
-export default async function GuideToolsPage() {
+export default async function GuideToolsPage({
+  searchParams,
+}: PageProps<"/guide/tools">) {
+  const query = await searchParams;
+  const unlockError = readGuideUnlockError(
+    typeof query.error === "string" ? query.error : null,
+  );
   const entitlement = await getEntitlement();
 
   if (!canReadToolkit(entitlement)) {
     return (
       <PageShell>
-        <AccessGate entitlement={entitlement} need="toolkit" />
+        <AccessGate
+          entitlement={entitlement}
+          need="toolkit"
+          returnTo="/guide/tools"
+          unlockError={unlockError}
+        />
       </PageShell>
     );
   }

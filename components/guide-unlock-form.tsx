@@ -13,17 +13,35 @@ export type GuideUnlockError =
   | "unlock-failed"
   | "auth";
 
+const GUIDE_UNLOCK_ERRORS: ReadonlyArray<GuideUnlockError> = [
+  "invalid-email",
+  "not-configured",
+  "no-purchase",
+  "unlock-failed",
+  "auth",
+];
+
+export function readGuideUnlockError(value: string | null | undefined): GuideUnlockError | null {
+  if (!value) {
+    return null;
+  }
+  return GUIDE_UNLOCK_ERRORS.find((known) => known === value) ?? null;
+}
+
 export function GuideUnlockForm({
   action,
   inputId,
   className,
+  returnTo = "/login",
 }: {
   action: (formData: FormData) => void | Promise<void>;
   inputId: string;
   className?: string;
+  returnTo?: string;
 }) {
   return (
     <form action={action} className={className}>
+      <input type="hidden" name="return_to" value={returnTo} />
       <label htmlFor={inputId} className="block text-sm font-semibold text-text">
         Checkout email
       </label>

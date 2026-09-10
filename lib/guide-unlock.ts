@@ -34,6 +34,22 @@ export type GuideUnlockByEmailOutcome =
   | { kind: "auth-user-failed" }
   | { kind: "sign-in-failed"; reason: "generate-link" | "verify" };
 
+/** Where unlock errors redirect after submit (login or guide surfaces only). */
+export function readGuideUnlockReturnTo(raw: FormDataEntryValue | null): string {
+  if (typeof raw !== "string" || !raw.startsWith("/")) {
+    return "/login";
+  }
+  const path = raw.split("?")[0];
+  if (path === "/login" || path === "/guide" || path.startsWith("/guide/")) {
+    return path;
+  }
+  return "/login";
+}
+
+export function guideUnlockErrorHref(returnTo: string, error: string): string {
+  return `${returnTo}?error=${encodeURIComponent(error)}`;
+}
+
 /**
  * Active, non-refunded rows for the checkout email (case-insensitive).
  * Matches `link_my_entitlements` / JWT email pairing.

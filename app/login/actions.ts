@@ -4,26 +4,32 @@ import { redirect } from "next/navigation";
 import { loginSendFailedPath, logAuthSendError, redactEmail } from "@/lib/auth-error";
 import { parseEmail } from "@/lib/email";
 import { getAppEnv } from "@/lib/env";
-import { unlockGuideByPurchaseEmail, type GuideUnlockAdmin } from "@/lib/guide-unlock";
+import {
+  guideUnlockErrorHref,
+  readGuideUnlockReturnTo,
+  unlockGuideByPurchaseEmail,
+  type GuideUnlockAdmin,
+} from "@/lib/guide-unlock";
 import { authConfirmRedirectTo } from "@/lib/purchase-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function unlockGuideWithEmail(formData: FormData) {
+  const returnTo = readGuideUnlockReturnTo(formData.get("return_to"));
   const parsed = parseEmail(formData.get("email"));
   if (parsed.kind === "invalid") {
-    redirect("/login?error=invalid-email");
+    redirect(guideUnlockErrorHref(returnTo, "invalid-email"));
   }
 
   const env = getAppEnv();
   if (env.supabase.kind === "missing") {
-    redirect("/login?error=not-configured");
+    redirect(guideUnlockErrorHref(returnTo, "not-configured"));
   }
 
   const admin = createSupabaseAdminClient();
   const supabase = await createSupabaseServerClient();
   if (!admin || !supabase) {
-    redirect("/login?error=not-configured");
+    redirect(guideUnlockErrorHref(returnTo, "not-configured"));
   }
 
   let outcome;
@@ -39,14 +45,14 @@ export async function unlockGuideWithEmail(formData: FormData) {
       { email: redactEmail(parsed.email) },
       error,
     );
-    redirect("/login?error=unlock-failed");
+    redirect(guideUnlockErrorHref(returnTo, "unlock-failed"));
   }
 
   if (outcome.kind === "signed-in") {
     redirect("/guide");
   }
   if (outcome.kind === "no-entitlement") {
-    redirect("/login?error=no-purchase");
+    redirect(guideUnlockErrorHref(returnTo, "no-purchase"));
   }
   if (outcome.kind === "auth-user-failed" || outcome.kind === "sign-in-failed") {
     const reason =
@@ -56,10 +62,10 @@ export async function unlockGuideWithEmail(formData: FormData) {
       { email: redactEmail(parsed.email), reason },
       new Error(reason),
     );
-    redirect("/login?error=unlock-failed");
+    redirect(guideUnlockErrorHref(returnTo, "unlock-failed"));
   }
 
-  redirect("/login?error=unlock-failed");
+  redirect(guideUnlockErrorHref(returnTo, "unlock-failed"));
 }
 
 export async function requestMagicLink(formData: FormData) {

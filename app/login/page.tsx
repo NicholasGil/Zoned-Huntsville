@@ -3,7 +3,7 @@ import { requestMagicLink, unlockGuideWithEmail } from "@/app/login/actions";
 import {
   GuideUnlockForm,
   GuideUnlockStatus,
-  type GuideUnlockError,
+  readGuideUnlockError,
 } from "@/components/guide-unlock-form";
 import { PageShell } from "@/components/page-shell";
 import {
@@ -21,24 +21,12 @@ export const metadata: Metadata = {
   title: "Open your guide",
 };
 
-const UNLOCK_ERRORS: ReadonlyArray<GuideUnlockError> = [
-  "invalid-email",
-  "not-configured",
-  "no-purchase",
-  "unlock-failed",
-  "auth",
-];
-
 const MAGIC_ERRORS: ReadonlyArray<SendLinkError> = [
   "invalid-email",
   "not-configured",
   "send-failed",
   "auth",
 ];
-
-function readUnlockError(value: string | null): GuideUnlockError | null {
-  return UNLOCK_ERRORS.find((known) => known === value) ?? null;
-}
 
 function readMagicError(value: string | null): SendLinkError | null {
   return MAGIC_ERRORS.find((known) => known === value) ?? null;
@@ -50,7 +38,7 @@ export default async function LoginPage({
   const query = await searchParams;
   const status = typeof query.status === "string" ? query.status : null;
   const errorParam = typeof query.error === "string" ? query.error : null;
-  const unlockError = readUnlockError(errorParam);
+  const unlockError = readGuideUnlockError(errorParam);
   const magicError = unlockError ? null : readMagicError(errorParam);
   const authError =
     magicError === "send-failed"
@@ -79,6 +67,7 @@ export default async function LoginPage({
       <GuideUnlockForm
         action={unlockGuideWithEmail}
         inputId="guide-unlock-email"
+        returnTo="/login"
         className="mt-8 max-w-md"
       />
 

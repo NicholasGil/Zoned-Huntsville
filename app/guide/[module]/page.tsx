@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { primaryButton, quietLink } from "@/components/button-styles";
 import { FactList } from "@/components/fact-list";
 import { AccessGate } from "@/components/gate";
+import { readGuideUnlockError } from "@/components/guide-unlock-form";
 import { LeaseCheck } from "@/components/lease-check";
 import { PageShell } from "@/components/page-shell";
 import { ShortlistPath } from "@/components/shortlist-path";
@@ -38,19 +39,30 @@ export async function generateMetadata({
 
 export default async function GuideModulePage({
   params,
+  searchParams,
 }: PageProps<"/guide/[module]">) {
   const { module: moduleSlug } = await params;
+  const query = await searchParams;
+  const unlockError = readGuideUnlockError(
+    typeof query.error === "string" ? query.error : null,
+  );
   const guideModule = getGuideModule(moduleSlug);
   if (!guideModule) {
     notFound();
   }
 
   const entitlement = await getEntitlement();
+  const returnTo = `/guide/${moduleSlug}`;
 
   if (!canReadGuide(entitlement)) {
     return (
       <PageShell>
-        <AccessGate entitlement={entitlement} need="guide" />
+        <AccessGate
+          entitlement={entitlement}
+          need="guide"
+          returnTo={returnTo}
+          unlockError={unlockError}
+        />
       </PageShell>
     );
   }

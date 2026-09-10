@@ -1,13 +1,23 @@
 import Link from "next/link";
-import { primaryButton, secondaryButton } from "@/components/button-styles";
+import { unlockGuideWithEmail } from "@/app/login/actions";
+import { secondaryButton } from "@/components/button-styles";
+import {
+  GuideUnlockForm,
+  GuideUnlockStatus,
+  type GuideUnlockError,
+} from "@/components/guide-unlock-form";
 import type { Entitlement } from "@/lib/entitlement";
 
 export function AccessGate({
   entitlement,
   need,
+  returnTo = "/guide",
+  unlockError = null,
 }: {
   entitlement: Entitlement;
   need: "guide" | "toolkit";
+  returnTo?: string;
+  unlockError?: GuideUnlockError | null;
 }) {
   const title =
     need === "toolkit"
@@ -25,20 +35,28 @@ export function AccessGate({
     <section className="rounded-lg border border-border bg-surface px-6 py-8">
       <h1 className="font-sans text-3xl font-semibold text-text">{title}</h1>
       <p className="mt-4 max-w-xl text-text-muted">{reason}</p>
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        <Link href="/login" className={primaryButton}>
-          Unlock with checkout email
-        </Link>
-        {entitlement.kind === "anonymous" ? (
-          <Link href="/login#magic-link" className={secondaryButton}>
-            Email me a sign-in link
-          </Link>
-        ) : (
+      {entitlement.kind === "anonymous" ? (
+        <>
+          <GuideUnlockForm
+            action={unlockGuideWithEmail}
+            inputId="guide-gate-email"
+            returnTo={returnTo}
+            className="mt-6 max-w-md"
+          />
+          <GuideUnlockStatus error={unlockError} />
+          <p className="mt-6">
+            <Link href="/login#magic-link" className={secondaryButton}>
+              Email me a sign-in link
+            </Link>
+          </p>
+        </>
+      ) : (
+        <div className="mt-6">
           <Link href="/#pricing" className={secondaryButton}>
             See pricing
           </Link>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }

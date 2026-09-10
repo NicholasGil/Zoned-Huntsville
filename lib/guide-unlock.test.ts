@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import {
+  guideUnlockErrorHref,
   hasActiveEntitlementForEmail,
+  readGuideUnlockReturnTo,
   unlockGuideByPurchaseEmail,
   type GuideUnlockAdmin,
 } from "./guide-unlock.ts";
@@ -69,6 +71,20 @@ function createSupabaseClient(calls: string[]): UnlockSessionClient {
   };
 }
 
+describe("readGuideUnlockReturnTo", () => {
+  it("allows login and guide paths only", () => {
+    assert.equal(readGuideUnlockReturnTo("/guide"), "/guide");
+    assert.equal(readGuideUnlockReturnTo("/guide/start-here"), "/guide/start-here");
+    assert.equal(readGuideUnlockReturnTo("/login"), "/login");
+    assert.equal(readGuideUnlockReturnTo("/account"), "/login");
+    assert.equal(readGuideUnlockReturnTo(null), "/login");
+  });
+
+  it("builds error hrefs on the return path", () => {
+    assert.equal(guideUnlockErrorHref("/guide", "no-purchase"), "/guide?error=no-purchase");
+  });
+});
+
 describe("hasActiveEntitlementForEmail", () => {
   it("matches checkout email case-insensitively and ignores refunds", async () => {
     const admin = createEntitlementAdmin([
@@ -131,8 +147,11 @@ describe("login wiring", () => {
     assert.match(loginPageSource, /unlockGuideWithEmail/);
     assert.match(loginPageSource, /GuideUnlockForm/);
     assert.match(loginActionsSource, /unlockGuideByPurchaseEmail/);
+    assert.match(loginActionsSource, /readGuideUnlockReturnTo/);
     assert.doesNotMatch(gateSource, /Request a magic link/);
-    assert.match(gateSource, /Unlock with checkout email/);
+    assert.match(gateSource, /GuideUnlockForm/);
+    assert.match(gateSource, /unlockGuideWithEmail/);
+    assert.match(gateSource, /\/login#magic-link/);
     assert.match(headerSource, /href: "\/guide"/);
   });
 });
