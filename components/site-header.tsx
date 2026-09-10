@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { HeaderBuyButton } from "@/components/header-buy-button";
 import {
   SiteHeaderMobileMenu,
   type SiteHeaderNavLink,
@@ -56,7 +55,6 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
-          <HeaderBuyButton />
           <SiteHeaderMobileMenu
             links={mobileMenuLinks}
             className="md:hidden"
