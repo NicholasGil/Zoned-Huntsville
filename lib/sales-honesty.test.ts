@@ -281,7 +281,7 @@ describe("mobile header tap targets", () => {
     assert.match(headerSource, /href: "\/sample"/);
     assert.match(headerSource, /href: "\/account"/);
     assert.match(headerSource, /href: "\/contact"/);
-    assert.equal(headerSource.includes('href: "/guide"'), false);
+    assert.match(headerSource, /href: "\/guide"/);
     assert.match(headerSource, /hidden min-w-0 flex-1 items-center justify-center gap-0 md:flex/);
     assert.match(headerSource, /mobileMenuLinks/);
     assert.match(headerSource, /SiteHeaderMobileMenu[\s\S]*className="md:hidden"/);

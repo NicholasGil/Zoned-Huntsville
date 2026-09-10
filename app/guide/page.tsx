@@ -6,6 +6,7 @@ import {
   quietLink,
 } from "@/components/button-styles";
 import { AccessGate } from "@/components/gate";
+import { readGuideUnlockError } from "@/components/guide-unlock-form";
 import { PageShell } from "@/components/page-shell";
 import { canReadGuide, getEntitlement } from "@/lib/entitlement";
 import { FIRST_PATH } from "@/lib/first-path";
@@ -18,13 +19,24 @@ export const metadata: Metadata = {
 
 const stepCard = `block rounded-lg border border-border bg-surface px-5 py-4 hover:border-action ${focusRing}`;
 
-export default async function GuideIndexPage() {
+export default async function GuideIndexPage({
+  searchParams,
+}: PageProps<"/guide">) {
+  const query = await searchParams;
+  const unlockError = readGuideUnlockError(
+    typeof query.error === "string" ? query.error : null,
+  );
   const entitlement = await getEntitlement();
 
   if (!canReadGuide(entitlement)) {
     return (
       <PageShell>
-        <AccessGate entitlement={entitlement} need="guide" />
+        <AccessGate
+          entitlement={entitlement}
+          need="guide"
+          returnTo="/guide"
+          unlockError={unlockError}
+        />
       </PageShell>
     );
   }
