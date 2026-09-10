@@ -87,7 +87,7 @@ export const pricingTiers = [
     name: "Guide + Toolkit + Call",
     includes: [
       "Everything in the Guide and Toolkit.",
-      "One 45-minute video call with Nicholas.",
+      "One 45-minute video call with an expert.",
     ],
   },
 ] as const;

@@ -20,7 +20,7 @@ export const salesCopy = {
     {
       name: "Guide + Toolkit + Call — $349",
       detail:
-        "Everything in the Guide and Toolkit, plus one 45-minute video call with Nicholas. Four slots each month.",
+        "Everything in the Guide and Toolkit, plus one 45-minute video call with an expert. Four slots each month.",
     },
   ],
   problem:
@@ -79,12 +79,12 @@ export const salesCopy = {
     {
       question: "What is the Toolkit?",
       answer:
-        "The $149 tier adds Toolkit access on top of the Guide. The Toolkit is on-page printable checklists built from sourced facts already in the Guide. This edition does not include a downloadable PDF pack. The $349 tier adds one 45-minute video call with Nicholas.",
+        "The $149 tier adds Toolkit access on top of the Guide. The Toolkit is on-page printable checklists built from sourced facts already in the Guide. This edition does not include a downloadable PDF pack. The $349 tier adds one 45-minute video call with an expert.",
     },
     {
       question: "Why is the call capped?",
       answer:
-        "The $349 tier includes one 45-minute video call with Nicholas. There are 4 slots each month. The pricing card shows how many remain, counted from this month's paid, non-refunded call purchases.",
+        "The $349 tier includes one 45-minute video call with an expert. There are 4 slots each month. The pricing card shows how many remain, counted from this month's paid, non-refunded call purchases.",
     },
     {
       question: "Can I upgrade from the $79 Guide to Toolkit or Call?",
