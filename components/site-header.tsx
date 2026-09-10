@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { HeaderBuyButton } from "@/components/header-buy-button";
+import {
+  SiteHeaderMobileMenu,
+  type SiteHeaderNavLink,
+} from "@/components/site-header-mobile-menu";
 import { site } from "@/lib/site";
 
 const pageLinks = [
@@ -14,6 +18,11 @@ const sectionLinks = [
   { href: "/#faq-heading", label: "FAQ" },
 ] as const;
 
+const mobileMenuLinks: SiteHeaderNavLink[] = [
+  ...pageLinks,
+  ...sectionLinks,
+];
+
 const navLinkClass =
   "inline-flex h-11 min-h-11 shrink-0 items-center justify-center px-1 text-xs text-text-muted hover:text-text sm:px-2 sm:text-sm";
 
@@ -23,13 +32,13 @@ export function SiteHeader() {
       <div className="mx-auto flex h-11 min-h-11 max-w-6xl items-center gap-2 px-3 sm:gap-3 sm:px-6">
         <Link
           href="/"
-          className="inline-flex min-h-11 min-w-0 max-w-[42%] shrink items-center truncate font-sans text-sm font-semibold tracking-tight text-text sm:max-w-[14rem] sm:text-base"
+          className="inline-flex min-h-11 min-w-0 flex-1 items-center truncate font-sans text-sm font-semibold tracking-tight text-text md:max-w-[14rem] md:flex-none md:text-base"
         >
           {site.name}
         </Link>
         <nav
           aria-label="Primary"
-          className="flex min-w-0 flex-1 items-center justify-center gap-0 sm:gap-0.5"
+          className="hidden min-w-0 flex-1 items-center justify-center gap-0 md:flex sm:gap-0.5"
         >
           {pageLinks.map((item) => (
             <Link key={item.href} href={item.href} className={navLinkClass}>
@@ -46,7 +55,13 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <HeaderBuyButton />
+        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
+          <HeaderBuyButton />
+          <SiteHeaderMobileMenu
+            links={mobileMenuLinks}
+            className="md:hidden"
+          />
+        </div>
       </div>
     </header>
   );
