@@ -6,78 +6,52 @@ import { MobileBuyBar } from "@/components/mobile-buy-bar";
 import { Pricing } from "@/components/pricing";
 import { SampleOptInForm } from "@/components/sample-opt-in-form";
 import { salesCopy } from "@/lib/sales";
-import { edition, hero, namedSources, officialPortals } from "@/lib/site";
-
-function GuideBuyCard({
-  showGuarantee,
-  showTiersLink,
-}: {
-  showGuarantee?: boolean;
-  showTiersLink?: boolean;
-}) {
-  return (
-    <div className="max-w-sm rounded-lg border border-border bg-surface px-4 py-4 sm:px-6 sm:py-6">
-      <div className="flex items-center gap-4">
-        <p className="font-sans text-[32px] font-semibold leading-none text-text">$79</p>
-        <CheckoutForm
-          tierId="79"
-          label={hero.cta}
-          variant="brick"
-          className="min-w-0 flex-1"
-        />
-      </div>
-      {showGuarantee ? (
-        <p className="mt-2 text-xs font-normal leading-snug text-text-muted sm:mt-3 sm:text-sm">
-          {salesCopy.heroRiskReversal}
-        </p>
-      ) : null}
-      {showTiersLink ? (
-        <p className="mt-4 text-sm font-normal text-text-muted">
-          <Link href="#pricing" className="text-action hover:underline">
-            See all three tiers
-          </Link>
-        </p>
-      ) : null}
-    </div>
-  );
-}
+import { HeroPhonePreview } from "@/components/hero-phone-preview";
+import { edition, hero, officialPortals } from "@/lib/site";
 
 export function SalesPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 pt-4 pb-28 sm:pt-16 sm:pb-24 max-md:pb-28">
+    <div className="mx-auto w-full max-w-4xl px-4 pb-28 pt-3 sm:px-6 sm:pt-10 sm:pb-24 max-md:pb-28">
       <Suspense fallback={null}>
         <CheckoutNotice />
       </Suspense>
-      <section aria-labelledby="hero-heading">
-        <p className="text-sm text-text-muted">
+      <section
+        aria-labelledby="hero-heading"
+        className="mx-auto flex max-w-2xl flex-col items-center text-center"
+      >
+        <p className="text-xs text-text-muted sm:text-sm">
           {edition} edition · five systems · Huntsville metro
         </p>
         <h1
           id="hero-heading"
-          className="mt-3 max-w-3xl font-sans text-[32px] font-semibold leading-tight text-text sm:mt-5 sm:text-[48px]"
+          className="mt-2 font-sans text-[26px] font-semibold leading-[1.15] text-text sm:mt-4 sm:text-[40px] sm:leading-tight"
         >
           {hero.headline}
         </h1>
-        <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:mt-6 sm:text-lg">
-          {hero.subhead}
+        <ul
+          className="mt-4 w-full max-w-xl space-y-2 text-left text-[13px] leading-snug text-text-muted sm:mt-6 sm:space-y-2.5 sm:text-base sm:leading-relaxed"
+          aria-label="Why this guide"
+        >
+          {hero.proofBeats.map((beat) => (
+            <li key={beat} className="flex gap-2.5">
+              <span
+                className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-action"
+                aria-hidden="true"
+              />
+              <span>{beat}</span>
+            </li>
+          ))}
+        </ul>
+        <CheckoutForm
+          tierId="79"
+          label={hero.cta}
+          variant="pill"
+          className="mt-5 w-full max-w-sm sm:mt-8 [&_button]:text-base"
+        />
+        <p className="mt-2 max-w-sm text-[11px] font-normal leading-snug text-text-muted sm:mt-3 sm:text-sm">
+          {salesCopy.heroRiskReversal}
         </p>
-        <p className="mt-3 max-w-2xl text-sm leading-snug text-text-muted">
-          Sourced from the{" "}
-          <a
-            href={namedSources.alsdeReportCard.href}
-            className="text-action hover:underline"
-          >
-            ALSDE report card
-          </a>
-          {" "}and{" "}
-          <a href={namedSources.nces.href} className="text-action hover:underline">
-            {namedSources.nces.label}
-          </a>
-          . Linked. Not a star rating.
-        </p>
-        <div className="mt-4 sm:mt-8">
-          <GuideBuyCard showGuarantee />
-        </div>
+        <HeroPhonePreview />
       </section>
 
       <section aria-labelledby="problem-heading" className="mt-16 sm:mt-20">
@@ -121,7 +95,11 @@ export function SalesPage() {
         </p>
       </section>
 
-      <section aria-labelledby="offer-heading" className="mt-16 sm:mt-20">
+      <section
+        id="whats-inside"
+        aria-labelledby="offer-heading"
+        className="mt-16 scroll-mt-14 sm:mt-20"
+      >
         <h2 id="offer-heading" className="font-sans text-2xl font-semibold text-text">
           What you get
         </h2>
@@ -170,12 +148,13 @@ export function SalesPage() {
         <p className="mt-4 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
           {salesCopy.zonePromise}
         </p>
-        <div className="mt-6">
-          <GuideBuyCard showGuarantee />
-        </div>
       </section>
 
-      <section aria-labelledby="faq-heading" className="mt-16 sm:mt-20">
+      <section
+        id="faq"
+        aria-labelledby="faq-heading"
+        className="mt-16 scroll-mt-14 sm:mt-20"
+      >
         <h2 id="faq-heading" className="font-sans text-2xl font-semibold text-text">
           FAQ
         </h2>
@@ -191,13 +170,22 @@ export function SalesPage() {
         </dl>
       </section>
 
-      <section aria-labelledby="final-cta-heading" className="mt-16 border-t border-border pt-16 sm:mt-20">
+      <section
+        aria-labelledby="final-cta-heading"
+        className="mt-16 border-t border-border pt-16 sm:mt-20"
+      >
         <h2 id="final-cta-heading" className="font-sans text-2xl font-semibold text-text">
-          Get the Guide
+          Ready when you are
         </h2>
-        <div className="mt-6">
-          <GuideBuyCard showGuarantee showTiersLink />
-        </div>
+        <p className="mt-4 max-w-2xl text-base text-text-muted sm:text-lg">
+          The hero button and pricing below both post the same $79 checkout — pick
+          whichever screen you&apos;re on.
+        </p>
+        <p className="mt-4">
+          <Link href="#pricing" className="text-action font-semibold hover:underline">
+            See pricing and tiers →
+          </Link>
+        </p>
       </section>
       <MobileBuyBar />
     </div>

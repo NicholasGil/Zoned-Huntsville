@@ -29,10 +29,12 @@ function writeAttributionFields(form: HTMLFormElement, attribution: Attribution)
 
 function CheckoutSubmitButton({
   label,
+  compactLabel,
   buttonClass,
   submitting,
 }: {
   label: string;
+  compactLabel?: string;
   buttonClass: string;
   submitting: boolean;
 }) {
@@ -46,7 +48,16 @@ function CheckoutSubmitButton({
       aria-busy={busy}
       className={`${buttonClass} disabled:opacity-60`}
     >
-      {busy ? busyLabel : label}
+      {busy ? (
+        busyLabel
+      ) : compactLabel ? (
+        <>
+          <span className="sm:hidden">{compactLabel}</span>
+          <span className="hidden sm:inline">{label}</span>
+        </>
+      ) : (
+        label
+      )}
     </button>
   );
 }
@@ -54,18 +65,22 @@ function CheckoutSubmitButton({
 export function CheckoutForm({
   tierId,
   label,
+  compactLabel,
   variant,
   className,
 }: {
   tierId: PricingTierId;
   label: string;
-  variant: "brick" | "ink" | "brick-full";
+  compactLabel?: string;
+  variant: "brick" | "ink" | "brick-full" | "pill";
   className?: string;
 }) {
   const buttonClass =
     variant === "ink"
       ? `w-full min-h-11 rounded-md border border-text bg-transparent px-6 py-3 text-sm font-semibold text-text hover:border-action ${focusRing}`
-      : `w-full ${primaryFill}`;
+      : variant === "pill"
+        ? `w-full min-h-12 rounded-full bg-action px-6 py-3.5 text-sm font-semibold tracking-tight text-text-on-action hover:bg-action-hover active:bg-action-active ${focusRing}`
+        : `w-full ${primaryFill}`;
   const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -98,6 +113,7 @@ export function CheckoutForm({
       ))}
       <CheckoutSubmitButton
         label={label}
+        compactLabel={compactLabel}
         buttonClass={buttonClass}
         submitting={submitting}
       />

@@ -59,6 +59,7 @@ function homepageOfferText(): string {
   return [
     hero.headline,
     hero.subhead,
+    ...hero.proofBeats,
     hero.credibility,
     hero.guarantee,
     salesCopy.heroRiskReversal,
@@ -119,9 +120,10 @@ describe("homepage offer honesty", () => {
   });
 
   it("keeps the first-screen buy as the $79 CheckoutForm on small viewports", () => {
-    assert.equal(hero.cta, "Get the Guide — $79");
+    assert.equal(hero.cta, "I want the details — $79");
+    assert.equal(hero.stickyMobileCta, "Get the School Guide — $79");
     assert.match(mobileBuyBarSource, /tierId="79"/);
-    assert.match(mobileBuyBarSource, /label=\{hero\.cta\}/);
+    assert.match(mobileBuyBarSource, /label=\{hero\.stickyMobileCta\}/);
     assert.match(mobileBuyBarSource, /variant="brick"/);
     assert.match(mobileBuyBarSource, /md:hidden/);
     assert.equal(mobileBuyBarSource.includes("hamburger"), false);
@@ -156,22 +158,25 @@ describe("homepage offer honesty", () => {
 });
 
 describe("first-screen buy", () => {
-  it("puts outcome headline, $79, buy CTA, and guarantee in the hero", () => {
+  it("puts yes-question headline, proof beats, $79 pill CTA, and guarantee in the hero", () => {
     const heroSource = heroSectionSource();
     assert.match(heroSource, /hero\.headline/);
-    assert.match(heroSource, /<GuideBuyCard showGuarantee \/>/);
+    assert.match(heroSource, /hero\.proofBeats/);
+    assert.match(heroSource, /variant="pill"/);
+    assert.match(heroSource, /tierId="79"/);
+    assert.match(heroSource, /HeroPhonePreview/);
     assert.match(salesPageSource, /\$79/);
-    assert.match(salesPageSource, /tierId="79"/);
     assert.match(salesPageSource, /hero\.cta/);
-    assert.match(salesPageSource, /salesCopy\.heroRiskReversal/);
+    assert.match(heroSource, /salesCopy\.heroRiskReversal/);
     assert.match(salesCopy.heroRiskReversal, /30-day refund/);
     assert.match(salesCopy.heroRiskReversal, /Zone Promise/);
     assert.match(hero.headline, /before you sign/i);
   });
 
-  it("repeats the $79 buy after offer, risk reversal, and close", () => {
-    const buyCards = salesPageSource.match(/<GuideBuyCard/g) ?? [];
-    assert.ok(buyCards.length >= 3, `expected 3+ in-page $79 cards, got ${buyCards.length}`);
+  it("limits mid-page $79 clones to hero plus pricing", () => {
+    assert.equal(salesPageSource.includes("GuideBuyCard"), false);
+    const heroTier79 = (salesPageSource.match(/tierId="79"/g) ?? []).length;
+    assert.equal(heroTier79, 1, "hero should be the only $79 form on the sales page");
     const order = [
       'aria-labelledby="hero-heading"',
       'aria-labelledby="problem-heading"',
@@ -197,23 +202,24 @@ describe("first-screen buy", () => {
 });
 
 describe("mobile header tap targets", () => {
-  it("keeps the existing four destinations and equal 44px targets", () => {
+  it("keeps one combined sticky bar with buy CTA", () => {
+    assert.match(headerSource, /sticky top-0/);
+    assert.equal(headerSource.includes("flex-col"), false);
+    assert.match(headerSource, /HeaderBuyButton/);
+    assert.match(headerSource, /truncate/);
+    assert.equal(headerSource.includes("hamburger"), false);
+  });
+
+  it("keeps Sample, Contact, and Account at 44px in the same row", () => {
     assert.match(headerSource, /href: "\/sample"/);
-    assert.match(headerSource, /href: "\/guide"/);
     assert.match(headerSource, /href: "\/account"/);
     assert.match(headerSource, /href: "\/contact"/);
-    assert.equal(headerSource.includes("hamburger"), false);
-    assert.match(headerSource, /grid-cols-4/);
-    assert.match(headerSource, /h-11/);
+    assert.equal(headerSource.includes('href: "/guide"'), false);
     assert.match(headerSource, /min-h-11/);
-    assert.match(headerSource, /min-w-11/);
-    const destinations = headerSource.match(/href: "\/[^"]+"/g) ?? [];
-    assert.deepEqual(destinations, [
-      'href: "/sample"',
-      'href: "/guide"',
-      'href: "/account"',
-      'href: "/contact"',
-    ]);
+    const pageDestinations =
+      headerSource.match(/href: "\/sample"|href: "\/contact"|href: "\/account"/g) ??
+      [];
+    assert.equal(pageDestinations.length, 3);
   });
 });
 

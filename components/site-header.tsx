@@ -1,36 +1,52 @@
 import Link from "next/link";
+import { HeaderBuyButton } from "@/components/header-buy-button";
 import { site } from "@/lib/site";
 
-const nav = [
+const pageLinks = [
   { href: "/sample", label: "Sample" },
-  { href: "/guide", label: "Guide" },
-  { href: "/account", label: "Account" },
   { href: "/contact", label: "Contact" },
+  { href: "/account", label: "Account" },
+] as const;
+
+const sectionLinks = [
+  { href: "/#offer-heading", label: "What's inside" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/#faq-heading", label: "FAQ" },
 ] as const;
 
 const navLinkClass =
-  "inline-flex h-11 min-h-11 min-w-11 w-full items-center justify-center px-1 text-sm text-text-muted hover:text-text";
+  "inline-flex h-11 min-h-11 shrink-0 items-center justify-center px-1 text-xs text-text-muted hover:text-text sm:px-2 sm:text-sm";
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-border">
-      <div className="mx-auto flex max-w-5xl flex-col px-4 py-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-2">
+    <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-11 min-h-11 max-w-6xl items-center gap-2 px-3 sm:gap-3 sm:px-6">
         <Link
           href="/"
-          className="inline-flex min-h-11 items-center font-sans text-base tracking-tight text-text sm:text-lg"
+          className="inline-flex min-h-11 min-w-0 max-w-[42%] shrink items-center truncate font-sans text-sm font-semibold tracking-tight text-text sm:max-w-[14rem] sm:text-base"
         >
           {site.name}
         </Link>
         <nav
           aria-label="Primary"
-          className="grid w-full grid-cols-4 sm:w-[22rem] sm:shrink-0"
+          className="flex min-w-0 flex-1 items-center justify-center gap-0 sm:gap-0.5"
         >
-          {nav.map((item) => (
+          {pageLinks.map((item) => (
             <Link key={item.href} href={item.href} className={navLinkClass}>
               {item.label}
             </Link>
           ))}
+          {sectionLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${navLinkClass} hidden lg:inline-flex`}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
+        <HeaderBuyButton />
       </div>
     </header>
   );

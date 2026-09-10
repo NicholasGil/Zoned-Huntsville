@@ -4,7 +4,11 @@ import { edition, hero, pricingTiers } from "@/lib/site";
 
 export function Pricing() {
   return (
-    <section id="pricing" aria-labelledby="pricing-heading" className="scroll-mt-8 mt-20">
+    <section
+      id="pricing"
+      aria-labelledby="pricing-heading"
+      className="mt-20 scroll-mt-14"
+    >
       <h2 id="pricing-heading" className="font-sans text-2xl font-semibold text-text">
         Pricing
       </h2>

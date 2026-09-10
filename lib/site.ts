@@ -38,10 +38,17 @@ export const namedSources = {
 } as const;
 
 export const hero = {
-  headline: "Know which system your address gets — before you sign.",
+  headline:
+    "Want every detail on Huntsville-area school zones before you sign?",
+  proofBeats: [
+    "Address decides the district — not the city name on the listing",
+    "Built for PCS / Redstone moves and local parents (Huntsville · Madison · Athens · Limestone)",
+    "Official, dated sources over star-rating fluff",
+  ] as const,
   subhead:
     "The 2026–27 Guide: what Huntsville's five systems publish, linked and dated. Not a ranking.",
-  cta: "Get the Guide — $79",
+  cta: "I want the details — $79",
+  stickyMobileCta: "Get the School Guide — $79",
   guarantee: "30-day money-back guarantee",
   credibility:
     "Sourced from the Alabama State Department of Education report card, NCES, each district's own published policy, and the schools themselves. Every claim is linked. Nothing here is a star rating.",
