@@ -60,7 +60,7 @@ export const hero = {
   ] as const,
   sampleDemoCue:
     "See the free sample — every figure linked and dated",
-  cta: "I want the details — $79",
+  cta: "Know the zone before I sign — $79",
   stickyMobileCta: "Get the School Guide — $79",
   guarantee: "30-day money-back guarantee",
   credibility:
