@@ -13,14 +13,14 @@ export const salesCopy = {
         "Sourced 2026–27 Guide modules, web-based, mobile-readable, lifetime access. Every published fact is linked to its official source and dated.",
     },
     {
-      name: "Guide + Toolkit — $149",
+      name: "Guide + Checklist Pack — $149",
       detail:
-        "Everything in the Guide, plus Toolkit access: on-page printable checklists built from sourced facts already in the Guide. This edition does not include a downloadable PDF pack.",
+        "Everything in the Guide, plus the Checklist Pack: on-page printable checklists built from sourced facts already in the Guide. This edition does not include a downloadable PDF pack.",
     },
     {
-      name: "Guide + Toolkit + Call — $349",
+      name: "Guide + Checklist Pack + Call — $349",
       detail:
-        "Everything in the Guide and Toolkit, plus one 45-minute video call with an expert. Four slots each month.",
+        "Everything in the Guide and Checklist Pack, plus one 45-minute video call with an expert. Four slots each month.",
     },
   ],
   problem:
@@ -60,9 +60,9 @@ export const salesCopy = {
         "It isn't a PDF, and the comparison isn't to a free blog post. It's to the cost of signing a lease in the wrong zone.",
     },
     {
-      question: "Do I need the Toolkit?",
+      question: "Do I need the Checklist Pack?",
       answer:
-        "If the Guide is enough, buy the Guide. The Toolkit tier is optional. It is Toolkit access — on-page checklists — not a five-worksheet pack. It is not required to read the Five Systems material.",
+        "If the Guide is enough, buy the Guide. The $149 Checklist Pack tier is optional — on-page checklists, not a five-worksheet pack or downloadable PDF pack. It is not required to read the Five Systems material.",
     },
   ],
   faq: [
@@ -77,9 +77,9 @@ export const salesCopy = {
         "30-day unconditional money-back. Email us through the contact form. You get a full refund. The Zone Promise also covers a missed address or a deadline that is wrong on the day you call.",
     },
     {
-      question: "What is the Toolkit?",
+      question: "What is the Checklist Pack?",
       answer:
-        "The $149 tier adds Toolkit access on top of the Guide. The Toolkit is on-page printable checklists built from sourced facts already in the Guide. This edition does not include a downloadable PDF pack. The $349 tier adds one 45-minute video call with an expert.",
+        "The $149 tier adds the Checklist Pack on top of the Guide: on-page printable checklists built from sourced facts already in the Guide. This edition does not include a downloadable PDF pack. The $349 tier adds one 45-minute video call with an expert.",
     },
     {
       question: "Why is the call capped?",
@@ -87,9 +87,9 @@ export const salesCopy = {
         "The $349 tier includes one 45-minute video call with an expert. There are 4 slots each month. The pricing card shows how many remain, counted from this month's paid, non-refunded call purchases.",
     },
     {
-      question: "Can I upgrade from the $79 Guide to Toolkit or Call?",
+      question: "Can I upgrade from the $79 Guide to Checklist Pack or Call?",
       answer:
-        "Yes. There is no pay-the-difference or prorated upgrade checkout. Choose the higher tier on the pricing section and pay the full listed price ($149 for Guide + Toolkit, $349 for Guide + Toolkit + Call). Each purchase is a separate Stripe charge at that price. Access stacks: Toolkit and Call include everything in lower tiers, and your account combines every active, non-refunded purchase—so the highest tier you have paid for unlocks the matching pages.",
+        "Yes. There is no pay-the-difference or prorated upgrade checkout. Choose the higher tier on the pricing section and pay the full listed price ($149 for Guide + Checklist Pack, $349 for Guide + Checklist Pack + Call). Each purchase is a separate Stripe charge at that price. Access stacks: Checklist Pack and Call include everything in lower tiers, and your account combines every active, non-refunded purchase—so the highest tier you have paid for unlocks the matching pages.",
     },
   ],
   upgradePath: {
@@ -100,12 +100,12 @@ export const salesCopy = {
     tiers: [
       {
         from: "Guide ($79)",
-        to: "Guide + Toolkit ($149)",
+        to: "Guide + Checklist Pack ($149)",
         charge: "Pay $149 in full at checkout.",
       },
       {
-        from: "Guide ($79) or Toolkit ($149)",
-        to: "Guide + Toolkit + Call ($349)",
+        from: "Guide ($79) or Checklist Pack ($149)",
+        to: "Guide + Checklist Pack + Call ($349)",
         charge: "Pay $349 in full at checkout.",
       },
     ],

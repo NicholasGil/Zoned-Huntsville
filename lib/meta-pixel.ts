@@ -41,14 +41,14 @@ export function initiateCheckoutParams(tierId: PricingTierId) {
 
 export function leadEventParams() {
   return {
-    content_name: "Huntsville City Schools sample",
+    content_name: "Huntsville zone-check demo",
     content_category: "lead",
   };
 }
 
 export function viewContentSampleParams() {
   return {
-    content_name: "Huntsville City Schools sample",
+    content_name: "Huntsville zone-check demo",
     content_type: "product",
   };
 }
