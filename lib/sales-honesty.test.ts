@@ -295,6 +295,7 @@ describe("first-screen buy", () => {
     assert.match(samplePageSource, /huntsvilleCityZoneDemoFacts/);
     assert.match(samplePageSource, /official check|official locator/i);
     assert.equal(samplePageSource.includes("superintendent"), false);
+    assert.match(samplePageSource, /hcs-zone-demo-heading/);
     assert.match(samplePageSource, /five metro systems|five separate systems/i);
     assert.match(samplePageSource, /SampleOptInForm/);
     assert.match(samplePageSource, /tierId="79"/);

@@ -33,6 +33,7 @@ const baseUrl =
 
 const HOME_H1 = "City name isn’t the school zone.";
 const SAMPLE_H1 = "Address → zone";
+const HOME_PAGE_MARKERS = ["City name isn’t the school zone.", "I want the details — $79"];
 
 async function waitForServer(url, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
@@ -88,16 +89,58 @@ async function assertMobileBuyClusterInView(page) {
       `$79 CTA must be in 375×667 viewport at scrollY=0: ${JSON.stringify(fold)}`,
     );
   }
-  const linkInView = await page.evaluate(() => {
-    const link = [...document.querySelectorAll("a")].find((a) =>
-      a.textContent?.includes("See the free sample"),
-    );
-    if (!link) return false;
-    const r = link.getBoundingClientRect();
-    return r.top >= 0 && r.bottom <= window.innerHeight;
+  const layout = await page.evaluate(() => {
+    const vh = window.innerHeight;
+    const buy = document.getElementById("hero-buy-cluster");
+    const link = document.getElementById("hero-sample-demo-link");
+    const phone = document.querySelector("#hero-fold [aria-hidden='true']");
+    const inView = (el) => {
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.top >= 0 && r.bottom <= vh;
+    };
+    const buyRect = buy?.getBoundingClientRect();
+    const linkRect = link?.getBoundingClientRect();
+    const phoneRect = phone?.getBoundingClientRect();
+    return {
+      chips: document.body.innerText.includes("30-day money-back"),
+      linkInView: inView(link),
+      buyAbovePhone:
+        buyRect &&
+        linkRect &&
+        phoneRect &&
+        buyRect.bottom <= linkRect.bottom + 2 &&
+        linkRect.bottom <= phoneRect.top + 2,
+      path: location.pathname,
+      h1: document.querySelector("#hero-heading")?.textContent?.trim(),
+    };
   });
-  if (!linkInView) {
-    throw new Error("Sample demo link must be visible at scrollY=0 on 375×667");
+  if (layout.path !== "/") {
+    throw new Error(`Homepage proof must be /, got ${layout.path}`);
+  }
+  if (!layout.h1?.includes("City name")) {
+    throw new Error(`Homepage proof H1 wrong: ${layout.h1}`);
+  }
+  if (!layout.linkInView || !layout.chips) {
+    throw new Error(`Buy cluster incomplete in viewport: ${JSON.stringify(layout)}`);
+  }
+  if (!layout.buyAbovePhone) {
+    throw new Error(`Phone must sit below buy cluster: ${JSON.stringify(layout)}`);
+  }
+}
+
+async function assertSampleCardInFirstScreen(page) {
+  await page.evaluate(() => window.scrollTo(0, 0));
+  const visible = await page.evaluate(() => {
+    const heading = document.getElementById("hcs-zone-demo-heading");
+    const verified = document.body.innerText.includes("verified");
+    if (!heading) return { ok: false, reason: "missing heading" };
+    const r = heading.getBoundingClientRect();
+    const inView = r.top >= 0 && r.top < window.innerHeight * 0.55;
+    return { ok: inView && verified, headingTop: r.top, verified };
+  });
+  if (!visible.ok) {
+    throw new Error(`Sample HCS card not in first screen: ${JSON.stringify(visible)}`);
   }
 }
 
@@ -157,9 +200,9 @@ async function capture() {
     path: join(repoRoot, "docs/proof/hormozi-rev6-375x667.png"),
     fullPage: false,
   });
-  const heroFold = page375.locator("#hero-fold");
-  await heroFold.screenshot({
+  await page375.screenshot({
     path: join(repoRoot, "docs/proof/revenue-fold-375x667.png"),
+    fullPage: false,
   });
   await page375.close();
 
@@ -171,8 +214,9 @@ async function capture() {
     path: join(repoRoot, "docs/proof/hormozi-rev6-1280x800.png"),
     fullPage: false,
   });
-  await page1280.locator("#hero-fold").screenshot({
+  await page1280.screenshot({
     path: join(repoRoot, "docs/proof/revenue-fold-1280x800.png"),
+    fullPage: false,
   });
   await page1280.close();
 
@@ -180,7 +224,7 @@ async function capture() {
   await pageSample375.setViewportSize({ width: 375, height: 667 });
   await pageSample375.goto(`${baseUrl}/sample`, { waitUntil: "networkidle" });
   await assertSamplePage(pageSample375);
-  await pageSample375.evaluate(() => window.scrollTo(0, 0));
+  await assertSampleCardInFirstScreen(pageSample375);
   await pageSample375.screenshot({
     path: join(repoRoot, "docs/proof/sample-375x667.png"),
     fullPage: false,

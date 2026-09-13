@@ -30,7 +30,7 @@ function HeroProofBeatsBelowFold() {
 
 export function SalesPage() {
   return (
-    <div className="mx-auto w-full min-w-0 max-w-4xl overflow-x-clip px-4 pb-28 pt-3 sm:px-6 sm:pt-10 sm:pb-24 max-md:pb-28">
+    <div className="mx-auto w-full min-w-0 max-w-4xl overflow-x-clip px-4 pb-28 pt-1 sm:px-6 sm:pt-10 sm:pb-24 max-md:pb-28">
       <Suspense fallback={null}>
         <CheckoutNotice />
       </Suspense>
@@ -39,28 +39,28 @@ export function SalesPage() {
         aria-labelledby="hero-heading"
         className="mx-auto flex w-full min-w-0 max-w-2xl flex-col items-center text-center"
       >
-        <p className="text-xs text-text-muted sm:text-sm">
+        <p className="text-[10px] leading-tight text-text-muted max-md:tracking-tight sm:text-sm">
           {edition} edition · five systems · Huntsville metro
         </p>
         <h1
           id="hero-heading"
-          className="mt-2 font-sans text-[28px] font-bold leading-[1.08] tracking-tight text-text max-md:max-w-[20rem] sm:mt-4 sm:max-w-none sm:text-[44px] sm:leading-[1.06] lg:text-[48px]"
+          className="mt-1 font-sans text-[1.375rem] font-bold leading-[1.12] tracking-tight text-text max-md:max-w-[18rem] sm:mt-4 sm:max-w-none sm:text-[44px] sm:leading-[1.06] lg:text-[48px]"
         >
           {hero.headline}
         </h1>
         <p
-          className="mt-2 w-full max-w-xl text-balance text-[14px] font-medium leading-snug text-text-muted sm:mt-4 sm:text-lg sm:leading-snug"
+          className="mt-1 w-full max-w-xl text-balance text-[13px] font-medium leading-snug text-text-muted sm:mt-4 sm:text-lg sm:leading-snug"
         >
           {hero.proofLineAboveFold}
         </p>
         <p
-          className="mt-1.5 w-full max-w-xl text-balance text-[12px] leading-snug text-text-muted sm:mt-3 sm:text-sm sm:leading-relaxed"
+          className="mt-1 w-full max-w-xl text-balance text-[11px] leading-snug text-text-muted sm:mt-3 sm:text-sm sm:leading-relaxed"
         >
           {hero.mechanismFold}
         </p>
         <div
           id="hero-buy-cluster"
-          className="order-2 mt-3 flex w-full max-w-sm flex-col items-center gap-2 md:order-4 sm:mt-7 sm:gap-3"
+          className="order-2 mt-2 flex w-full max-w-sm flex-col items-center gap-1 md:order-4 sm:mt-7 sm:gap-3"
         >
           <CheckoutForm
             tierId="79"
@@ -69,26 +69,27 @@ export function SalesPage() {
             className="w-full"
           />
           <p
-            className="text-center text-[11px] leading-snug text-text-muted sm:text-xs"
+            className="text-center text-[10px] leading-snug text-text-muted sm:text-xs"
             aria-label="Purchase guarantees"
           >
             {hero.foldGuaranteeChips.join(" · ")}
           </p>
         </div>
-        <p className="order-3 mt-2 max-w-sm text-center md:order-5 sm:mt-4">
+        <p className="order-3 mt-1 max-w-sm text-center md:order-5 sm:mt-4">
           <Link
             href="/sample"
-            className="text-[13px] font-medium text-action underline-offset-4 hover:underline sm:text-sm"
+            id="hero-sample-demo-link"
+            className="text-[12px] font-medium text-action underline-offset-4 hover:underline sm:text-sm"
           >
             {hero.sampleDemoCue}
           </Link>
         </p>
-        <HeroPhonePreview className="order-4 mt-3 max-md:max-w-[9.75rem] md:order-3 sm:mt-8" />
-        <div className="order-5 w-full md:order-6">
-          <HeroProofBeatsBelowFold />
-        </div>
-        <div id="hero-fold-sentinel" className="h-px w-full" aria-hidden="true" />
+        <HeroPhonePreview className="order-4 mt-2 max-md:max-w-[8.25rem] md:order-3 sm:mt-8" />
+        <div id="hero-fold-sentinel" className="order-5 h-px w-full md:order-6" aria-hidden="true" />
       </section>
+      <div className="mx-auto mt-4 w-full max-w-2xl max-md:mt-3 sm:mt-6">
+        <HeroProofBeatsBelowFold />
+      </div>
 
       <section aria-labelledby="problem-heading" className="mt-16 sm:mt-20">
         <h2 id="problem-heading" className="font-sans text-2xl font-semibold text-text">
