@@ -25,6 +25,7 @@ const FIVE_SYSTEM_LABELS =
 
 export default function SamplePage() {
   const facts = huntsvilleCityZoneDemoFacts();
+  const [leadFact, ...moreFacts] = facts;
 
   return (
     <PageShell>
@@ -70,8 +71,16 @@ export default function SamplePage() {
           Worked example for one address. Other systems use their own locators in
           the paid Guide.
         </p>
+        {leadFact ? (
+          <p className="mt-4 text-sm leading-relaxed text-ink">
+            <span className="font-medium text-ink">
+              {fieldLabel(leadFact.field)}:{" "}
+            </span>
+            <SourcedFact fact={leadFact} />
+          </p>
+        ) : null}
         <dl className="mt-6 space-y-5">
-          {facts.map((fact) => (
+          {moreFacts.map((fact) => (
             <div key={fact.field}>
               <dt className="text-sm text-muted">{fieldLabel(fact.field)}</dt>
               <dd className="mt-1 text-ink">

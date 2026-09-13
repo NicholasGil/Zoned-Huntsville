@@ -214,9 +214,14 @@ describe("first-screen buy", () => {
     assert.match(heroSource, /hero\.headline/);
     assert.match(heroSource, /hero\.proofLineAboveFold/);
     assert.match(heroSource, /hero\.mechanismFold/);
+    assert.match(heroSource, /id="hero-buy-cluster"/);
     assert.match(heroSource, /hero\.foldGuaranteeChips/);
     assert.match(heroSource, /hero\.sampleDemoCue/);
     assert.match(heroSource, /href="\/sample"/);
+    assert.match(heroSource, /HeroPhonePreview className="order-4/);
+    const buyIdx = heroSource.indexOf('id="hero-buy-cluster"');
+    const phoneIdx = heroSource.indexOf("HeroPhonePreview");
+    assert.ok(buyIdx > 0 && phoneIdx > buyIdx, "buy cluster precedes phone in DOM for ≤767 flex order");
     assert.equal(
       heroSource.includes("hero.proofBeats.map"),
       false,

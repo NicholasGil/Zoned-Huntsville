@@ -35,6 +35,7 @@ export function SalesPage() {
         <CheckoutNotice />
       </Suspense>
       <section
+        id="hero-fold"
         aria-labelledby="hero-heading"
         className="mx-auto flex w-full min-w-0 max-w-2xl flex-col items-center text-center"
       >
@@ -43,22 +44,24 @@ export function SalesPage() {
         </p>
         <h1
           id="hero-heading"
-          className="mt-2 font-sans text-[32px] font-bold leading-[1.08] tracking-tight text-text max-md:max-w-[20rem] sm:mt-4 sm:max-w-none sm:text-[44px] sm:leading-[1.06] lg:text-[48px]"
+          className="mt-2 font-sans text-[28px] font-bold leading-[1.08] tracking-tight text-text max-md:max-w-[20rem] sm:mt-4 sm:max-w-none sm:text-[44px] sm:leading-[1.06] lg:text-[48px]"
         >
           {hero.headline}
         </h1>
         <p
-          className="mt-3 w-full max-w-xl text-balance text-[15px] font-medium leading-snug text-text-muted sm:mt-4 sm:text-lg sm:leading-snug"
+          className="mt-2 w-full max-w-xl text-balance text-[14px] font-medium leading-snug text-text-muted sm:mt-4 sm:text-lg sm:leading-snug"
         >
           {hero.proofLineAboveFold}
         </p>
         <p
-          className="mt-2 w-full max-w-xl text-balance text-[13px] leading-snug text-text-muted sm:mt-3 sm:text-sm sm:leading-relaxed"
+          className="mt-1.5 w-full max-w-xl text-balance text-[12px] leading-snug text-text-muted sm:mt-3 sm:text-sm sm:leading-relaxed"
         >
           {hero.mechanismFold}
         </p>
-        <HeroPhonePreview />
-        <div className="mt-5 flex w-full max-w-sm flex-col items-center gap-3 sm:mt-7">
+        <div
+          id="hero-buy-cluster"
+          className="order-2 mt-3 flex w-full max-w-sm flex-col items-center gap-2 md:order-4 sm:mt-7 sm:gap-3"
+        >
           <CheckoutForm
             tierId="79"
             label={hero.cta}
@@ -72,7 +75,7 @@ export function SalesPage() {
             {hero.foldGuaranteeChips.join(" · ")}
           </p>
         </div>
-        <p className="mt-4 max-w-sm text-center">
+        <p className="order-3 mt-2 max-w-sm text-center md:order-5 sm:mt-4">
           <Link
             href="/sample"
             className="text-[13px] font-medium text-action underline-offset-4 hover:underline sm:text-sm"
@@ -80,7 +83,10 @@ export function SalesPage() {
             {hero.sampleDemoCue}
           </Link>
         </p>
-        <HeroProofBeatsBelowFold />
+        <HeroPhonePreview className="order-4 mt-3 max-md:max-w-[9.75rem] md:order-3 sm:mt-8" />
+        <div className="order-5 w-full md:order-6">
+          <HeroProofBeatsBelowFold />
+        </div>
         <div id="hero-fold-sentinel" className="h-px w-full" aria-hidden="true" />
       </section>
 
