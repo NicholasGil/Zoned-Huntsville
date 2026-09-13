@@ -52,13 +52,34 @@ export function SalesPage() {
         >
           {hero.proofLineAboveFold}
         </p>
-        <CheckoutForm
-          tierId="79"
-          label={hero.cta}
-          variant="pill"
-          className="mt-5 w-full max-w-sm sm:mt-7"
-        />
+        <p
+          className="mt-2 w-full max-w-xl text-balance text-[13px] leading-snug text-text-muted sm:mt-3 sm:text-sm sm:leading-relaxed"
+        >
+          {hero.mechanismFold}
+        </p>
         <HeroPhonePreview />
+        <div className="mt-5 flex w-full max-w-sm flex-col items-center gap-3 sm:mt-7">
+          <CheckoutForm
+            tierId="79"
+            label={hero.cta}
+            variant="pill"
+            className="w-full"
+          />
+          <p
+            className="text-center text-[11px] leading-snug text-text-muted sm:text-xs"
+            aria-label="Purchase guarantees"
+          >
+            {hero.foldGuaranteeChips.join(" · ")}
+          </p>
+        </div>
+        <p className="mt-4 max-w-sm text-center">
+          <Link
+            href="/sample"
+            className="text-[13px] font-medium text-action underline-offset-4 hover:underline sm:text-sm"
+          >
+            {hero.sampleDemoCue}
+          </Link>
+        </p>
         <HeroProofBeatsBelowFold />
         <div id="hero-fold-sentinel" className="h-px w-full" aria-hidden="true" />
       </section>
@@ -131,7 +152,8 @@ export function SalesPage() {
           ))}
         </ul>
         <p className="mt-6 max-w-2xl text-base font-normal leading-relaxed text-text-muted sm:text-lg">
-          Preview first: the Huntsville City Schools profile is free on the{" "}
+          Preview first: the free address→zone decision demo (Huntsville City
+          Schools) is on the{" "}
           <Link href="/sample" className="text-action hover:underline">
             sample page
           </Link>
@@ -179,23 +201,6 @@ export function SalesPage() {
         </dl>
       </section>
 
-      <section
-        aria-labelledby="final-cta-heading"
-        className="mt-16 border-t border-border pt-16 sm:mt-20"
-      >
-        <h2 id="final-cta-heading" className="font-sans text-2xl font-semibold text-text">
-          Ready when you are
-        </h2>
-        <p className="mt-4 max-w-2xl text-base text-text-muted sm:text-lg">
-          The hero button and pricing below both post the same $79 checkout — pick
-          whichever screen you&apos;re on.
-        </p>
-        <p className="mt-4">
-          <Link href="#pricing" className="text-action font-semibold hover:underline">
-            See pricing and tiers →
-          </Link>
-        </p>
-      </section>
       <MobileBuyBar />
     </div>
   );

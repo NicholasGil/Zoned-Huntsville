@@ -284,7 +284,7 @@ describe("C-032 toolkit", () => {
     assert.ok(toolkitTier);
     assert.deepEqual(toolkitTier.includes, [
       "Everything in the Guide.",
-      "Toolkit access.",
+      "Checklist Pack: on-page printable checklists built from sourced facts in the Guide — not a downloadable PDF pack.",
     ]);
     assert.equal(siteSource.includes("Deadline Calendar"), false);
     assert.equal(salesSource.includes("Call Script Pack"), false);

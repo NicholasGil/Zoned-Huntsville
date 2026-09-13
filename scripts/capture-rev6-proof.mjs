@@ -48,7 +48,11 @@ async function capture() {
   const pageSample = await browser.newPage();
   await pageSample.setViewportSize({ width: 390, height: 844 });
   await pageSample.goto(`${baseUrl}/sample`, { waitUntil: "networkidle" });
-  await pageSample.screenshot({ path: samplePath, fullPage: false });
+  const citation = pageSample.locator("dd").filter({ hasText: /verified/i }).first();
+  if (await citation.count()) {
+    await citation.scrollIntoViewIfNeeded();
+  }
+  await pageSample.screenshot({ path: samplePath, fullPage: false, clip: { x: 0, y: 0, width: 390, height: 520 } });
   await pageSample.close();
 
   const page375 = await browser.newPage();
@@ -59,7 +63,21 @@ async function capture() {
     path: join(repoRoot, "docs/proof/hormozi-rev6-375x667.png"),
     fullPage: false,
   });
+  await page375.screenshot({
+    path: join(repoRoot, "docs/proof/revenue-fold-375x667.png"),
+    fullPage: false,
+  });
   await page375.close();
+
+  const pageSample375 = await browser.newPage();
+  await pageSample375.setViewportSize({ width: 375, height: 667 });
+  await pageSample375.goto(`${baseUrl}/sample`, { waitUntil: "networkidle" });
+  await pageSample375.evaluate(() => window.scrollTo(0, 0));
+  await pageSample375.screenshot({
+    path: join(repoRoot, "docs/proof/sample-375x667.png"),
+    fullPage: false,
+  });
+  await pageSample375.close();
 
   const page1280 = await browser.newPage();
   await page1280.setViewportSize({ width: 1280, height: 800 });

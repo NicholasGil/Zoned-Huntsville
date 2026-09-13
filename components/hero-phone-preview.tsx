@@ -26,7 +26,7 @@ export function HeroPhonePreview() {
         </div>
       </div>
       <p className="mt-2 text-center text-[10px] text-text-muted sm:mt-3 sm:text-xs">
-        Screenshot from the free sample page — real guide UI.
+        Screenshot from the free zone-check demo — real product UI.
       </p>
     </div>
   );

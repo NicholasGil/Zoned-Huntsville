@@ -38,7 +38,7 @@ export const namedSources = {
 } as const;
 
 export const hero = {
-  headline: "Want the zone details before you sign?",
+  headline: "City name isn’t the school zone.",
   proofLineAboveFold:
     "The address decides the district — not the city name on the listing.",
   proofBeatsBelowFold: [
@@ -52,6 +52,14 @@ export const hero = {
   ] as const,
   subhead:
     "The 2026–27 Guide: what Huntsville's five systems publish, linked and dated. Not a ranking.",
+  mechanismFold:
+    "Sourced, dated assembly across five systems — not star rankings.",
+  foldGuaranteeChips: [
+    "30-day money-back",
+    "Zone Promise if an address or deadline is wrong",
+  ] as const,
+  sampleDemoCue:
+    "See the free sample — every figure linked and dated",
   cta: "I want the details — $79",
   stickyMobileCta: "Get the School Guide — $79",
   guarantee: "30-day money-back guarantee",
@@ -74,19 +82,19 @@ export const pricingTiers = [
     id: "149",
     amountUsd: 149,
     prominence: "target",
-    name: "Guide + Toolkit",
+    name: "Guide + Checklist Pack",
     includes: [
       "Everything in the Guide.",
-      "Toolkit access.",
+      "Checklist Pack: on-page printable checklists built from sourced facts in the Guide — not a downloadable PDF pack.",
     ],
   },
   {
     id: "349",
     amountUsd: 349,
     prominence: "default",
-    name: "Guide + Toolkit + Call",
+    name: "Guide + Checklist Pack + Call",
     includes: [
-      "Everything in the Guide and Toolkit.",
+      "Everything in the Guide and Checklist Pack.",
       "One 45-minute video call with an expert.",
     ],
   },

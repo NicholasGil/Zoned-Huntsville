@@ -37,6 +37,10 @@ const webhookSource = readFileSync(
   new URL("../app/api/webhooks/stripe/route.ts", import.meta.url),
   "utf8",
 );
+const samplePageSource = readFileSync(
+  new URL("../app/sample/page.tsx", import.meta.url),
+  "utf8",
+);
 
 const FALSE_CATALOG = "Every district, every magnet, every private school";
 const MISSING_WORKSHEETS = [
@@ -59,6 +63,9 @@ function homepageOfferText(): string {
   return [
     hero.headline,
     hero.subhead,
+    hero.mechanismFold,
+    ...hero.foldGuaranteeChips,
+    hero.sampleDemoCue,
     hero.proofLineAboveFold,
     ...hero.proofBeatsBelowFold,
     ...hero.proofBeats,
@@ -106,7 +113,14 @@ describe("homepage offer honesty", () => {
     for (const name of MISSING_WORKSHEETS) {
       assert.equal(text.includes(name), false, name);
     }
-    assert.match(text, /Toolkit access/);
+    assert.match(text, /Checklist Pack/);
+    const checklistPack = pricingTiers.find((tier) => tier.id === "149");
+    assert.ok(checklistPack);
+    assert.match(
+      checklistPack.includes.join("\n"),
+      /on-page printable checklists/,
+    );
+    assert.match(checklistPack.includes.join("\n"), /not a downloadable PDF pack/);
     assert.match(salesCopy.objections[4].answer, /not a five-worksheet pack/);
     assert.match(
       salesCopy.offerStack[1].detail,
@@ -170,12 +184,12 @@ describe("homepage offer honesty", () => {
       salesCopy.offerStack[2].detail,
       /one 45-minute video call with an expert\. Four slots each month\./,
     );
-    const toolkitFaq = salesCopy.faq.find((item) =>
-      item.question.includes("Toolkit"),
+    const checklistFaq = salesCopy.faq.find((item) =>
+      item.question.includes("Checklist Pack"),
     );
-    assert.ok(toolkitFaq);
+    assert.ok(checklistFaq);
     assert.match(
-      toolkitFaq.answer,
+      checklistFaq.answer,
       /\$349 tier adds one 45-minute video call with an expert\./,
     );
     const cappedFaq = salesCopy.faq.find((item) =>
@@ -195,10 +209,14 @@ describe("homepage offer honesty", () => {
 });
 
 describe("first-screen buy", () => {
-  it("puts yes-question headline, marketing proof line, and $79 pill CTA in the hero (no refund below button)", () => {
+  it("puts soft H1, proof, mechanism, phone preview, $79 CTA, fold guarantee chips, and sample demo link in the hero", () => {
     const heroSource = heroSectionSource();
     assert.match(heroSource, /hero\.headline/);
     assert.match(heroSource, /hero\.proofLineAboveFold/);
+    assert.match(heroSource, /hero\.mechanismFold/);
+    assert.match(heroSource, /hero\.foldGuaranteeChips/);
+    assert.match(heroSource, /hero\.sampleDemoCue/);
+    assert.match(heroSource, /href="\/sample"/);
     assert.equal(
       heroSource.includes("hero.proofBeats.map"),
       false,
@@ -208,17 +226,17 @@ describe("first-screen buy", () => {
     assert.match(heroSource, /variant="pill"/);
     assert.match(heroSource, /tierId="79"/);
     assert.match(heroSource, /HeroPhonePreview/);
-    assert.match(salesPageSource, /\$79/);
-    assert.match(salesPageSource, /hero\.cta/);
-    assert.equal(heroSource.includes("hero.guarantee"), false);
     assert.equal(heroSource.includes("salesCopy.heroRiskReversal"), false);
-    assert.equal(heroSource.toLowerCase().includes("zone promise"), false);
-    assert.equal(heroSource.toLowerCase().includes("refund"), false);
-    assert.match(salesCopy.heroRiskReversal, /30-day refund/);
-    assert.match(salesCopy.heroRiskReversal, /Zone Promise/);
+    assert.match(heroSource, /hero\.cta/);
+    assert.equal(hero.cta.includes("$79"), true);
+    assert.equal(heroSource.includes("hero.guarantee"), false);
     assert.equal(
       hero.headline,
-      "Want the zone details before you sign?",
+      "City name isn’t the school zone.",
+    );
+    assert.equal(
+      hero.mechanismFold,
+      "Sourced, dated assembly across five systems — not star rankings.",
     );
     assert.equal(
       hero.proofLineAboveFold,
@@ -237,6 +255,15 @@ describe("first-screen buy", () => {
     assert.equal(salesPageSource.includes("GuideBuyCard"), false);
     const heroTier79 = (salesPageSource.match(/tierId="79"/g) ?? []).length;
     assert.equal(heroTier79, 1, "hero should be the only $79 form on the sales page");
+    assert.equal(
+      salesPageSource.includes("Ready when you are"),
+      false,
+      "remove trailing final CTA section that competes with hero + pricing",
+    );
+    assert.equal(
+      salesPageSource.includes('aria-labelledby="final-cta-heading"'),
+      false,
+    );
     const order = [
       'aria-labelledby="hero-heading"',
       'aria-labelledby="problem-heading"',
@@ -245,7 +272,6 @@ describe("first-screen buy", () => {
       "<Pricing />",
       'aria-labelledby="guarantee-heading"',
       'aria-labelledby="faq-heading"',
-      'aria-labelledby="final-cta-heading"',
     ];
     let last = -1;
     for (const marker of order) {
@@ -258,6 +284,16 @@ describe("first-screen buy", () => {
   it("keeps a real /sample preview path", () => {
     assert.match(salesPageSource, /href="\/sample"/);
     assert.match(salesPageSource, /SampleOptInForm/);
+  });
+
+  it("frames /sample as address-to-zone demo, not a district phone book", () => {
+    assert.match(samplePageSource, /huntsvilleCityZoneDemoFacts/);
+    assert.match(samplePageSource, /official check|official locator/i);
+    assert.equal(samplePageSource.includes("superintendent"), false);
+    assert.match(samplePageSource, /five metro systems|five separate systems/i);
+    assert.match(samplePageSource, /SampleOptInForm/);
+    assert.match(samplePageSource, /tierId="79"/);
+    assert.match(samplePageSource, /Free decision demo/i);
   });
 });
 

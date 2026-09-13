@@ -6,7 +6,7 @@ import {
   sendTransactionalEmail,
   type SendEmailResult,
 } from "@/lib/resend";
-import { fieldLabel, huntsvilleCitySampleFacts } from "@/lib/seed-facts";
+import { fieldLabel, huntsvilleCityZoneDemoFacts } from "@/lib/seed-facts";
 import { site } from "@/lib/site";
 
 function escapeHtml(value: string): string {
@@ -33,14 +33,14 @@ export function buildSampleProfileEmail(siteUrl: string): {
   text: string;
   html: string;
 } {
-  const facts = huntsvilleCitySampleFacts();
+  const facts = huntsvilleCityZoneDemoFacts();
   const sampleUrl = `${siteOrigin(siteUrl)}/sample`;
-  const subject = "Your Huntsville City Schools sample";
+  const subject = "Your Huntsville zone-check demo";
 
   const textLines = [
-    "Huntsville City Schools",
+    "Address → zone decision demo (Huntsville City Schools)",
     "",
-    "This is the district profile you asked for. Each figure has its official source and the date it was verified.",
+    "This is the free demo you asked for: how to check zoning with official sources, each linked and dated.",
     "",
   ];
 
@@ -63,8 +63,8 @@ export function buildSampleProfileEmail(siteUrl: string): {
     })
     .join("");
 
-  const html = `<p>Huntsville City Schools</p>
-<p>This is the district profile you asked for. Each figure has its official source and the date it was verified.</p>
+  const html = `<p>Address → zone decision demo (Huntsville City Schools)</p>
+<p>This is the free demo you asked for: how to check zoning with official sources, each linked and dated.</p>
 ${factBlocks}
 <p>You can also read this profile at <a href="${escapeHtml(sampleUrl)}">${escapeHtml(sampleUrl)}</a></p>`;
 

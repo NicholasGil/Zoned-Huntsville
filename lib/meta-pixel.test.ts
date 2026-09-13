@@ -40,7 +40,7 @@ describe("initiateCheckoutParams", () => {
 describe("leadEventParams", () => {
   it("names the sample, not a paid product", () => {
     const lead = leadEventParams();
-    assert.equal(lead.content_name, "Huntsville City Schools sample");
+    assert.equal(lead.content_name, "Huntsville zone-check demo");
     assert.equal(lead.content_category, "lead");
   });
 });

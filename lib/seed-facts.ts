@@ -64,6 +64,11 @@ export const HUNTSVILLE_CITY_SAMPLE_FIELDS = [
   "zone_locator_url",
 ] as const;
 
+export const HUNTSVILLE_CITY_ZONE_DEMO_FIELDS = [
+  "how_to_check_before_lease",
+  "zone_locator_url",
+] as const;
+
 export const FACT_FIELD_LABELS: Record<string, string> = {
   name: "Name",
   website: "Website",
@@ -930,6 +935,25 @@ export function huntsvilleCitySampleFacts(): SeedFact[] {
       ) -
       HUNTSVILLE_CITY_SAMPLE_FIELDS.indexOf(
         b.field as (typeof HUNTSVILLE_CITY_SAMPLE_FIELDS)[number],
+      ),
+  );
+}
+
+export function huntsvilleCityZoneDemoFacts(): SeedFact[] {
+  const wanted = new Set<string>(HUNTSVILLE_CITY_ZONE_DEMO_FIELDS);
+  const found = seedFactsMatching(
+    (fact) =>
+      fact.entity_type === "district" &&
+      fact.entity_slug === "huntsville-city" &&
+      wanted.has(fact.field),
+  );
+  return [...found].sort(
+    (a, b) =>
+      HUNTSVILLE_CITY_ZONE_DEMO_FIELDS.indexOf(
+        a.field as (typeof HUNTSVILLE_CITY_ZONE_DEMO_FIELDS)[number],
+      ) -
+      HUNTSVILLE_CITY_ZONE_DEMO_FIELDS.indexOf(
+        b.field as (typeof HUNTSVILLE_CITY_ZONE_DEMO_FIELDS)[number],
       ),
   );
 }
