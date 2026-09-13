@@ -33,7 +33,10 @@ const baseUrl =
 
 const HOME_H1 = "City name isn’t the school zone.";
 const SAMPLE_H1 = "Address → zone";
-const HOME_PAGE_MARKERS = ["City name isn’t the school zone.", "I want the details — $79"];
+const HOME_PAGE_MARKERS = [
+  "City name isn’t the school zone.",
+  "Know the zone before I sign — $79",
+];
 
 async function waitForServer(url, timeoutMs) {
   const deadline = Date.now() + timeoutMs;

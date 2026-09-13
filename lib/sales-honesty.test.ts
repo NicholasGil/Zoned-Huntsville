@@ -136,7 +136,7 @@ describe("homepage offer honesty", () => {
   });
 
   it("keeps the first-screen buy as the $79 CheckoutForm on small viewports", () => {
-    assert.equal(hero.cta, "I want the details — $79");
+    assert.equal(hero.cta, "Know the zone before I sign — $79");
     assert.equal(hero.stickyMobileCta, "Get the School Guide — $79");
     assert.match(mobileBuyBarSource, /tierId="79"/);
     assert.match(mobileBuyBarSource, /label=\{hero\.stickyMobileCta\}/);
